@@ -14,7 +14,7 @@ namespace Aoc2023.Tests
         [TestMethod()]
         public void Part1Test()
         {
-            var instance = new Day01("TEMP");
+            var instance = new Day01(File.ReadAllText("day01-input.txt"));
             var answer = instance.Part1();
             Assert.Inconclusive(answer.ToString());
         }
@@ -22,7 +22,7 @@ namespace Aoc2023.Tests
         [TestMethod()]
         public void Part2Test()
         {
-            var instance = new Day01("TEMP");
+            var instance = new Day01(File.ReadAllText("day01-input.txt"));
             var answer = instance.Part2();
             Assert.Inconclusive(answer.ToString());
         }

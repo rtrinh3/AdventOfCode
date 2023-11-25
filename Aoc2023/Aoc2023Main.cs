@@ -5,7 +5,7 @@
         static void Main(string[] args)
         {
             string day = args.ElementAtOrDefault(0) ?? "01";
-            string input = args.ElementAtOrDefault(1) ?? "day01_example.txt";
+            string input = args.ElementAtOrDefault(1) ?? "input.txt";
             if (File.Exists(input))
             {
                 input = File.ReadAllText(input);
