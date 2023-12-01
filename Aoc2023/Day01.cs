@@ -20,18 +20,19 @@ namespace Aoc2023
             int sum = 0;
             foreach (var line in inputLines)
             {
-                string cs = $"{line.First(char.IsDigit)}{line.Last(char.IsDigit)}";
-                sum += int.Parse(cs);
+                string value = $"{line.First(char.IsDigit)}{line.Last(char.IsDigit)}";
+                sum += int.Parse(value);
             }
             return sum;
         }
         public int Part2()
         {
+            const string DIGIT_PATTERN = @"one|two|three|four|five|six|seven|eight|nine|[0-9]";
             int sum = 0;
             foreach (var line in inputLines)
             {
-                var first = Regex.Match(line, "one|two|three|four|five|six|seven|eight|nine|[0-9]");
-                var last = Regex.Match(line, "one|two|three|four|five|six|seven|eight|nine|[0-9]", RegexOptions.RightToLeft);
+                var first = Regex.Match(line, DIGIT_PATTERN);
+                var last = Regex.Match(line, DIGIT_PATTERN, RegexOptions.RightToLeft);
                 sum += 10 * GetValue(first.Value) + GetValue(last.Value);
             }
             return sum;
