@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
+// https://adventofcode.com/2023/day/1
+
 namespace Aoc2023
 {
     public class Day01
@@ -20,14 +22,13 @@ namespace Aoc2023
             int sum = 0;
             foreach (var line in inputLines)
             {
-                string value = $"{line.First(char.IsDigit)}{line.Last(char.IsDigit)}";
-                sum += int.Parse(value);
+                sum += 10 * (line.First(char.IsDigit) - '0') + (line.Last(char.IsDigit) - '0');
             }
             return sum;
         }
         public int Part2()
         {
-            const string DIGIT_PATTERN = @"one|two|three|four|five|six|seven|eight|nine|[0-9]";
+            const string DIGIT_PATTERN = @"one|two|three|four|five|six|seven|eight|nine|\d";
             int sum = 0;
             foreach (var line in inputLines)
             {

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// https://adventofcode.com/2023/day/2
+
 namespace Aoc2023
 {
     public class Day02
@@ -22,20 +24,22 @@ namespace Aoc2023
                 string[] header = gameParts[0].Split(' ', TrimAndDiscard);
                 Debug.Assert(header[0] == "Game" && header[1] == (i + 1).ToString());
 
-                Dictionary<string, int> gameMinBalls = new();
-                string[] sets = gameParts[1].Split(';', TrimAndDiscard);
-                foreach (string set in sets)
+                Dictionary<string, int> gameMinBalls = new()
                 {
-                    string[] balls = set.Split(',', TrimAndDiscard);
-                    foreach (string ball in balls)
+                    ["red"] = 0,
+                    ["green"] = 0,
+                    ["blue"] = 0,
+                };
+                // No need to distinguish between sets
+                string[] balls = gameParts[1].Split(new char[] { ';', ',' }, TrimAndDiscard);
+                foreach (string ball in balls)
+                {
+                    string[] ballParts = ball.Split(' ', TrimAndDiscard);
+                    int ballCount = int.Parse(ballParts[0]);
+                    string ballColor = ballParts[1];
+                    if (gameMinBalls[ballColor] < ballCount)
                     {
-                        string[] ballParts = ball.Split(' ', TrimAndDiscard);
-                        int ballCount = int.Parse(ballParts[0]);
-                        string ballColor = ballParts[1];
-                        if (gameMinBalls.GetValueOrDefault(ballColor) < ballCount)
-                        {
-                            gameMinBalls[ballColor] = ballCount;
-                        }
+                        gameMinBalls[ballColor] = ballCount;
                     }
                 }
                 games[i] = gameMinBalls;
@@ -57,7 +61,7 @@ namespace Aoc2023
                 bool isPossible = true;
                 foreach (var maxForColor in maxAllowedScores)
                 {
-                    if (maxForColor.Value < game.GetValueOrDefault(maxForColor.Key))
+                    if (maxForColor.Value < game[maxForColor.Key])
                     {
                         isPossible = false;
                         break;
@@ -73,7 +77,7 @@ namespace Aoc2023
 
         public int Part2()
         {
-            return games.Sum(game => game.GetValueOrDefault("red") * game.GetValueOrDefault("green") * game.GetValueOrDefault("blue"));
+            return games.Sum(game => game["red"] * game["green"] * game["blue"]);
         }
     }
 }
