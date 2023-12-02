@@ -9,12 +9,11 @@ namespace Aoc2023
 {
     public class Day02
     {
-        private const StringSplitOptions TrimAndDiscard = StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries;
-
         private Dictionary<string, int>[] games;
 
         public Day02(string input)
         {
+            const StringSplitOptions TrimAndDiscard = StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries;
             string[] lines = input.Split('\n', TrimAndDiscard);
             games = new Dictionary<string, int>[lines.Length];
             for (int i = 0; i < lines.Length; i++)
@@ -46,7 +45,7 @@ namespace Aoc2023
         public int Part1()
         {
             int sumOfIds = 0;
-            Dictionary<string, int> minimumScores = new()
+            Dictionary<string, int> maxAllowedScores = new()
             {
                 ["red"] = 12,
                 ["green"] = 13,
@@ -56,9 +55,9 @@ namespace Aoc2023
             {
                 var game = games[i];
                 bool isPossible = true;
-                foreach (var kvp in minimumScores)
+                foreach (var maxForColor in maxAllowedScores)
                 {
-                    if (kvp.Value < game.GetValueOrDefault(kvp.Key))
+                    if (maxForColor.Value < game.GetValueOrDefault(maxForColor.Key))
                     {
                         isPossible = false;
                         break;
