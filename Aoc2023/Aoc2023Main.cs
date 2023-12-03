@@ -4,8 +4,21 @@
     {
         static void Main(string[] args)
         {
-            string day = args.ElementAtOrDefault(0) ?? "01";
-            string input = args.ElementAtOrDefault(1) ?? "input.txt";
+            string? day = args.ElementAtOrDefault(0);
+            string? input = args.ElementAtOrDefault(1);
+#if DEBUG
+            day ??= "01";
+            input ??= @"PLACEHOLDER";
+#else
+            if (args.Length < 1)
+            {
+                throw new Exception($"Missing day");
+            }
+            if (args.Length < 2)
+            {
+                throw new Exception($"Missing input");
+            }
+#endif
             if (File.Exists(input))
             {
                 input = File.ReadAllText(input);
