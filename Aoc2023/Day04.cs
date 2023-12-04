@@ -35,11 +35,11 @@ namespace Aoc2023
         {
             int[] piles = new int[matches.Length];
             Array.Fill(piles, 1);
-            for (int m = 0; m < matches.Length; m++)
+            for (int cardNumber = 0; cardNumber < piles.Length; cardNumber++)
             {
-                for (int p = 0; p < matches[m]; p++)
+                for (int following = 0; following < matches[cardNumber]; following++)
                 {
-                    piles[m + p + 1] += piles[m];
+                    piles[cardNumber + following + 1] += piles[cardNumber];
                 }
             }
             return piles.Sum();
