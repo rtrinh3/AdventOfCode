@@ -28,6 +28,7 @@
                 throw new Exception($"Bad day: {day}");
             }
             string dayClassName = "Aoc2023.Day" + dayValue.ToString("00");
+            Console.WriteLine($"Loading: {dayClassName}");
             var dayClass = typeof(Aoc2023Main).Assembly.GetType(dayClassName);
             var dayConstructor = dayClass.GetConstructor([typeof(string)]);
             var dayInstance = dayConstructor.Invoke([input]);
