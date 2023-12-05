@@ -9,14 +9,17 @@ using System.Threading.Tasks;
 
 namespace Aoc2023
 {
-    public class Day05(string input)
+    public class Day05
     {
-        public long Part1()
+        private long[] seeds;
+        private Dictionary<string, (string mapTo, long[] rangeKeys, (long destinationRangeStart, long sourceRangeStart, long rangeLength)[] ranges)> maps = new();
+
+        public Day05(string input)
         {
             string[] paragraphs = input.ReplaceLineEndings("\n").Split("\n\n", StringSplitOptions.TrimEntries);
             Debug.Assert(paragraphs[0].StartsWith("seeds:"));
-            long[] seeds = paragraphs[0].Split(':', StringSplitOptions.TrimEntries)[1].Split(' ').Select(s => long.Parse(s)).ToArray();
-            var maps = new Dictionary<string, (string mapTo, long[] rangeKeys, (long destinationRangeStart, long sourceRangeStart, long rangeLength)[] ranges)>();
+            seeds = paragraphs[0].Split(':', StringSplitOptions.TrimEntries)[1].Split(' ').Select(s => long.Parse(s)).ToArray();
+            //var maps = new Dictionary<string, (string mapTo, long[] rangeKeys, (long destinationRangeStart, long sourceRangeStart, long rangeLength)[] ranges)>();
             foreach (string map in paragraphs.Skip(1))
             {
                 string[] lines = map.Split('\n');
@@ -35,33 +38,36 @@ namespace Aoc2023
                 maps[mapFrom] = (mapTo, rangeKeys, ranges);
             }
 
-            // Sanity check: we can map from seed to location
-            string testMaps = "seed";
-            while (testMaps != "location")
-            {
-                testMaps = maps[testMaps].mapTo;
-            }
+            //// Sanity check: we can map from seed to location
+            //string testMaps = "seed";
+            //while (testMaps != "location")
+            //{
+            //    testMaps = maps[testMaps].mapTo;
+            //}
+        }
 
-            (long, string) Convert(long n, string t)
+        private (long, string) Convert(long n, string t)
+        {
+            var mapping = maps[t];
+            var binarySearchResult = Array.BinarySearch(mapping.rangeKeys, n);
+            var index = (binarySearchResult < 0) ? (~binarySearchResult - 1) : binarySearchResult;
+            if (index < 0)
             {
-                var mapping = maps[t];
-                var binarySearchResult = Array.BinarySearch(mapping.rangeKeys, n);
-                var index =  (binarySearchResult < 0) ? (~binarySearchResult - 1) : binarySearchResult;
-                if (index < 0)
-                {
-                    return (n, mapping.mapTo);
-                }
-                var range = mapping.ranges[index];
-                if (range.sourceRangeStart <= n && n < range.sourceRangeStart + range.rangeLength)
-                {
-                    return (n - range.sourceRangeStart + range.destinationRangeStart, mapping.mapTo); 
-                }
-                else
-                {
-                    return (n, mapping.mapTo);
-                }
+                return (n, mapping.mapTo);
             }
+            var range = mapping.ranges[index];
+            if (range.sourceRangeStart <= n && n < range.sourceRangeStart + range.rangeLength)
+            {
+                return (n - range.sourceRangeStart + range.destinationRangeStart, mapping.mapTo);
+            }
+            else
+            {
+                return (n, mapping.mapTo);
+            }
+        }
 
+        public long Part1()
+        {
             var locations = seeds.Select(seed =>
             {
                 var item = (seed, "seed");
@@ -76,7 +82,36 @@ namespace Aoc2023
 
         public long Part2()
         {
-            return -1337;
+            object lockMinLocation = new();
+            long minLocation = long.MaxValue;
+            int seedRangeCount = seeds.Length / 2;
+            Parallel.ForEach(seeds.Chunk(2), seedRange =>
+            {
+                long localMinLocation = long.MaxValue;
+                for (long seed = seedRange[0]; seed < seedRange[0] + seedRange[1]; seed++)
+                {
+                    var item = (seed, "seed");
+                    while (item.Item2 != "location")
+                    {
+                        item = Convert(item.Item1, item.Item2);
+                    }
+                    long location = item.Item1;
+                    if (location < localMinLocation)
+                    {
+                        localMinLocation = location;
+                    }
+                }
+                lock (lockMinLocation)
+                {
+                    if (localMinLocation < minLocation)
+                    {
+                        minLocation = localMinLocation;
+                    }
+                }
+                Console.WriteLine($"Done range {seedRange[0]} length {seedRange[1]}");
+            });
+            Console.WriteLine(minLocation);
+            return minLocation;
         }
     }
 }

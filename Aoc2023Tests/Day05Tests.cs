@@ -31,16 +31,14 @@ namespace Aoc2023.Tests
         {
             var instance = new Day05(File.ReadAllText("day05-example.txt"));
             var answer = instance.Part2();
-            //Assert.AreEqual(30, answer);
-            Assert.Inconclusive(answer.ToString());
+            Assert.AreEqual(46L, answer);
         }
         [TestMethod()]
         public void Part2InputTest()
         {
             var instance = new Day05(File.ReadAllText("day05-input.txt"));
             var answer = instance.Part2();
-            //Assert.AreEqual(30, answer);
-            Assert.Inconclusive(answer.ToString());
+            Assert.AreEqual(47909639L, answer);
         }
     }
 }
