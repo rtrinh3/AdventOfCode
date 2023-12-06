@@ -40,5 +40,14 @@ namespace Aoc2023.Tests
             var answer = instance.Part2();
             Assert.AreEqual(42250895, answer);
         }
+
+        [TestMethod()]
+        public void RedditTest()
+        {
+            // A useful integer case from https://reddit.com/r/adventofcode/comments/18c6bsm/for_time30_and_dist200_why_is_accepted_answer_9/
+            var instance = new Day06("Time: 30\nDistance: 200");
+            var answer = instance.Part1();
+            Assert.AreEqual(9, answer, "You need to beat the record -- matching it isn't good enough.");
+        }
     }
 }
