@@ -11,21 +11,24 @@ namespace Aoc2023
 {
     public class Day05
     {
-        private long[] seeds;
-        private Dictionary<string, (string mapTo, long[] rangeKeys, (long destinationRangeStart, long sourceRangeStart, long rangeLength)[] ranges)> maps = new();
+        private readonly long[] seeds;
+        private readonly (long[] rangeKeys, (long destinationRangeStart, long sourceRangeStart, long rangeLength)[] ranges)[] maps;
 
         public Day05(string input)
         {
             string[] paragraphs = input.ReplaceLineEndings("\n").Split("\n\n", StringSplitOptions.TrimEntries);
             Debug.Assert(paragraphs[0].StartsWith("seeds:"));
-            seeds = paragraphs[0].Split(':', StringSplitOptions.TrimEntries)[1].Split(' ').Select(s => long.Parse(s)).ToArray();
-            //var maps = new Dictionary<string, (string mapTo, long[] rangeKeys, (long destinationRangeStart, long sourceRangeStart, long rangeLength)[] ranges)>();
-            foreach (string map in paragraphs.Skip(1))
+            seeds = paragraphs[0].Split(':', StringSplitOptions.TrimEntries)[1].Split(' ').Select(long.Parse).ToArray();
+            string previousTarget = "seed";
+            maps = new (long[], (long, long, long)[])[paragraphs.Length - 1];
+            for (int i = 1; i < paragraphs.Length; i++)
             {
+                string map = paragraphs[i];
                 string[] lines = map.Split('\n');
                 var parseHeader = Regex.Match(lines[0], @"([a-z]+)-to-([a-z]+) map:");
                 string mapFrom = parseHeader.Groups[1].Value;
                 string mapTo = parseHeader.Groups[2].Value;
+                Debug.Assert(previousTarget == mapFrom); // Assert the mappings are in order
                 var ranges = lines.Skip(1).Select(range =>
                 {
                     var numbers = range.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -35,80 +38,64 @@ namespace Aoc2023
                     return (destinationRangeStart, sourceRangeStart, rangeLength);
                 }).OrderBy(r => r.sourceRangeStart).ToArray();
                 var rangeKeys = ranges.Select(r => r.sourceRangeStart).ToArray();
-                maps[mapFrom] = (mapTo, rangeKeys, ranges);
+                maps[i - 1] = (rangeKeys, ranges);
+                previousTarget = mapTo;
             }
-
-            //// Sanity check: we can map from seed to location
-            //string testMaps = "seed";
-            //while (testMaps != "location")
-            //{
-            //    testMaps = maps[testMaps].mapTo;
-            //}
         }
 
-        private (long, string) Convert(long n, string t)
+        private long ConvertFromSeedToLocation(long seed)
         {
-            var mapping = maps[t];
-            var binarySearchResult = Array.BinarySearch(mapping.rangeKeys, n);
-            var index = (binarySearchResult < 0) ? (~binarySearchResult - 1) : binarySearchResult;
-            if (index < 0)
+            long n = seed;
+            foreach (var mapping in maps)
             {
-                return (n, mapping.mapTo);
+                var binarySearchResult = Array.BinarySearch(mapping.rangeKeys, n);
+                var index = (binarySearchResult < 0) ? (~binarySearchResult - 1) : binarySearchResult;
+                if (index >= 0)
+                {
+                    var range = mapping.ranges[index];
+                    if (range.sourceRangeStart <= n && n < range.sourceRangeStart + range.rangeLength)
+                    {
+                        n = n - range.sourceRangeStart + range.destinationRangeStart;
+                    }
+                    // else no adjustment
+                }
+                // else no adjustment
             }
-            var range = mapping.ranges[index];
-            if (range.sourceRangeStart <= n && n < range.sourceRangeStart + range.rangeLength)
-            {
-                return (n - range.sourceRangeStart + range.destinationRangeStart, mapping.mapTo);
-            }
-            else
-            {
-                return (n, mapping.mapTo);
-            }
+            return n;
         }
 
         public long Part1()
         {
-            var locations = seeds.Select(seed =>
-            {
-                var item = (seed, "seed");
-                while (item.Item2 != "location")
-                {
-                    item = Convert(item.Item1, item.Item2);
-                }
-                return item.Item1;
-            });
+            var locations = seeds.Select(ConvertFromSeedToLocation);
             return locations.Min();
         }
 
         public long Part2()
         {
-            object lockMinLocation = new();
+            object minLocationLock = new();
             long minLocation = long.MaxValue;
             int seedRangeCount = seeds.Length / 2;
+            int done = 0;
             Parallel.ForEach(seeds.Chunk(2), seedRange =>
             {
                 long localMinLocation = long.MaxValue;
                 for (long seed = seedRange[0]; seed < seedRange[0] + seedRange[1]; seed++)
                 {
-                    var item = (seed, "seed");
-                    while (item.Item2 != "location")
-                    {
-                        item = Convert(item.Item1, item.Item2);
-                    }
-                    long location = item.Item1;
+                    long location = ConvertFromSeedToLocation(seed);
                     if (location < localMinLocation)
                     {
                         localMinLocation = location;
                     }
                 }
-                lock (lockMinLocation)
+                lock (minLocationLock)
                 {
                     if (localMinLocation < minLocation)
                     {
                         minLocation = localMinLocation;
                     }
+                    ++done;
                 }
-                Console.WriteLine($"Done range {seedRange[0]} length {seedRange[1]}");
+                Console.WriteLine($"Done range {seedRange[0]} length {seedRange[1]}, {done}/{seedRangeCount}");
             });
             Console.WriteLine(minLocation);
             return minLocation;
