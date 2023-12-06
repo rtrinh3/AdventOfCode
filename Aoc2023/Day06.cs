@@ -15,21 +15,9 @@ namespace Aoc2023
 
         public Day06(string input)
         {
-            foreach (string line in input.ReplaceLineEndings("\n").Split('\n', StringSplitOptions.RemoveEmptyEntries))
-            {
-                if (line.StartsWith("Time"))
-                {
-                    times = Regex.Matches(line, @"\d+").Select(m => m.Value).ToArray();
-                }
-                else if (line.StartsWith("Distance"))
-                {
-                    distances = Regex.Matches(line, @"\d+").Select(m => m.Value).ToArray();
-                }
-                else
-                {
-                    throw new Exception("What is this line");
-                }
-            }
+            string[] lines = input.ReplaceLineEndings("\n").Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            times = Regex.Matches(lines.First(line => line.StartsWith("Time")), @"\d+").Select(m => m.Value).ToArray();
+            distances = Regex.Matches(lines.First(line => line.StartsWith("Distance")), @"\d+").Select(m => m.Value).ToArray();
         }
 
         public long Part1()

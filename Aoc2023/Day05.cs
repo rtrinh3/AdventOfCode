@@ -38,7 +38,7 @@ namespace Aoc2023
                     return (destinationRangeStart, sourceRangeStart, rangeLength);
                 }).OrderBy(r => r.sourceRangeStart).ToList();
 
-                // Fill ranges with trivial mappings, inspired by https://reddit.com/r/adventofcode/comments/18b4b0r/2023_day_5_solutions/kc67vzu/
+                // Fill gaps in ranges with trivial mappings, inspired by https://reddit.com/r/adventofcode/comments/18b4b0r/2023_day_5_solutions/kc67vzu/
                 int rangesInText = ranges.Count;
                 if (ranges[0].sourceRangeStart > 0) {
                     ranges.Add((0, 0, ranges[0].sourceRangeStart));
@@ -71,16 +71,10 @@ namespace Aoc2023
                 // We want the index of the element <= our item.
                 var binarySearchResult = Array.BinarySearch(mapping.rangeKeys, n);
                 var index = (binarySearchResult < 0) ? (~binarySearchResult - 1) : binarySearchResult;
-                if (index >= 0)
-                {
-                    var range = mapping.ranges[index];
-                    if (range.sourceRangeStart <= n && n < range.sourceRangeStart + range.rangeLength)
-                    {
-                        n = n - range.sourceRangeStart + range.destinationRangeStart;
-                    }
-                    // else no adjustment
-                }
-                // else no adjustment
+                Debug.Assert(0 <= index && index < mapping.rangeKeys.Length, "Did I mess up the range fillers?");
+                var range = mapping.ranges[index];
+                Debug.Assert(range.sourceRangeStart <= n && n < range.sourceRangeStart + range.rangeLength, "Did I mess up the range fillers?");
+                n = n - range.sourceRangeStart + range.destinationRangeStart;
             }
             return n;
         }
@@ -94,30 +88,30 @@ namespace Aoc2023
         public long Part2()
         {
             (long start, long length)[] initialSeedRanges = seeds.Chunk(2).Select(c => (c[0], c[1])).ToArray();
-            // The "queues" allow me to handle cut-off ranges the same as unprocessed ranges
-            Stack<(long start, long length)> workQueue = new(initialSeedRanges);
+            Stack<(long start, long length)> incomingRanges = new(initialSeedRanges);
             foreach (var mapping in maps) {
-                Stack<(long start, long length)> nextQueue = new();
-                while (workQueue.Count > 0) {
-                    var thisRange = workQueue.Pop();
+                Stack<(long start, long length)> mappedRanges = new();
+                while (incomingRanges.Count > 0) {
+                    var thisRange = incomingRanges.Pop();
                     // See comment about binary search in ConvertFromSeedToLocation
                     var binarySearchResult = Array.BinarySearch(mapping.rangeKeys, thisRange.start);
                     var index = (binarySearchResult < 0) ? (~binarySearchResult - 1) : binarySearchResult;
-                    if (index < 0 || index >= mapping.rangeKeys.Length) throw new Exception("Did I mess up the range fillers?");
+                    Debug.Assert(0 <= index && index < mapping.rangeKeys.Length, "Did I mess up the range fillers?");
                     var range = mapping.ranges[index];
                     if (thisRange.start + thisRange.length > range.sourceRangeStart + range.rangeLength) {
                         // If thisRange goes beyond range
                         var overlap = range.sourceRangeStart + range.rangeLength - thisRange.start;
-                        nextQueue.Push((thisRange.start - range.sourceRangeStart + range.destinationRangeStart, overlap));
-                        workQueue.Push((thisRange.start + overlap, thisRange.length - overlap));
+                        mappedRanges.Push((thisRange.start - range.sourceRangeStart + range.destinationRangeStart, overlap));
+                        // Put the cut-off part back in the queue for processing
+                        incomingRanges.Push((thisRange.start + overlap, thisRange.length - overlap));
                     } else {
                         // thisRange fits within range
-                        nextQueue.Push((thisRange.start - range.sourceRangeStart + range.destinationRangeStart, thisRange.length));
+                        mappedRanges.Push((thisRange.start - range.sourceRangeStart + range.destinationRangeStart, thisRange.length));
                     }
                 }
-                workQueue = nextQueue;
+                incomingRanges = mappedRanges;
             }
-            return workQueue.Min(r => r.start);
+            return incomingRanges.Min(r => r.start);
         }
     }
 }
