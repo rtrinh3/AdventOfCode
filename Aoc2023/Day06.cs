@@ -10,8 +10,8 @@ namespace Aoc2023
     // https://adventofcode.com/2023/day/6
     public class Day06
     {
-        private string[] times;
-        private string[] distances;
+        private readonly string[] times;
+        private readonly string[] distances;
 
         public Day06(string input)
         {
@@ -34,8 +34,7 @@ namespace Aoc2023
 
         public long Part1()
         {
-            return Enumerable.Range(0, times.Length)
-                .Select(i => SolveRace(double.Parse(times[i]), double.Parse(distances[i])))
+            return times.Zip(distances, (t, d) => SolveRace(double.Parse(t), double.Parse(d)))
                 .Aggregate(1L, (a, b) => a * b);
         }
 
