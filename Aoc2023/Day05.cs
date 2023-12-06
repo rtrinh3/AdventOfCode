@@ -36,9 +36,26 @@ namespace Aoc2023
                     var sourceRangeStart = long.Parse(numbers[1]);
                     var rangeLength = long.Parse(numbers[2]);
                     return (destinationRangeStart, sourceRangeStart, rangeLength);
-                }).OrderBy(r => r.sourceRangeStart).ToArray();
+                }).OrderBy(r => r.sourceRangeStart).ToList();
+
+                // Fill ranges with trivial mappings, inspired by https://reddit.com/r/adventofcode/comments/18b4b0r/2023_day_5_solutions/kc67vzu/
+                int rangesInText = ranges.Count;
+                if (ranges[0].sourceRangeStart > 0) {
+                    ranges.Add((0, 0, ranges[0].sourceRangeStart));
+                }
+                for (int r = 0; r < rangesInText - 1; r++) {
+                    if (ranges[r].sourceRangeStart + ranges[r].rangeLength < ranges[r + 1].sourceRangeStart) {
+                        var gapStart = ranges[r].sourceRangeStart + ranges[r].rangeLength;
+                        var gapLength = ranges[r + 1].sourceRangeStart - gapStart;
+                        ranges.Add((gapStart, gapStart, gapLength));
+                    }
+                }
+                var lastRangeStart = ranges[rangesInText - 1].sourceRangeStart + ranges[rangesInText - 1].rangeLength;
+                ranges.Add((lastRangeStart, lastRangeStart, long.MaxValue - lastRangeStart));
+                ranges.Sort((a, b) => a.sourceRangeStart.CompareTo(b.sourceRangeStart));
+
                 var rangeKeys = ranges.Select(r => r.sourceRangeStart).ToArray();
-                maps[i - 1] = (rangeKeys, ranges);
+                maps[i - 1] = (rangeKeys, ranges.ToArray());
                 previousTarget = mapTo;
             }
         }
@@ -48,6 +65,10 @@ namespace Aoc2023
             long n = seed;
             foreach (var mapping in maps)
             {
+                // The keys are sorted, so we can search through them with a binary search
+                // The result of Array.BinarySearch is either positive -- the index of an exact match --
+                // or negative -- the bitwise complement of the index of the element > our item.
+                // We want the index of the element <= our item.
                 var binarySearchResult = Array.BinarySearch(mapping.rangeKeys, n);
                 var index = (binarySearchResult < 0) ? (~binarySearchResult - 1) : binarySearchResult;
                 if (index >= 0)
@@ -72,33 +93,31 @@ namespace Aoc2023
 
         public long Part2()
         {
-            object minLocationLock = new();
-            long minLocation = long.MaxValue;
-            int seedRangeCount = seeds.Length / 2;
-            int done = 0;
-            Parallel.ForEach(seeds.Chunk(2), seedRange =>
-            {
-                long localMinLocation = long.MaxValue;
-                for (long seed = seedRange[0]; seed < seedRange[0] + seedRange[1]; seed++)
-                {
-                    long location = ConvertFromSeedToLocation(seed);
-                    if (location < localMinLocation)
-                    {
-                        localMinLocation = location;
+            (long start, long length)[] initialSeedRanges = seeds.Chunk(2).Select(c => (c[0], c[1])).ToArray();
+            // The "queues" allow me to handle cut-off ranges the same as unprocessed ranges
+            Stack<(long start, long length)> workQueue = new(initialSeedRanges);
+            foreach (var mapping in maps) {
+                Stack<(long start, long length)> nextQueue = new();
+                while (workQueue.Count > 0) {
+                    var thisRange = workQueue.Pop();
+                    // See comment about binary search in ConvertFromSeedToLocation
+                    var binarySearchResult = Array.BinarySearch(mapping.rangeKeys, thisRange.start);
+                    var index = (binarySearchResult < 0) ? (~binarySearchResult - 1) : binarySearchResult;
+                    if (index < 0 || index >= mapping.rangeKeys.Length) throw new Exception("Did I mess up the range fillers?");
+                    var range = mapping.ranges[index];
+                    if (thisRange.start + thisRange.length > range.sourceRangeStart + range.rangeLength) {
+                        // If thisRange goes beyond range
+                        var overlap = range.sourceRangeStart + range.rangeLength - thisRange.start;
+                        nextQueue.Push((thisRange.start - range.sourceRangeStart + range.destinationRangeStart, overlap));
+                        workQueue.Push((thisRange.start + overlap, thisRange.length - overlap));
+                    } else {
+                        // thisRange fits within range
+                        nextQueue.Push((thisRange.start - range.sourceRangeStart + range.destinationRangeStart, thisRange.length));
                     }
                 }
-                lock (minLocationLock)
-                {
-                    if (localMinLocation < minLocation)
-                    {
-                        minLocation = localMinLocation;
-                    }
-                    ++done;
-                }
-                Console.WriteLine($"Done range {seedRange[0]} length {seedRange[1]}, {done}/{seedRangeCount}");
-            });
-            Console.WriteLine(minLocation);
-            return minLocation;
+                workQueue = nextQueue;
+            }
+            return workQueue.Min(r => r.start);
         }
     }
 }

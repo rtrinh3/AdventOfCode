@@ -33,10 +33,7 @@ namespace Aoc2023.Tests
             var answer = instance.Part2();
             Assert.AreEqual(46L, answer);
         }
-
-        // 2 minute timeout
-        // This takes about 1.8 minutes in Debug, 40 seconds in Release
-        [TestMethod(), Timeout(120_000)]
+        [TestMethod()]
         public void Part2InputTest()
         {
             var instance = new Day05(File.ReadAllText("day05-input.txt"));
