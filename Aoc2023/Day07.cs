@@ -10,6 +10,17 @@ namespace Aoc2023
     // https://adventofcode.com/2023/day/7
     public class Day07
     {
+        private enum HandStrengths
+        {
+            HIGH_CARD,
+            ONE_PAIR,
+            TWO_PAIR,
+            THREE_OF_A_KIND,
+            FULL_HOUSE,
+            FOUR_OF_A_KIND,
+            FIVE_OF_A_KIND
+        }
+
         private readonly (string hand, int bid)[] hands;
 
         public Day07(string input)
@@ -21,59 +32,57 @@ namespace Aoc2023
             }).ToArray();
         }
 
-        private static int CompareHandsPart1(string a, string b)
+        private static int CompareHands(string a, string b)
         {
-            Debug.Assert(a.Length == b.Length);
             // Weaker < Stronger
             var handComparison = EvaluateHand(a).CompareTo(EvaluateHand(b));
             if (handComparison != 0) return handComparison;
             const string CARD_ORDER = "23456789TJQKA";
-            for (int i = 0; i < a.Length; i++)
+            for (int i = 0; i < a.Length && i < b.Length; i++)
             {
                 int cardComparison = CARD_ORDER.IndexOf(a[i]).CompareTo(CARD_ORDER.IndexOf(b[i]));
                 if (cardComparison != 0) return cardComparison;
             }
-            // No tiebreakers
-            return 0;
+            return a.Length.CompareTo(b.Length);
         }
 
-        private static int EvaluateHand(string hand)
+        private static HandStrengths EvaluateHand(string hand)
         {
             var groups = hand.GroupBy(c => c).Select(g => (g.Key, g.Count())).OrderByDescending(g => g.Item2).ToArray();
             if (groups[0].Item2 >= 5)
             {
-                return 6;
+                return HandStrengths.FIVE_OF_A_KIND;
             }
             else if (groups[0].Item2 == 4)
             {
-                return 5;
+                return HandStrengths.FOUR_OF_A_KIND;
             }
             else if (groups[0].Item2 == 3 && groups[1].Item2 == 2)
             {
-                return 4;
+                return HandStrengths.FULL_HOUSE;
             }
             else if (groups[0].Item2 == 3 && groups[1].Item2 == 1)
             {
-                return 3;
+                return HandStrengths.THREE_OF_A_KIND;
             }
             else if (groups[0].Item2 == 2 && groups[1].Item2 == 2)
             {
-                return 2;
+                return HandStrengths.TWO_PAIR;
             }
             else if (groups[0].Item2 == 2 && groups[1].Item2 == 1)
             {
-                return 1;
+                return HandStrengths.ONE_PAIR;
             }
             else
             {
-                return 0;
+                return HandStrengths.HIGH_CARD;
             }
         }
 
         public int Part1()
         {
             var partOneHands = hands.ToArray();
-            Array.Sort(partOneHands, (a, b) => CompareHandsPart1(a.hand, b.hand));
+            Array.Sort(partOneHands, (a, b) => CompareHands(a.hand, b.hand));
             int winnings = 0;
             for (int i = 0; i < partOneHands.Length; i++)
             {
@@ -82,11 +91,11 @@ namespace Aoc2023
             return winnings;
         }
 
-        private static int EvaluateHandWithJokers(string hand)
+        private static HandStrengths EvaluateHandWithJokers(string hand)
         {
             if (hand == "JJJJJ")
             {
-                return EvaluateHand(hand);
+                return HandStrengths.FIVE_OF_A_KIND;
             }
             else
             {
@@ -109,18 +118,16 @@ namespace Aoc2023
 
         private static int CompareHandsWithJokers(string a, string b)
         {
-            Debug.Assert(a.Length == b.Length);
             // Weaker < Stronger
             var handComparison = EvaluateHandWithJokers(a).CompareTo(EvaluateHandWithJokers(b));
             if (handComparison != 0) return handComparison;
             const string CARD_ORDER = "J23456789TQKA";
-            for (int i = 0; i < a.Length; i++)
+            for (int i = 0; i < a.Length && i < b.Length; i++)
             {
                 int cardComparison = CARD_ORDER.IndexOf(a[i]).CompareTo(CARD_ORDER.IndexOf(b[i]));
                 if (cardComparison != 0) return cardComparison;
             }
-            // No tiebreakers
-            return 0;
+            return a.Length.CompareTo(b.Length);
         }
 
         public int Part2()
