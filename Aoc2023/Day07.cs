@@ -81,21 +81,20 @@ namespace Aoc2023
 
         public int Part1()
         {
-            var partOneHands = hands.ToArray();
-            Array.Sort(partOneHands, (a, b) => CompareHands(a.hand, b.hand));
+            Array.Sort(hands, (a, b) => CompareHands(a.hand, b.hand));
             int winnings = 0;
-            for (int i = 0; i < partOneHands.Length; i++)
+            for (int i = 0; i < hands.Length; i++)
             {
-                winnings += (i + 1) * partOneHands[i].bid;
+                winnings += (i + 1) * hands[i].bid;
             }
             return winnings;
         }
 
         private static HandStrengths EvaluateHandWithJokers(string hand)
         {
-            if (hand == "JJJJJ")
+            if (hand.All(c => c == 'J'))
             {
-                return HandStrengths.FIVE_OF_A_KIND;
+                return EvaluateHand(hand);
             }
             else
             {
@@ -132,12 +131,11 @@ namespace Aoc2023
 
         public int Part2()
         {
-            var partTwoHands = hands.ToArray();
-            Array.Sort(partTwoHands, (a, b) => CompareHandsWithJokers(a.hand, b.hand));
+            Array.Sort(hands, (a, b) => CompareHandsWithJokers(a.hand, b.hand));
             int winnings = 0;
-            for (int i = 0; i < partTwoHands.Length; i++)
+            for (int i = 0; i < hands.Length; i++)
             {
-                winnings += (i + 1) * partTwoHands[i].bid;
+                winnings += (i + 1) * hands[i].bid;
             }
             return winnings;
         }

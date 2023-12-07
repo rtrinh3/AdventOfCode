@@ -40,5 +40,32 @@ namespace Aoc2023.Tests
             var answer = instance.Part2();
             Assert.AreEqual(250577259, answer);
         }
+
+        [TestMethod()]
+        public void RedditTest()
+        {
+            // https://www.reddit.com/r/adventofcode/comments/18cr4xr/2023_day_7_better_example_input_not_a_spoiler/
+            var instance = new Day07(@"2345A 1
+Q2KJJ 13
+Q2Q2Q 19
+T3T3J 17
+T3Q33 11
+2345J 3
+J345A 2
+32T3K 5
+T55J5 29
+KK677 7
+KTJJT 34
+QQQJA 31
+JJJJJ 37
+JAAAA 43
+AAAAJ 59
+AAAAA 61
+2AAAA 23
+2JJJJ 53
+JJJJ2 41");
+            Assert.AreEqual(6592, instance.Part1());
+            Assert.AreEqual(6839, instance.Part2());
+        }
     }
 }
