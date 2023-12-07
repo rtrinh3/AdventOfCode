@@ -20,10 +20,8 @@ namespace Aoc2023
             Debug.Assert(paragraphs[0].StartsWith("seeds:"));
             seeds = paragraphs[0].Split(':', StringSplitOptions.TrimEntries)[1].Split(' ').Select(long.Parse).ToArray();
             string previousTarget = "seed";
-            maps = new (long[], (long, long, long)[])[paragraphs.Length - 1];
-            for (int i = 1; i < paragraphs.Length; i++)
+            maps = paragraphs.Skip(1).Select(map =>
             {
-                string map = paragraphs[i];
                 string[] lines = map.Split('\n');
                 var parseHeader = Regex.Match(lines[0], @"([a-z]+)-to-([a-z]+) map:");
                 string mapFrom = parseHeader.Groups[1].Value;
@@ -40,24 +38,27 @@ namespace Aoc2023
 
                 // Fill gaps in ranges with trivial mappings, inspired by https://reddit.com/r/adventofcode/comments/18b4b0r/2023_day_5_solutions/kc67vzu/
                 int rangesInText = ranges.Count;
-                if (ranges[0].sourceRangeStart > 0) {
+                var lastRangeStart = ranges.Last().sourceRangeStart + ranges.Last().rangeLength;
+                ranges.Add((lastRangeStart, lastRangeStart, long.MaxValue - lastRangeStart));
+                if (ranges[0].sourceRangeStart > 0)
+                {
                     ranges.Add((0, 0, ranges[0].sourceRangeStart));
                 }
-                for (int r = 0; r < rangesInText - 1; r++) {
-                    if (ranges[r].sourceRangeStart + ranges[r].rangeLength < ranges[r + 1].sourceRangeStart) {
+                for (int r = 0; r < rangesInText - 1; r++)
+                {
+                    if (ranges[r].sourceRangeStart + ranges[r].rangeLength < ranges[r + 1].sourceRangeStart)
+                    {
                         var gapStart = ranges[r].sourceRangeStart + ranges[r].rangeLength;
                         var gapLength = ranges[r + 1].sourceRangeStart - gapStart;
                         ranges.Add((gapStart, gapStart, gapLength));
                     }
                 }
-                var lastRangeStart = ranges[rangesInText - 1].sourceRangeStart + ranges[rangesInText - 1].rangeLength;
-                ranges.Add((lastRangeStart, lastRangeStart, long.MaxValue - lastRangeStart));
                 ranges.Sort((a, b) => a.sourceRangeStart.CompareTo(b.sourceRangeStart));
 
                 var rangeKeys = ranges.Select(r => r.sourceRangeStart).ToArray();
-                maps[i - 1] = (rangeKeys, ranges.ToArray());
                 previousTarget = mapTo;
-            }
+                return (rangeKeys, ranges.ToArray());
+            }).ToArray();
         }
 
         private long ConvertFromSeedToLocation(long seed)
@@ -89,22 +90,27 @@ namespace Aoc2023
         {
             (long start, long length)[] initialSeedRanges = seeds.Chunk(2).Select(c => (c[0], c[1])).ToArray();
             Stack<(long start, long length)> incomingRanges = new(initialSeedRanges);
-            foreach (var mapping in maps) {
+            foreach (var mapping in maps)
+            {
                 Stack<(long start, long length)> mappedRanges = new();
-                while (incomingRanges.Count > 0) {
+                while (incomingRanges.Count > 0)
+                {
                     var thisRange = incomingRanges.Pop();
                     // See comment about binary search in ConvertFromSeedToLocation
                     var binarySearchResult = Array.BinarySearch(mapping.rangeKeys, thisRange.start);
                     var index = (binarySearchResult < 0) ? (~binarySearchResult - 1) : binarySearchResult;
                     Debug.Assert(0 <= index && index < mapping.rangeKeys.Length, "Did I mess up the range fillers?");
                     var range = mapping.ranges[index];
-                    if (thisRange.start + thisRange.length > range.sourceRangeStart + range.rangeLength) {
+                    if (thisRange.start + thisRange.length > range.sourceRangeStart + range.rangeLength)
+                    {
                         // If thisRange goes beyond range
                         var overlap = range.sourceRangeStart + range.rangeLength - thisRange.start;
                         mappedRanges.Push((thisRange.start - range.sourceRangeStart + range.destinationRangeStart, overlap));
                         // Put the cut-off part back in the queue for processing
                         incomingRanges.Push((thisRange.start + overlap, thisRange.length - overlap));
-                    } else {
+                    }
+                    else
+                    {
                         // thisRange fits within range
                         mappedRanges.Push((thisRange.start - range.sourceRangeStart + range.destinationRangeStart, thisRange.length));
                     }
