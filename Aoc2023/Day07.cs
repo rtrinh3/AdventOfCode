@@ -66,6 +66,7 @@ namespace Aoc2023
         }
 
         private static IEnumerable<string> GenerateJokerSubstitutions(string hand) {
+            if (hand == "JJJJJ") return [hand];
             var seed = hand.Where(c => c != 'J').ToList();
             var candidates = seed.Distinct().ToList();
             return GenerateJokerSubstitutionsImpl(seed, candidates).Select(h => string.Join("", h));
