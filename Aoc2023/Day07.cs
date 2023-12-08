@@ -139,5 +139,25 @@ namespace Aoc2023
             }
             return winnings;
         }
+
+        // Calculate the score of a hand by
+        // first putting the strength of the hand as a hex digit,
+        // then appending the strengths of each card as hex digits.
+        // Base 16 isn't strictly necessary (the minimum is 13, the number of cards),
+        // but it makes debugging easier because we can format it as a hexadecimal number.
+        private static int ScoreHand(string hand)
+        {
+            const string CARD_ORDER = "23456789TJQKA";
+            return hand.Aggregate((int)EvaluateHand(hand), (acc, c) => acc * 0x10 + CARD_ORDER.IndexOf(c));
+        }
+
+        private static int ScoreHandWithJokers(string hand)
+        {
+            const string CARD_ORDER = "J23456789TQKA";
+            return hand.Aggregate((int)EvaluateHandWithJokers(hand), (acc, c) => acc * 0x10 + CARD_ORDER.IndexOf(c));
+        }
+
+        public int Part1Optimized() => hands.OrderBy(h => ScoreHand(h.hand)).Select((s, i) => s.bid * (i + 1)).Sum();
+        public int Part2Optimized() => hands.OrderBy(h => ScoreHandWithJokers(h.hand)).Select((s, i) => s.bid * (i + 1)).Sum();
     }
 }
