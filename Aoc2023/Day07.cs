@@ -79,7 +79,7 @@ namespace Aoc2023
             }
         }
 
-        public int Part1()
+        public int Part1Original()
         {
             Array.Sort(hands, (a, b) => CompareHands(a.hand, b.hand));
             int winnings = 0;
@@ -129,7 +129,7 @@ namespace Aoc2023
             return a.Length.CompareTo(b.Length);
         }
 
-        public int Part2()
+        public int Part2Original()
         {
             Array.Sort(hands, (a, b) => CompareHandsWithJokers(a.hand, b.hand));
             int winnings = 0;
@@ -157,7 +157,7 @@ namespace Aoc2023
             return hand.Aggregate((int)EvaluateHandWithJokers(hand), (acc, c) => acc * 0x10 + CARD_ORDER.IndexOf(c));
         }
 
-        public int Part1Optimized() => hands.OrderBy(h => ScoreHand(h.hand)).Select((s, i) => s.bid * (i + 1)).Sum();
-        public int Part2Optimized() => hands.OrderBy(h => ScoreHandWithJokers(h.hand)).Select((s, i) => s.bid * (i + 1)).Sum();
+        public int Part1() => hands.OrderBy(h => ScoreHand(h.hand)).Select((s, i) => s.bid * (i + 1)).Sum();
+        public int Part2() => hands.OrderBy(h => ScoreHandWithJokers(h.hand)).Select((s, i) => s.bid * (i + 1)).Sum();
     }
 }

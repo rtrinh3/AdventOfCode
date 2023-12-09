@@ -9,7 +9,7 @@ namespace Aoc2023
     // https://adventofcode.com/2023/day/9
     public class Day09(string input)
     {
-        private int[][] histories = input.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+        private readonly int[][] histories = input.Split('\n', StringSplitOptions.RemoveEmptyEntries)
                 .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(s => int.Parse(s)).ToArray())
                 .ToArray();
 
