@@ -12,17 +12,17 @@ namespace Aoc2023
         {
             return new VectorRC(left.Row + right.Row, left.Col + right.Col);
         }
-        public static VectorRC operator +(VectorRC left, (int, int) right)
+        public static VectorRC operator +(VectorRC left, (int row, int col) right)
         {
-            return new VectorRC(left.Row + right.Item1, left.Col + right.Item2);
+            return new VectorRC(left.Row + right.row, left.Col + right.col);
         }
         public static VectorRC operator -(VectorRC left, VectorRC right)
         {
             return new VectorRC(left.Row - right.Row, left.Col - right.Col);
         }
-        public static VectorRC operator -(VectorRC left, (int, int) right)
+        public static VectorRC operator -(VectorRC left, (int row, int col) right)
         {
-            return new VectorRC(left.Row - right.Item1, left.Col - right.Item2);
+            return new VectorRC(left.Row - right.row, left.Col - right.col);
         }
         public static VectorRC operator -(VectorRC val)
         {
@@ -49,24 +49,24 @@ namespace Aoc2023
         {
             return
                 [
-                    this + new VectorRC(+1, 0),
-                    this + new VectorRC(0, +1),
-                    this + new VectorRC(-1, 0),
-                    this + new VectorRC(0, -1),
+                    this + (+1, 0),
+                    this + (0, +1),
+                    this + (-1, 0),
+                    this + (0, -1),
                 ];
         }
         public readonly VectorRC[] EightNeighbors()
         {
             return 
                 [
-                    this + new VectorRC(-1, -1),
-                    this + new VectorRC(-1, 0),
-                    this + new VectorRC(-1, +1),
-                    this + new VectorRC(0, -1),
-                    this + new VectorRC(0, +1),
-                    this + new VectorRC(+1, -1),
-                    this + new VectorRC(+1, 0),
-                    this + new VectorRC(+1, +1),
+                    this + (-1, -1),
+                    this + (-1, 0),
+                    this + (-1, +1),
+                    this + (0, -1),
+                    this + (0, +1),
+                    this + (+1, -1),
+                    this + (+1, 0),
+                    this + (+1, +1),
                 ];
         }
     }

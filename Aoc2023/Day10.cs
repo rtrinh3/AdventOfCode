@@ -13,7 +13,6 @@ namespace Aoc2023
         private readonly string[] maze;
         private readonly Dictionary<VectorRC, int> loopDistances;
         private readonly VectorRC startCoord;
-        private readonly char startActualShape;
 
         public Day10(string input)
         {
@@ -32,38 +31,8 @@ namespace Aoc2023
             }
             throw new Exception("Did not find starting point");
         FOUND_START:
-            var startConnections = GetConnections(startCoord);
-            Debug.Assert(startConnections.Length == 2);
-            if (startConnections.Contains(startCoord + (+1, 0)) && startConnections.Contains(startCoord + (-1, 0)))
-            {
-                startActualShape = '|';
-            }
-            else if (startConnections.Contains(startCoord + (0, +1)) && startConnections.Contains(startCoord + (0, -1)))
-            {
-                startActualShape = '-';
-            }
-            else if (startConnections.Contains(startCoord + (-1, 0)) && startConnections.Contains(startCoord + (0, +1)))
-            {
-                startActualShape = 'L';
-            }
-            else if (startConnections.Contains(startCoord + (-1, 0)) && startConnections.Contains(startCoord + (0, -1)))
-            {
-                startActualShape = 'J';
-            }
-            else if (startConnections.Contains(startCoord + (+1, 0)) && startConnections.Contains(startCoord + (0, -1)))
-            {
-                startActualShape = '7';
-            }
-            else if (startConnections.Contains(startCoord + (+1, 0)) && startConnections.Contains(startCoord + (0, +1)))
-            {
-                startActualShape = 'F';
-            }
-            else
-            {
-                throw new Exception("What is this start?!");
-            }
-
-            var bfsResult = BfsToAll(startCoord, GetConnections);
+            Debug.Assert(GetConnections(startCoord).Length == 2);
+            var bfsResult = GraphAlgos.BfsToAll(startCoord, GetConnections);
             loopDistances = bfsResult.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.distance);
         }
 
@@ -96,7 +65,6 @@ namespace Aoc2023
             };
         }
 
-        private char GetTilePlainStart(VectorRC coord) => (coord == startCoord) ? startActualShape : GetTile(coord);
 
         public int Part1()
         {
@@ -108,10 +76,42 @@ namespace Aoc2023
 
         public int Part2()
         {
-            var minRow = loopDistances.Keys.Min(c => c.Row);
-            var maxRow = loopDistances.Keys.Max(c => c.Row);
-            var minCol = loopDistances.Keys.Min(c => c.Col);
-            var maxCol = loopDistances.Keys.Max(c => c.Col);
+            // Preparations
+            char startActualShape;
+            var startConnections = GetConnections(startCoord);
+            if (startConnections.Contains(startCoord + (+1, 0)) && startConnections.Contains(startCoord + (-1, 0)))
+            {
+                startActualShape = '|';
+            }
+            else if (startConnections.Contains(startCoord + (0, +1)) && startConnections.Contains(startCoord + (0, -1)))
+            {
+                startActualShape = '-';
+            }
+            else if (startConnections.Contains(startCoord + (-1, 0)) && startConnections.Contains(startCoord + (0, +1)))
+            {
+                startActualShape = 'L';
+            }
+            else if (startConnections.Contains(startCoord + (-1, 0)) && startConnections.Contains(startCoord + (0, -1)))
+            {
+                startActualShape = 'J';
+            }
+            else if (startConnections.Contains(startCoord + (+1, 0)) && startConnections.Contains(startCoord + (0, -1)))
+            {
+                startActualShape = '7';
+            }
+            else if (startConnections.Contains(startCoord + (+1, 0)) && startConnections.Contains(startCoord + (0, +1)))
+            {
+                startActualShape = 'F';
+            }
+            else
+            {
+                throw new Exception("What is this start?!");
+            }
+            char GetTilePlainStart(VectorRC coord)
+            {
+                return (coord == startCoord) ? startActualShape : GetTile(coord);
+            }
+
             // We can trace a line from a point, extend it in any direction
             // and count how many times it crosses our loop.
             // I choose to draw the line to the right.
@@ -124,6 +124,10 @@ namespace Aoc2023
             // The fewer of the two counts is the number of times the loop crosses our line;
             // the difference between the two counts should be even.
             HashSet<VectorRC> enclosedTiles = new();
+            var minRow = loopDistances.Keys.Min(c => c.Row);
+            var maxRow = loopDistances.Keys.Max(c => c.Row);
+            var minCol = loopDistances.Keys.Min(c => c.Col);
+            var maxCol = loopDistances.Keys.Max(c => c.Col);
             for (int row = minRow; row <= maxRow; row++)
             {
                 for (int col = minCol; col <= maxCol; col++)
@@ -194,28 +198,6 @@ namespace Aoc2023
             //}
 
             return enclosedTiles.Count;
-        }
-
-        private static Dictionary<T, (T parent, int distance)> BfsToAll<T>(T start, Func<T, IEnumerable<T>> getNeighbors)
-            where T : notnull
-        {
-            Queue<T> queue = new();
-            queue.Enqueue(start);
-            Dictionary<T, (T, int)> parentsDistances = new();
-            parentsDistances[start] = (start, 0);
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-                foreach (var next in getNeighbors(current))
-                {
-                    if (!parentsDistances.ContainsKey(next))
-                    {
-                        parentsDistances[next] = (current, parentsDistances[current].Item2 + 1);
-                        queue.Enqueue(next);
-                    }
-                }
-            }
-            return parentsDistances;
         }
     }
 }
