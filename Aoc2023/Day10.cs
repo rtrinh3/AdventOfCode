@@ -76,7 +76,7 @@ namespace Aoc2023
 
         public int Part2()
         {
-            // Preparations
+            // Prepare startActualShape and GetTilePlainStart
             char startActualShape;
             var startConnections = GetConnections(startCoord);
             if (startConnections.Contains(startCoord + (+1, 0)) && startConnections.Contains(startCoord + (-1, 0)))
@@ -137,12 +137,12 @@ namespace Aoc2023
                     {
                         int loopUp = 0;
                         int loopDown = 0;
-                        for (int iterCol = col; iterCol < maze[row].Length; iterCol++)
+                        for (int rayCol = col; rayCol <= maxCol; rayCol++)
                         {
-                            var iterCoord = new VectorRC(row, iterCol);
-                            if (loopDistances.ContainsKey(iterCoord))
+                            var rayCoord = new VectorRC(row, rayCol);
+                            if (loopDistances.ContainsKey(rayCoord))
                             {
-                                char loopTile = GetTilePlainStart(iterCoord);
+                                char loopTile = GetTilePlainStart(rayCoord);
                                 if (loopTile == '|' || loopTile == 'L' || loopTile == 'J')
                                 {
                                     loopUp++;
@@ -172,6 +172,14 @@ namespace Aoc2023
             //        var coord = new VectorRC(row, col);
             //        if (loopDistances.ContainsKey(coord))
             //        {
+            //            if (coord == startCoord)
+            //            {
+            //                Console.ForegroundColor = ConsoleColor.Green;
+            //            }
+            //            else
+            //            {
+            //                Console.ResetColor();
+            //            }
             //            char tile = GetTile(coord);
             //            char toDraw = tile switch
             //            {
@@ -187,10 +195,12 @@ namespace Aoc2023
             //        }
             //        else if (enclosedTiles.Contains(coord))
             //        {
+            //            Console.ForegroundColor = ConsoleColor.Red;
             //            Console.Write('█');
             //        }
             //        else
             //        {
+            //            Console.ResetColor();
             //            Console.Write(maze[row][col]);
             //        }
             //    }
