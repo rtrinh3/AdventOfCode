@@ -168,7 +168,7 @@ namespace Aoc2023
             //            {
             //                Console.ResetColor();
             //            }
-            //            char tile = GetTile(coord);
+            //            char tile = GetTilePlainStart(coord);
             //            char toDraw = tile switch
             //            {
             //                '|' => '║',
@@ -177,7 +177,7 @@ namespace Aoc2023
             //                'J' => '╝',
             //                '7' => '╗',
             //                'F' => '╔',
-            //                _ => '╬'
+            //                _ => throw new Exception($"This tile {tile} can't be part of the loop?!")
             //            };
             //            Console.Write(toDraw);
             //        }
