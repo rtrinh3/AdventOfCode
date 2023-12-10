@@ -112,17 +112,15 @@ namespace Aoc2023
                 return (coord == startCoord) ? startActualShape : GetTile(coord);
             }
 
-            // We can trace a line from a point, extend it in any direction
-            // and count how many times it crosses our loop.
-            // I choose to draw the line to the right.
-            // If the line crooses the loop an odd number of times,
-            // we can conclude that the point is inside the loop,
-            // because this loop doesn't cross over itself.
-            // If it did, we would have to calculate the winding number instead.
-            // The loop will often be colinear with our line, so we will instead count
-            // how many times the loop touches our line from the top and from the bottom.
-            // The fewer of the two counts is the number of times the loop crosses our line;
-            // the difference between the two counts should be even.
+            // From https://www.reddit.com/r/adventofcode/comments/18eza5g/2023_day_10_animated_visualization/
+            // We will find the spaces inside the loop by scanning the grid row by row,
+            // and keeping track of whether we're inside the loop by flipping the inLoop variable
+            // every time the loop touches our ray from the bottom.
+            // (We could also flip it when the loop touches from the top;
+            // the number of times it touches from the top versus from the bottom
+            // should differ by an even number, so it shouldn't affect calculations.)
+            // (Flipping a boolean works because the loop doesn't cross over itself.
+            // If it did, we'd have to track the winding number instead.)
             HashSet<VectorRC> enclosedTiles = new();
             var minRow = loopDistances.Keys.Min(c => c.Row);
             var maxRow = loopDistances.Keys.Max(c => c.Row);
@@ -130,32 +128,22 @@ namespace Aoc2023
             var maxCol = loopDistances.Keys.Max(c => c.Col);
             for (int row = minRow; row <= maxRow; row++)
             {
+                bool inLoop = false;
                 for (int col = minCol; col <= maxCol; col++)
                 {
                     var coord = new VectorRC(row, col);
-                    if (!loopDistances.ContainsKey(coord))
+                    if (loopDistances.ContainsKey(coord))
                     {
-                        int loopUp = 0;
-                        int loopDown = 0;
-                        for (int rayCol = col; rayCol <= maxCol; rayCol++)
+                        char loopTile = GetTilePlainStart(coord);
+                        // if loop touches from the bottom
+                        if (loopTile == '|' || loopTile == '7' || loopTile == 'F')
                         {
-                            var rayCoord = new VectorRC(row, rayCol);
-                            if (loopDistances.ContainsKey(rayCoord))
-                            {
-                                char loopTile = GetTilePlainStart(rayCoord);
-                                if (loopTile == '|' || loopTile == 'L' || loopTile == 'J')
-                                {
-                                    loopUp++;
-                                }
-                                if (loopTile == '|' || loopTile == '7' || loopTile == 'F')
-                                {
-                                    loopDown++;
-                                }
-                            }
+                            inLoop = !inLoop;
                         }
-                        Debug.Assert((loopUp - loopDown) % 2 == 0);
-                        int loopCrossings = Math.Min(loopUp, loopDown);
-                        if ((loopCrossings % 2) != 0)
+                    }
+                    else
+                    {
+                        if (inLoop)
                         {
                             enclosedTiles.Add(coord);
                         }
