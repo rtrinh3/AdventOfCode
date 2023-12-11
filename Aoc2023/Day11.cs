@@ -46,7 +46,7 @@ namespace Aoc2023
             return DoPuzzle(1_000_000);
         }
 
-        private long DoPuzzle(int expansion) {
+        public long DoPuzzle(int expansion) {
             int[] rowMapping = Enumerable.Range(0, height).Select(r => r + (expansion - 1) * emptyRows.Count(e => e < r)).ToArray();
             int[] colMapping = Enumerable.Range(0, width).Select(c => c + (expansion - 1) * emptyCols.Count(e => e < c)).ToArray();
             long sum = 0;
