@@ -17,16 +17,19 @@ namespace Aoc2023
         private readonly HashSet<int> emptyCols;
         private readonly List<VectorRC> galaxies;
 
-        public Day11(string input) {
+        public Day11(string input)
+        {
             string[] space = input.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             height = space.Length;
             width = space.Max(r => r.Length);
             emptyRows = new HashSet<int>(Enumerable.Range(0, height));
             emptyCols = new HashSet<int>(Enumerable.Range(0, width));
             galaxies = new List<VectorRC>();
-            for (int row = 0; row < height; row++) {
+            for (int row = 0; row < height; row++)
+            {
                 var matches = Regex.EnumerateMatches(space[row], @"#");
-                foreach (var m in matches) {
+                foreach (var m in matches)
+                {
                     Debug.Assert(m.Length == 1);
                     var coord = new VectorRC(row, m.Index);
                     galaxies.Add(coord);
@@ -46,14 +49,17 @@ namespace Aoc2023
             return DoPuzzle(1_000_000);
         }
 
-        public long DoPuzzle(int expansion) {
+        public long DoPuzzle(int expansion)
+        {
             int[] rowMapping = Enumerable.Range(0, height).Select(r => r + (expansion - 1) * emptyRows.Count(e => e < r)).ToArray();
             int[] colMapping = Enumerable.Range(0, width).Select(c => c + (expansion - 1) * emptyCols.Count(e => e < c)).ToArray();
             long sum = 0;
-            for (int i = 0; i < galaxies.Count; i++) {
+            for (int i = 0; i < galaxies.Count; i++)
+            {
                 int irow = rowMapping[galaxies[i].Row];
                 int icol = colMapping[galaxies[i].Col];
-                for (int j = i + 1; j < galaxies.Count; j++) {
+                for (int j = i + 1; j < galaxies.Count; j++)
+                {
                     int jrow = rowMapping[galaxies[j].Row];
                     int jcol = colMapping[galaxies[j].Col];
                     sum += Math.Abs(jrow - irow) + Math.Abs(jcol - icol);
