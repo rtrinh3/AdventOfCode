@@ -12,7 +12,7 @@ namespace Aoc2023
     public class Day12
     {
         private record Row(string mask, int[] runs);
-        private enum CellType { SPACE, BROKEN, FLEX };
+        private enum CellType { DOT, POUND, FLEX };
         private record CellRun(CellType type, int length);
 
         private readonly Row[] records;
@@ -30,7 +30,8 @@ namespace Aoc2023
         public long Part1()
         {
             //return DoBruteForce(records);
-            return records.Sum(row => DoPuzzle(row));
+            //return records.Sum(row => DoPuzzle(row));
+            return records.Sum(row => DoPuzzle2(row));
         }
 
         public long Part2()
@@ -49,7 +50,7 @@ namespace Aoc2023
             var unfoldedRecordsCount = unfoldedRecords.Count;
             Parallel.ForEach(unfoldedRecords, row =>
             {
-                var qty = DoPuzzle(row);
+                var qty = DoPuzzle2(row);
                 //sum += qty;
                 var mySum = Interlocked.Add(ref sum, qty);
                 var myDone = Interlocked.Increment(ref done);
@@ -64,11 +65,11 @@ namespace Aoc2023
             initialRuns.Add(new CellRun(CellType.FLEX, 0));
             for (int i = 0; i < row.runs.Length - 1; i++)
             {
-                initialRuns.Add(new CellRun(CellType.BROKEN, row.runs[i]));
-                initialRuns.Add(new CellRun(CellType.SPACE, 1));
+                initialRuns.Add(new CellRun(CellType.POUND, row.runs[i]));
+                initialRuns.Add(new CellRun(CellType.DOT, 1));
                 initialRuns.Add(new CellRun(CellType.FLEX, 0));
             }
-            initialRuns.Add(new CellRun(CellType.BROKEN, row.runs.Last()));
+            initialRuns.Add(new CellRun(CellType.POUND, row.runs.Last()));
             initialRuns.Add(new CellRun(CellType.FLEX, 0));
 
             Regex[] maskValidators = new Regex[row.mask.Length];
@@ -98,8 +99,8 @@ namespace Aoc2023
                 {
                     char c = runs[index - 1].type switch
                     {
-                        CellType.SPACE => '.',
-                        CellType.BROKEN => '#',
+                        CellType.DOT => '.',
+                        CellType.POUND => '#',
                         _ => throw new Exception() // FLEX too
                     };
                     buf.Append(c, runs[index - 1].length);
@@ -121,7 +122,7 @@ namespace Aoc2023
                 }
 
                 var run = runs[index];
-                if (run.type == CellType.SPACE || run.type == CellType.BROKEN)
+                if (run.type == CellType.DOT || run.type == CellType.POUND)
                 {
                     DoPuzzleRecurse(runs, index + 1, pattern);
                     return;
@@ -135,7 +136,7 @@ namespace Aoc2023
                 if (index == runs.Count - 1)
                 {
                     var nextRun = new List<CellRun>(runs);
-                    nextRun[index] = new CellRun(CellType.SPACE, remainingSpace);
+                    nextRun[index] = new CellRun(CellType.DOT, remainingSpace);
                     DoPuzzleRecurse(nextRun, index + 1, pattern);
                 }
                 else
@@ -144,7 +145,7 @@ namespace Aoc2023
                     //Parallel.For(0, remainingSpace + 1, s =>
                     {
                         var nextRun = new List<CellRun>(runs);
-                        nextRun[index] = new CellRun(CellType.SPACE, s);
+                        nextRun[index] = new CellRun(CellType.DOT, s);
                         DoPuzzleRecurse(nextRun, index + 1, pattern);
                     }//);
                 }
@@ -214,6 +215,132 @@ namespace Aoc2023
                 Interlocked.Add(ref sum, localSum);
             });
             return sum;
+        }
+
+        private long DoPuzzle2(Row row)
+        {
+            var expandedRuns = new List<CellRun>();
+            expandedRuns.Add(new CellRun(CellType.FLEX, 0));
+            for (int i = 0; i < row.runs.Length - 1; i++)
+            {
+                expandedRuns.Add(new CellRun(CellType.POUND, row.runs[i]));
+                expandedRuns.Add(new CellRun(CellType.DOT, 1));
+                expandedRuns.Add(new CellRun(CellType.FLEX, 0));
+            }
+            expandedRuns.Add(new CellRun(CellType.POUND, row.runs.Last()));
+            expandedRuns.Add(new CellRun(CellType.FLEX, 0));
+
+            Func<int, int, Regex> GetValidator = (int startIndex, int length) =>
+            {
+                var patternBuilder = new StringBuilder(@"^");
+                var substrLen = Math.Min(row.mask.Length - startIndex, length);
+                string substr = row.mask.Substring(startIndex, substrLen);
+                var escapes = substr.Select(c =>
+                {
+                    return c switch
+                    {
+                        '.' => @"\.",
+                        '#' => @"#",
+                        '?' => @".",
+                        _ => throw new Exception("What is this mask")
+                    };
+                });
+                patternBuilder.AppendJoin("", escapes);
+                patternBuilder.Append('$');
+                string pattern = patternBuilder.ToString();
+                return new Regex(pattern);
+            };
+            GetValidator = Memoize(GetValidator);
+
+            Func<int, int, long> DoPuzzleRecurse = (x, y) => throw new Exception("Not initialized");
+            DoPuzzleRecurse = Memoize((int maskIndex, int runIndex) =>
+            {
+                Debug.Assert(maskIndex <= row.mask.Length);
+                Debug.Assert(runIndex <= expandedRuns.Count);
+                if (runIndex == expandedRuns.Count)
+                {
+                    return (maskIndex == row.mask.Length) ? 1 : 0;
+                }
+                var run = expandedRuns[runIndex];
+                char c = run.type switch
+                {
+                    CellType.DOT => '.',
+                    CellType.POUND => '#',
+                    CellType.FLEX => '.',
+                    _ => throw new Exception("What is this cell")
+                };
+                IEnumerable<int> lengths = run.type switch
+                {
+                    CellType.DOT => [run.length],
+                    CellType.POUND => [run.length],
+                    CellType.FLEX => Enumerable.Range(0, 1 + row.mask.Length - maskIndex - expandedRuns.Skip(runIndex).Sum(r => r.length)),
+                    _ => throw new Exception("What is this cell")
+                };
+                long sum = 0;
+                foreach (var len in lengths)
+                {
+                    string runString = string.Join("", Enumerable.Repeat(c, len));
+                    var validator = GetValidator(maskIndex, len);
+                    if (validator.IsMatch(runString))
+                    {
+                        sum += DoPuzzleRecurse(maskIndex + len, runIndex + 1);
+                    }
+                }
+                return sum;
+            });
+
+            var answer = DoPuzzleRecurse(0, 0);
+            return answer;
+        }
+
+        private static Func<T1, TR> Memoize<T1, TR>(Func<T1, TR> fn)
+            where T1: notnull
+        {
+            Dictionary<T1, TR> memo = new();
+            return x1 =>
+            {
+                if (memo.TryGetValue(x1, out var result))
+                {
+                    return result;
+                }
+                return memo[x1] = fn(x1);
+            };
+        }
+        private static Func<T1, T2, TR> Memoize<T1, T2, TR>(Func<T1, T2, TR> fn)
+        {
+            Dictionary<(T1, T2), TR> memo = new();
+            return (x1, x2) =>
+            {
+                if (memo.TryGetValue((x1, x2), out var result))
+                {
+                    return result;
+                }
+                return memo[(x1, x2)] = fn(x1, x2);
+            };
+        }
+        private static Func<T1, T2, T3, TR> Memoize<T1, T2, T3, TR>(Func<T1, T2, T3, TR> fn)
+        {
+            Dictionary<(T1, T2, T3), TR> memo = new();
+            return (x1, x2, x3) =>
+            {
+                if (memo.TryGetValue((x1, x2, x3), out var result))
+                {
+                    return result;
+                }
+                return memo[(x1, x2, x3)] = fn(x1, x2, x3);
+            };
+        }
+        private static Func<T1, T2, T3, T4, TR> Memoize<T1, T2, T3, T4, TR>(Func<T1, T2, T3, T4, TR> fn)
+        {
+            Dictionary<(T1, T2, T3, T4), TR> memo = new();
+            return (x1, x2, x3, x4) =>
+            {
+                if (memo.TryGetValue((x1, x2, x3, x4), out var result))
+                {
+                    return result;
+                }
+                return memo[(x1, x2, x3, x4)] = fn(x1, x2, x3, x4);
+            };
         }
     }
 }
