@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Aoc2023
 {
     // https://adventofcode.com/2023/day/4
-    public class Day04
+    public class Day04 : IAocDay
     {
         private readonly int[] matches;
 
@@ -26,12 +26,12 @@ namespace Aoc2023
             }
         }
 
-        public int Part1()
+        public long Part1()
         {
             return matches.Sum(x => (1 << x) >> 1);
         }
 
-        public int Part2()
+        public long Part2()
         {
             int[] piles = new int[matches.Length];
             Array.Fill(piles, 1);

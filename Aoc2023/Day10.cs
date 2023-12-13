@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Aoc2023
 {
     // https://adventofcode.com/2023/day/10
-    public class Day10
+    public class Day10 : IAocDay
     {
         private readonly string[] maze;
         private readonly Dictionary<VectorRC, int> loopDistances;
@@ -66,7 +66,7 @@ namespace Aoc2023
         }
 
 
-        public int Part1()
+        public long Part1()
         {
             int maxDistance = loopDistances.Values.Max();
             var countMaxDistance = loopDistances.Values.Count(d => d == maxDistance);
@@ -74,7 +74,7 @@ namespace Aoc2023
             return maxDistance;
         }
 
-        public int Part2()
+        public long Part2()
         {
             // Prepare startActualShape and GetTilePlainStart
             char startActualShape;

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Aoc2023
 {
-    public class Day05
+    public class Day05 : IAocDay
     {
         private readonly long[] seeds;
         private readonly (long[] rangeKeys, (long destinationRangeStart, long sourceRangeStart, long rangeLength)[] ranges)[] maps;

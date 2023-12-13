@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 namespace Aoc2023
 {
     // https://adventofcode.com/2023/day/3
-    public class Day03
+    public class Day03 : IAocDay
     {
         private string[] grid;
 
@@ -30,7 +30,7 @@ namespace Aoc2023
             return grid[coord.Row][coord.Col];
         }
 
-        public int Part1()
+        public long Part1()
         {
             int sum = 0;
             for (int row = 0; row < grid.Length; row++)
@@ -53,7 +53,7 @@ namespace Aoc2023
             return sum;
         }
 
-        public int Part2()
+        public long Part2()
         {
             Dictionary<VectorRC, (VectorRC start, int value)> gridNumbers = new();
             for (int row = 0; row < grid.Length; row++)

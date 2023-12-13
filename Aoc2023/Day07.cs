@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Aoc2023
 {
     // https://adventofcode.com/2023/day/7
-    public class Day07
+    public class Day07 : IAocDay
     {
         private enum HandStrengths
         {
@@ -157,7 +157,7 @@ namespace Aoc2023
             return hand.Aggregate((int)EvaluateHandWithJokers(hand), (acc, c) => acc * 0x10 + CARD_ORDER.IndexOf(c));
         }
 
-        public int Part1() => hands.OrderBy(h => ScoreHand(h.hand)).Select((s, i) => s.bid * (i + 1)).Sum();
-        public int Part2() => hands.OrderBy(h => ScoreHandWithJokers(h.hand)).Select((s, i) => s.bid * (i + 1)).Sum();
+        public long Part1() => hands.OrderBy(h => ScoreHand(h.hand)).Select((s, i) => s.bid * (i + 1)).Sum();
+        public long Part2() => hands.OrderBy(h => ScoreHandWithJokers(h.hand)).Select((s, i) => s.bid * (i + 1)).Sum();
     }
 }

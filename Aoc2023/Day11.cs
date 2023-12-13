@@ -9,7 +9,7 @@ using System.Diagnostics;
 namespace Aoc2023
 {
     // https://adventofcode.com/2023/day/11
-    public class Day11
+    public class Day11 : IAocDay
     {
         private readonly int height;
         private readonly int width;

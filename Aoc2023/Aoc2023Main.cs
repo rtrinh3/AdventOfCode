@@ -31,16 +31,14 @@
             Console.WriteLine($"Loading: {dayClassName}");
             var dayClass = typeof(Aoc2023Main).Assembly.GetType(dayClassName);
             var dayConstructor = dayClass.GetConstructor([typeof(string)]);
-            var dayInstance = dayConstructor.Invoke([input]);
+            IAocDay dayInstance = (IAocDay)dayConstructor.Invoke([input]);
 
             Console.WriteLine("Part 1");
-            var partOneMethod = dayClass.GetMethod("Part1");
-            var partOneAnswer = partOneMethod.Invoke(dayInstance, []);
+            var partOneAnswer = dayInstance.Part1();
             Console.WriteLine(partOneAnswer);
 
             Console.WriteLine("Part 2");
-            var partTwoMethod = dayClass.GetMethod("Part2");
-            var partTwoAnswer = partTwoMethod.Invoke(dayInstance, []);
+            var partTwoAnswer = dayInstance.Part2();
             Console.WriteLine(partTwoAnswer);
         }
     }

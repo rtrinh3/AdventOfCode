@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Aoc2023
 {
-    public class Day02
+    public class Day02 : IAocDay
     {
         private Dictionary<string, int>[] games;
 
@@ -46,7 +46,7 @@ namespace Aoc2023
             }
         }
 
-        public int Part1()
+        public long Part1()
         {
             int sumOfIds = 0;
             Dictionary<string, int> maxAllowedScores = new()
@@ -75,7 +75,7 @@ namespace Aoc2023
             return sumOfIds;
         }
 
-        public int Part2()
+        public long Part2()
         {
             return games.Sum(game => game["red"] * game["green"] * game["blue"]);
         }

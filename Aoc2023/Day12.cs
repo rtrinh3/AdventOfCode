@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Aoc2023
 {
     // https://adventofcode.com/2023/day/12
-    public class Day12
+    public class Day12: IAocDay
     {
         private record Row(string mask, int[] runs);
         private enum CellType { DOT, POUND, FLEX };

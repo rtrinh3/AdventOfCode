@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 namespace Aoc2023
 {
     // https://adventofcode.com/2023/day/6
-    public class Day06
+    public class Day06 : IAocDay
     {
         private readonly string[] times;
         private readonly string[] distances;

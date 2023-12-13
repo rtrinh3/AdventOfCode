@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace Aoc2023
 {
-    public class Day01
+    public class Day01 : IAocDay
     {
         string[] inputLines;
         public Day01(string input)
@@ -17,7 +17,7 @@ namespace Aoc2023
             inputLines = input.TrimEnd().Split(Environment.NewLine);
         }
 
-        public int Part1()
+        public long Part1()
         {
             int sum = 0;
             foreach (var line in inputLines)
@@ -26,7 +26,7 @@ namespace Aoc2023
             }
             return sum;
         }
-        public int Part2()
+        public long Part2()
         {
             const string DIGIT_PATTERN = @"one|two|three|four|five|six|seven|eight|nine|\d";
             int sum = 0;

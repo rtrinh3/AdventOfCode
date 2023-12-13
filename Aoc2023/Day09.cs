@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace Aoc2023
 {
     // https://adventofcode.com/2023/day/9
-    public class Day09(string input)
+    public class Day09(string input) : IAocDay
     {
         private readonly int[][] histories = input.Split('\n', StringSplitOptions.RemoveEmptyEntries)
                 .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(s => int.Parse(s)).ToArray())
                 .ToArray();
 
-        public int Part1()
+        public long Part1()
         {
             var answer = histories.Sum(h => Extrapolate(h));
             return answer;
@@ -34,7 +34,7 @@ namespace Aoc2023
             return list.Last() + nextDifference;
         }
 
-        public int Part2()
+        public long Part2()
         {
             var answer = histories.Sum(h => Extrapolate(h.Reverse().ToArray()));
             return answer;

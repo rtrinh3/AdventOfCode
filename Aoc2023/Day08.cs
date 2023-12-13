@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Aoc2023
 {
     // https://adventofcode.com/2023/day/8
-    public class Day08
+    public class Day08 : IAocDay
     {
         private readonly string directions;
         private readonly Dictionary<string, (string Left, string Right)> map;
@@ -38,7 +38,7 @@ namespace Aoc2023
             return i;
         }
 
-        public int Part1()
+        public long Part1()
         {
             return FindPathLength("AAA", node => node == "ZZZ");
         }
