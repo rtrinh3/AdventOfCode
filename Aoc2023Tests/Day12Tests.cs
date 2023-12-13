@@ -11,14 +11,14 @@ namespace Aoc2023.Tests
     [TestClass()]
     public class Day12Tests
     {
-        [TestMethod()]
+        [TestMethod(), Timeout(1_000)]
         public void Part1ExampleTest()
         {
             var instance = new Day12(File.ReadAllText("day12-example.txt"));
             var answer = instance.Part1();
             Assert.AreEqual(21, answer);
         }
-        [TestMethod(), Timeout(60_000)]
+        [TestMethod(), Timeout(1_000)]
         public void Part1InputTest()
         {
             var instance = new Day12(File.ReadAllText("day12-input.txt"));
