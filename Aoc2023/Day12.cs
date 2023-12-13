@@ -56,24 +56,9 @@ namespace Aoc2023
             expandedRuns.Add(new CellRun(CellType.POUND, row.runs.Last()));
             expandedRuns.Add(new CellRun(CellType.FLEX, 0));
 
-            Func<int, int, Regex> GetValidator = Memoization.Make((int startIndex, int length) =>
+            Func<int, int> GetLengthOfRemainingRuns = Memoization.Make((int runIndex) =>
             {
-                var patternBuilder = new StringBuilder(@"^");
-                string substr = row.mask.Substring(startIndex, length);
-                var escapes = substr.Select(c =>
-                {
-                    return c switch
-                    {
-                        '.' => @"\.",
-                        '#' => @"#",
-                        '?' => @".",
-                        _ => throw new Exception("What is this mask")
-                    };
-                });
-                patternBuilder.AppendJoin("", escapes);
-                patternBuilder.Append('$');
-                string pattern = patternBuilder.ToString();
-                return new Regex(pattern);
+                return expandedRuns.Skip(runIndex).Sum(r => r.length);
             });
 
             Func<int, int, long> DoPuzzleRecurse = (x, y) => throw new NotImplementedException("Stub for recursive function");
@@ -97,15 +82,22 @@ namespace Aoc2023
                 {
                     CellType.DOT => [run.length],
                     CellType.POUND => [run.length],
-                    CellType.FLEX => Enumerable.Range(0, 1 + row.mask.Length - maskIndex - expandedRuns.Skip(runIndex).Sum(r => r.length)),
+                    CellType.FLEX => Enumerable.Range(0, 1 + row.mask.Length - maskIndex - GetLengthOfRemainingRuns(runIndex)),
                     _ => throw new Exception("What is this cell")
                 };
                 long sum = 0;
                 foreach (var len in runLengths)
                 {
-                    string runString = string.Join("", Enumerable.Repeat(runChar, len));
-                    var validator = GetValidator(maskIndex, len);
-                    if (validator.IsMatch(runString))
+                    bool isMatch = true;
+                    for (int i = 0; i < len && isMatch; i++)
+                    {
+                        char maskChar = row.mask[maskIndex + i];
+                        if (maskChar != '?' && maskChar != runChar)
+                        {
+                            isMatch = false;
+                        }
+                    }
+                    if (isMatch)
                     {
                         sum += DoPuzzleRecurse(maskIndex + len, runIndex + 1);
                     }
