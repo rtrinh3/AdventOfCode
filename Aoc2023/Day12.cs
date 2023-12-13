@@ -56,10 +56,12 @@ namespace Aoc2023
             expandedRuns.Add(new CellRun(CellType.POUND, row.runs.Last()));
             expandedRuns.Add(new CellRun(CellType.FLEX, 0));
 
-            Func<int, int> GetLengthOfRemainingRuns = Memoization.Make((int runIndex) =>
+            int[] lengthOfRemainingRuns = new int[expandedRuns.Count];
+            lengthOfRemainingRuns[expandedRuns.Count - 1] = 0;
+            for (int i = expandedRuns.Count - 2; i >= 0; i--)
             {
-                return expandedRuns.Skip(runIndex).Sum(r => r.length);
-            });
+                lengthOfRemainingRuns[i] = lengthOfRemainingRuns[i + 1] + expandedRuns[i].length;
+            }
 
             Func<int, int, long> DoPuzzleRecurse = (x, y) => throw new NotImplementedException("Stub for recursive function");
             DoPuzzleRecurse = Memoization.Make((int maskIndex, int runIndex) =>
@@ -82,7 +84,7 @@ namespace Aoc2023
                 {
                     CellType.DOT => [run.length],
                     CellType.POUND => [run.length],
-                    CellType.FLEX => Enumerable.Range(0, 1 + row.mask.Length - maskIndex - GetLengthOfRemainingRuns(runIndex)),
+                    CellType.FLEX => Enumerable.Range(0, 1 + row.mask.Length - maskIndex - lengthOfRemainingRuns[runIndex]),
                     _ => throw new Exception("What is this cell")
                 };
                 long sum = 0;
