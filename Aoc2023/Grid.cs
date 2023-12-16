@@ -4,16 +4,16 @@ namespace Aoc2023
 {
     internal class Grid
     {
-        public readonly ImmutableArray<string> Data;
+        public ImmutableArray<string> Data { get; init; }
+        public int Height { get => Data.Length; }
+        public int Width { get; init; }
+
         private readonly char outsideChar;
-        public readonly int Height;
-        public readonly int Width;
 
         public Grid(string input, char outsideChar)
         {
             Data = input.ReplaceLineEndings("\n").Split('\n', StringSplitOptions.RemoveEmptyEntries).ToImmutableArray();
             this.outsideChar = outsideChar;
-            Height = Data.Length;
             Width = Data.Max(row => row.Length);
         }
 
