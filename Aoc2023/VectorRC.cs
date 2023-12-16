@@ -39,7 +39,24 @@ namespace Aoc2023
         {
             return new VectorRC(Col, -Row);
         }
-        public readonly VectorRC[] FourNeighbors()
+
+        public readonly VectorRC NextUp()
+        {
+            return this + Up;
+        }
+        public readonly VectorRC NextDown()
+        {
+            return this + Down;
+        }
+        public readonly VectorRC NextLeft()
+        {
+            return this + Left;
+        }
+        public readonly VectorRC NextRight()
+        {
+            return this + Right;
+        }
+        public readonly VectorRC[] NextFour()
         {
             return
                 [
@@ -49,7 +66,7 @@ namespace Aoc2023
                     this + Right,
                 ];
         }
-        public readonly VectorRC[] EightNeighbors()
+        public readonly VectorRC[] NextEight()
         {
             return
                 [

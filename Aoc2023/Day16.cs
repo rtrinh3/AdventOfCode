@@ -76,12 +76,12 @@ namespace Aoc2023
                         photons.Push((pos + dir, dir));
                         break;
                     case '/':
-                        VectorRC newDirA = new(-dir.Col, -dir.Row);
-                        photons.Push((pos + newDirA, newDirA));
+                        VectorRC flipDirA = new(-dir.Col, -dir.Row);
+                        photons.Push((pos + flipDirA, flipDirA));
                         break;
                     case '\\':
-                        VectorRC newDirB = new(dir.Col, dir.Row);
-                        photons.Push((pos + newDirB, newDirB));
+                        VectorRC flipDirB = new(dir.Col, dir.Row);
+                        photons.Push((pos + flipDirB, flipDirB));
                         break;
                     case '|':
                         if (dir.Col == 0)

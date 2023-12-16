@@ -29,7 +29,7 @@ namespace Aoc2023
                     for (int i = 0; i < match.Length && !foundSymbol; i++)
                     {
                         VectorRC coord = new VectorRC(row, match.Index + i);
-                        if (coord.EightNeighbors().Select(grid.Get).Any(c => !char.IsDigit(c) && c != '.'))
+                        if (coord.NextEight().Select(grid.Get).Any(c => !char.IsDigit(c) && c != '.'))
                         {
                             sum += int.Parse(grid.Data[row].AsSpan().Slice(match.Index, match.Length));
                             foundSymbol = true;
@@ -65,7 +65,7 @@ namespace Aoc2023
                 foreach (var match in matches)
                 {
                     VectorRC coord = new VectorRC(row, match.Index);
-                    var adjacentNumbers = coord.EightNeighbors().Where(gridNumbers.ContainsKey).Select(c => gridNumbers[c]).Distinct().ToList();
+                    var adjacentNumbers = coord.NextEight().Where(gridNumbers.ContainsKey).Select(c => gridNumbers[c]).Distinct().ToList();
                     if (adjacentNumbers.Count == 2)
                     {
                         sum += adjacentNumbers[0].value * adjacentNumbers[1].value;
