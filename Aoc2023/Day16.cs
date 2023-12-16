@@ -31,7 +31,12 @@ namespace Aoc2023
                 configurations.Add((new VectorRC(0, col), VectorRC.Down));
                 configurations.Add((new VectorRC(grid.Height - 1, col), VectorRC.Up));
             }
-            return configurations.Max(cfg => SimulateLight(cfg.origin, cfg.direction));
+            long[] energies = new long[configurations.Count];
+            Parallel.For(0, configurations.Count, i =>
+            {
+                energies[i] = SimulateLight(configurations[i].origin, configurations[i].direction);
+            });
+            return energies.Max();
         }
 
         private long SimulateLight(VectorRC initialPosition, VectorRC initialDirection)
