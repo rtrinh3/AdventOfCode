@@ -26,19 +26,19 @@ namespace Aoc2023
             for (int i = 0; i < ITERATIONS; i++)
             {
                 string save = SerializeGrid(grid);
-                if (seen.TryAdd(save, i))
-                {
-                    seenList.Add(save);
-                }
-                else
+                if (seen.TryGetValue(save, out int loopStart))
                 {
                     // Found cycle
-                    int loopStart = seen[save];
-                    int loopLength = i - seen[save];
+                    int loopLength = i - loopStart;
                     string finalState = seenList[(ITERATIONS - loopStart) % loopLength + loopStart];
                     char[,] finalGrid = TextToGrid(finalState);
                     int finalLoad = CalculateLoad(finalGrid);
                     return finalLoad;
+                }
+                else
+                {
+                    seen.Add(save, i);
+                    seenList.Add(save);
                 }
                 Cycle(grid);
             }
