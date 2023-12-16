@@ -20,34 +20,18 @@ namespace Aoc2023
 
         public long Part2()
         {
-            long maxEnergy = -1;
+            List<(VectorRC origin, VectorRC direction)> configurations = new();
             for (int row = 0; row < grid.Height; row++)
             {
-                long leftToRight = SimulateLight(new VectorRC(row, 0), VectorRC.Right);
-                if (maxEnergy < leftToRight)
-                {
-                    maxEnergy = leftToRight;
-                }
-                long rightToLeft = SimulateLight(new VectorRC(row, grid.Width - 1), VectorRC.Left);
-                if (maxEnergy < rightToLeft)
-                {
-                    maxEnergy = rightToLeft;
-                }
+                configurations.Add((new VectorRC(row, 0), VectorRC.Right));
+                configurations.Add((new VectorRC(row, grid.Width - 1), VectorRC.Left));
             }
             for (int col = 0; col < grid.Width; col++)
             {
-                long topToBottom = SimulateLight(new VectorRC(0, col), VectorRC.Down);
-                if (maxEnergy < topToBottom)
-                {
-                    maxEnergy = topToBottom;
-                }
-                long bottomToTop = SimulateLight(new VectorRC(grid.Height - 1, col), VectorRC.Up);
-                if (maxEnergy < bottomToTop)
-                {
-                    maxEnergy = bottomToTop;
-                }
+                configurations.Add((new VectorRC(0, col), VectorRC.Down));
+                configurations.Add((new VectorRC(grid.Height - 1, col), VectorRC.Up));
             }
-            return maxEnergy;
+            return configurations.Max(cfg => SimulateLight(cfg.origin, cfg.direction));
         }
 
         private long SimulateLight(VectorRC initialPosition, VectorRC initialDirection)
@@ -64,7 +48,6 @@ namespace Aoc2023
                     continue;
                 }
                 var (pos, dir) = thisPhoton;
-
                 char tile = grid.Get(pos);
                 if (tile != OUTSIDE)
                 {
