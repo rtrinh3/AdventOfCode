@@ -22,9 +22,46 @@ namespace Aoc2023
 
         public long Part1()
         {
+            return SimulateLight(new VectorRC(0, 0), new VectorRC(0, +1));
+        }
+
+        public long Part2()
+        {
+            long maxEnergy = -1;
+            for (int row =  0; row < grid.Length; row++)
+            {
+                long leftToRight = SimulateLight(new VectorRC(row, 0), new VectorRC(0, +1));
+                if (maxEnergy < leftToRight)
+                {
+                    maxEnergy = leftToRight;
+                }
+                long rightToLeft = SimulateLight(new VectorRC(row, grid[0].Length - 1), new VectorRC(0, -1));
+                if (maxEnergy < rightToLeft)
+                {
+                    maxEnergy = rightToLeft;
+                }
+            }
+            for (int col = 0; col < grid[0].Length; col++)
+            {
+                long topToBottom = SimulateLight(new VectorRC(0, col), new VectorRC(+1, 0));
+                if (maxEnergy < topToBottom)
+                {
+                    maxEnergy = topToBottom;
+                }
+                long bottomToTop = SimulateLight(new VectorRC(grid.Length - 1, col), new VectorRC(-1, 0));
+                if (maxEnergy < bottomToTop)
+                {
+                    maxEnergy = bottomToTop;
+                }
+            }
+            return maxEnergy;
+        }
+
+        private long SimulateLight(VectorRC initialPosition, VectorRC initialDirection)
+        {
             HashSet<VectorRC> energized = new();
             Stack<(VectorRC pos, VectorRC dir)> photons = new();
-            photons.Push((new VectorRC(0, 0), new VectorRC(0, +1)));
+            photons.Push((initialPosition, initialDirection));
             HashSet<(VectorRC pos, VectorRC dir)> seen = new();
             while (photons.Count > 0)
             {
@@ -36,7 +73,7 @@ namespace Aoc2023
                 else
                 {
                     seen.Add(thisPhoton);
-                }                
+                }
                 var (pos, dir) = thisPhoton;
 
                 if (0 <= pos.Row && pos.Row < grid.Length && 0 <= pos.Col && pos.Col < grid[pos.Row].Length)
@@ -105,11 +142,6 @@ namespace Aoc2023
             //    Console.WriteLine();
             //}
             return energized.Count;
-        }
-
-        public long Part2()
-        {
-            return -2;
         }
     }
 }
