@@ -9,16 +9,9 @@ namespace Aoc2023
     // https://adventofcode.com/2023/day/16
     public class Day16(string input) : IAocDay
     {
-        private string[] grid = input.ReplaceLineEndings("\n").Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        private const char OUTSIDE = '\0';
 
-        private char GetTile(VectorRC coord)
-        {
-            if (coord.Row < 0 || coord.Row >= grid.Length || coord.Col < 0 || coord.Col >= grid[coord.Row].Length)
-            {
-                return '\0';
-            }
-            return grid[coord.Row][coord.Col];
-        }
+        private readonly Grid grid = new Grid(input, OUTSIDE);
 
         public long Part1()
         {
@@ -28,27 +21,27 @@ namespace Aoc2023
         public long Part2()
         {
             long maxEnergy = -1;
-            for (int row = 0; row < grid.Length; row++)
+            for (int row = 0; row < grid.Height; row++)
             {
                 long leftToRight = SimulateLight(new VectorRC(row, 0), VectorRC.Right);
                 if (maxEnergy < leftToRight)
                 {
                     maxEnergy = leftToRight;
                 }
-                long rightToLeft = SimulateLight(new VectorRC(row, grid[0].Length - 1), VectorRC.Left);
+                long rightToLeft = SimulateLight(new VectorRC(row, grid.Width - 1), VectorRC.Left);
                 if (maxEnergy < rightToLeft)
                 {
                     maxEnergy = rightToLeft;
                 }
             }
-            for (int col = 0; col < grid[0].Length; col++)
+            for (int col = 0; col < grid.Width; col++)
             {
                 long topToBottom = SimulateLight(new VectorRC(0, col), VectorRC.Down);
                 if (maxEnergy < topToBottom)
                 {
                     maxEnergy = topToBottom;
                 }
-                long bottomToTop = SimulateLight(new VectorRC(grid.Length - 1, col), VectorRC.Up);
+                long bottomToTop = SimulateLight(new VectorRC(grid.Height - 1, col), VectorRC.Up);
                 if (maxEnergy < bottomToTop)
                 {
                     maxEnergy = bottomToTop;
@@ -72,12 +65,11 @@ namespace Aoc2023
                 }
                 var (pos, dir) = thisPhoton;
 
-                if (0 <= pos.Row && pos.Row < grid.Length && 0 <= pos.Col && pos.Col < grid[pos.Row].Length)
+                char tile = grid.Get(pos);
+                if (tile != OUTSIDE)
                 {
                     energized.Add(pos);
                 }
-
-                char tile = GetTile(pos);
                 switch (tile)
                 {
                     case '.':
@@ -113,7 +105,7 @@ namespace Aoc2023
                             photons.Push((pos, VectorRC.Right));
                         }
                         break;
-                    case '\0':
+                    case OUTSIDE:
                         // OOB, no more photons
                         break;
                     default:

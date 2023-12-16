@@ -10,19 +10,19 @@ namespace Aoc2023
     // https://adventofcode.com/2023/day/10
     public class Day10 : IAocDay
     {
-        private readonly string[] maze;
+        private readonly Grid maze;
         private readonly Dictionary<VectorRC, int> loopDistances;
         private readonly VectorRC startCoord;
 
         public Day10(string input)
         {
-            maze = input.ReplaceLineEndings("\n").Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            maze = new Grid(input, '.');
 
-            for (int row = 0; row < maze.Length; row++)
+            for (int row = 0; row < maze.Height; row++)
             {
-                for (int col = 0; col < maze[row].Length; col++)
+                for (int col = 0; col < maze.Width; col++)
                 {
-                    if (maze[row][col] == 'S')
+                    if (maze.Get(row, col) == 'S')
                     {
                         startCoord = new(row, col);
                         goto FOUND_START;
@@ -36,22 +36,9 @@ namespace Aoc2023
             loopDistances = bfsResult.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.distance);
         }
 
-        private char GetTile(VectorRC coord)
-        {
-            if (coord.Row < 0 || coord.Row >= maze.Length)
-            {
-                return '.';
-            }
-            if (coord.Col < 0 || coord.Col >= maze[coord.Row].Length)
-            {
-                return '.';
-            }
-            return maze[coord.Row][coord.Col];
-        }
-
         private VectorRC[] GetConnections(VectorRC coord)
         {
-            return GetTile(coord) switch
+            return maze.Get(coord) switch
             {
                 '|' => [coord + VectorRC.Up, coord + VectorRC.Down],
                 '-' => [coord + VectorRC.Left, coord + VectorRC.Right],
@@ -61,7 +48,7 @@ namespace Aoc2023
                 'F' => [coord + VectorRC.Down, coord + VectorRC.Right],
                 '.' => [],
                 'S' => coord.FourNeighbors().Where(neighbor => GetConnections(neighbor).Contains(coord)).ToArray(),
-                _ => throw new Exception($"What tile is this!? {GetTile(coord)} at {coord}")
+                _ => throw new Exception($"What tile is this!? {maze.Get(coord)} at {coord}")
             };
         }
 
@@ -109,7 +96,7 @@ namespace Aoc2023
             }
             char GetTilePlainStart(VectorRC coord)
             {
-                return (coord == startCoord) ? startActualShape : GetTile(coord);
+                return (coord == startCoord) ? startActualShape : maze.Get(coord);
             }
 
             // From https://www.reddit.com/r/adventofcode/comments/18eza5g/2023_day_10_animated_visualization/

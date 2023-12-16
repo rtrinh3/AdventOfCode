@@ -10,41 +10,28 @@ namespace Aoc2023
     // https://adventofcode.com/2023/day/3
     public class Day03 : IAocDay
     {
-        private string[] grid;
+        private readonly Grid grid;
 
         public Day03(string input)
         {
-            grid = input.ReplaceLineEndings("\n").Split('\n', StringSplitOptions.RemoveEmptyEntries);
-        }
-
-        private char GetTile(VectorRC coord)
-        {
-            if (coord.Row < 0 || coord.Row >= grid.Length)
-            {
-                return '.';
-            }
-            if (coord.Col < 0 || coord.Col >= grid[coord.Row].Length)
-            {
-                return '.';
-            }
-            return grid[coord.Row][coord.Col];
+            grid = new Grid(input, '.');
         }
 
         public long Part1()
         {
             int sum = 0;
-            for (int row = 0; row < grid.Length; row++)
+            for (int row = 0; row < grid.Height; row++)
             {
-                var matches = Regex.EnumerateMatches(grid[row], @"\d+");
+                var matches = Regex.EnumerateMatches(grid.Data[row], @"\d+");
                 foreach (var match in matches)
                 {
                     bool foundSymbol = false;
                     for (int i = 0; i < match.Length && !foundSymbol; i++)
                     {
                         VectorRC coord = new VectorRC(row, match.Index + i);
-                        if (coord.EightNeighbors().Select(GetTile).Any(c => !char.IsDigit(c) && c != '.'))
+                        if (coord.EightNeighbors().Select(grid.Get).Any(c => !char.IsDigit(c) && c != '.'))
                         {
-                            sum += int.Parse(grid[row].AsSpan().Slice(match.Index, match.Length));
+                            sum += int.Parse(grid.Data[row].AsSpan().Slice(match.Index, match.Length));
                             foundSymbol = true;
                         }
                     }
@@ -56,13 +43,13 @@ namespace Aoc2023
         public long Part2()
         {
             Dictionary<VectorRC, (VectorRC start, int value)> gridNumbers = new();
-            for (int row = 0; row < grid.Length; row++)
+            for (int row = 0; row < grid.Height; row++)
             {
-                var matches = Regex.EnumerateMatches(grid[row], @"\d+");
+                var matches = Regex.EnumerateMatches(grid.Data[row], @"\d+");
                 foreach (var match in matches)
                 {
                     VectorRC start = new VectorRC(row, match.Index);
-                    int value = int.Parse(grid[row].AsSpan().Slice(match.Index, match.Length));
+                    int value = int.Parse(grid.Data[row].AsSpan().Slice(match.Index, match.Length));
                     for (int i = 0; i < match.Length; i++)
                     {
                         VectorRC coord = new VectorRC(row, match.Index + i);
@@ -72,9 +59,9 @@ namespace Aoc2023
             }
 
             int sum = 0;
-            for (int row = 0; row < grid.Length; row++)
+            for (int row = 0; row < grid.Height; row++)
             {
-                var matches = Regex.EnumerateMatches(grid[row], @"\*");
+                var matches = Regex.EnumerateMatches(grid.Data[row], @"\*");
                 foreach (var match in matches)
                 {
                     VectorRC coord = new VectorRC(row, match.Index);
