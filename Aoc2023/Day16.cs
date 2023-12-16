@@ -66,13 +66,9 @@ namespace Aoc2023
             while (photons.Count > 0)
             {
                 var thisPhoton = photons.Pop();
-                if (seen.Contains(thisPhoton))
+                if (!seen.Add(thisPhoton))
                 {
                     continue;
-                }
-                else
-                {
-                    seen.Add(thisPhoton);
                 }
                 var (pos, dir) = thisPhoton;
 
