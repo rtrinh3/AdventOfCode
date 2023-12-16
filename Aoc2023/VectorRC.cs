@@ -8,21 +8,19 @@ namespace Aoc2023
 {
     internal record struct VectorRC(int Row, int Col)
     {
+        public static readonly VectorRC Zero = new VectorRC(0, 0);
+        public static readonly VectorRC Up = new VectorRC(-1, 0);
+        public static readonly VectorRC Down = new VectorRC(+1, 0);
+        public static readonly VectorRC Left = new VectorRC(0, -1);
+        public static readonly VectorRC Right = new VectorRC(0, +1);
+
         public static VectorRC operator +(VectorRC left, VectorRC right)
         {
             return new VectorRC(left.Row + right.Row, left.Col + right.Col);
         }
-        public static VectorRC operator +(VectorRC left, (int row, int col) right)
-        {
-            return new VectorRC(left.Row + right.row, left.Col + right.col);
-        }
         public static VectorRC operator -(VectorRC left, VectorRC right)
         {
             return new VectorRC(left.Row - right.Row, left.Col - right.Col);
-        }
-        public static VectorRC operator -(VectorRC left, (int row, int col) right)
-        {
-            return new VectorRC(left.Row - right.row, left.Col - right.col);
         }
         public static VectorRC operator -(VectorRC val)
         {
@@ -32,10 +30,6 @@ namespace Aoc2023
         public readonly int Dot(VectorRC that)
         {
             return this.Row * that.Row + this.Col * that.Col;
-        }
-        public readonly int Dot((int, int) that)
-        {
-            return this.Row * that.Item1 + this.Col * that.Item2;
         }
         public readonly VectorRC RotatedLeft()
         {
@@ -49,24 +43,24 @@ namespace Aoc2023
         {
             return
                 [
-                    this + (+1, 0),
-                    this + (0, +1),
-                    this + (-1, 0),
-                    this + (0, -1),
+                    this + Up,
+                    this + Down,
+                    this + Left,
+                    this + Right,
                 ];
         }
         public readonly VectorRC[] EightNeighbors()
         {
-            return 
+            return
                 [
-                    this + (-1, -1),
-                    this + (-1, 0),
-                    this + (-1, +1),
-                    this + (0, -1),
-                    this + (0, +1),
-                    this + (+1, -1),
-                    this + (+1, 0),
-                    this + (+1, +1),
+                    this + Up + Left,
+                    this + Up,
+                    this + Up + Right,
+                    this + Left,
+                    this + Right,
+                    this + Down + Left,
+                    this + Down,
+                    this + Down + Right,
                 ];
         }
     }

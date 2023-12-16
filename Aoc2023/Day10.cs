@@ -53,12 +53,12 @@ namespace Aoc2023
         {
             return GetTile(coord) switch
             {
-                '|' => [coord + (+1, 0), coord + (-1, 0)],
-                '-' => [coord + (0, +1), coord + (0, -1)],
-                'L' => [coord + (-1, 0), coord + (0, +1)],
-                'J' => [coord + (-1, 0), coord + (0, -1)],
-                '7' => [coord + (+1, 0), coord + (0, -1)],
-                'F' => [coord + (+1, 0), coord + (0, +1)],
+                '|' => [coord + VectorRC.Up, coord + VectorRC.Down],
+                '-' => [coord + VectorRC.Left, coord + VectorRC.Right],
+                'L' => [coord + VectorRC.Up, coord + VectorRC.Right],
+                'J' => [coord + VectorRC.Up, coord + VectorRC.Left],
+                '7' => [coord + VectorRC.Down, coord + VectorRC.Left],
+                'F' => [coord + VectorRC.Down, coord + VectorRC.Right],
                 '.' => [],
                 'S' => coord.FourNeighbors().Where(neighbor => GetConnections(neighbor).Contains(coord)).ToArray(),
                 _ => throw new Exception($"What tile is this!? {GetTile(coord)} at {coord}")
@@ -79,27 +79,27 @@ namespace Aoc2023
             // Prepare startActualShape and GetTilePlainStart
             char startActualShape;
             var startConnections = GetConnections(startCoord);
-            if (startConnections.Contains(startCoord + (+1, 0)) && startConnections.Contains(startCoord + (-1, 0)))
+            if (startConnections.Contains(startCoord + VectorRC.Down) && startConnections.Contains(startCoord + VectorRC.Up))
             {
                 startActualShape = '|';
             }
-            else if (startConnections.Contains(startCoord + (0, +1)) && startConnections.Contains(startCoord + (0, -1)))
+            else if (startConnections.Contains(startCoord + VectorRC.Left) && startConnections.Contains(startCoord + VectorRC.Right))
             {
                 startActualShape = '-';
             }
-            else if (startConnections.Contains(startCoord + (-1, 0)) && startConnections.Contains(startCoord + (0, +1)))
+            else if (startConnections.Contains(startCoord + VectorRC.Up) && startConnections.Contains(startCoord + VectorRC.Right))
             {
                 startActualShape = 'L';
             }
-            else if (startConnections.Contains(startCoord + (-1, 0)) && startConnections.Contains(startCoord + (0, -1)))
+            else if (startConnections.Contains(startCoord + VectorRC.Up) && startConnections.Contains(startCoord + VectorRC.Left))
             {
                 startActualShape = 'J';
             }
-            else if (startConnections.Contains(startCoord + (+1, 0)) && startConnections.Contains(startCoord + (0, -1)))
+            else if (startConnections.Contains(startCoord + VectorRC.Down) && startConnections.Contains(startCoord + VectorRC.Left))
             {
                 startActualShape = '7';
             }
-            else if (startConnections.Contains(startCoord + (+1, 0)) && startConnections.Contains(startCoord + (0, +1)))
+            else if (startConnections.Contains(startCoord + VectorRC.Down) && startConnections.Contains(startCoord + VectorRC.Right))
             {
                 startActualShape = 'F';
             }

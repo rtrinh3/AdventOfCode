@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Aoc2023
 {
     // https://adventofcode.com/2023/day/16
-    public class Day16(string input): IAocDay
+    public class Day16(string input) : IAocDay
     {
         private string[] grid = input.ReplaceLineEndings("\n").Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
@@ -22,20 +22,20 @@ namespace Aoc2023
 
         public long Part1()
         {
-            return SimulateLight(new VectorRC(0, 0), new VectorRC(0, +1));
+            return SimulateLight(VectorRC.Zero, VectorRC.Right);
         }
 
         public long Part2()
         {
             long maxEnergy = -1;
-            for (int row =  0; row < grid.Length; row++)
+            for (int row = 0; row < grid.Length; row++)
             {
-                long leftToRight = SimulateLight(new VectorRC(row, 0), new VectorRC(0, +1));
+                long leftToRight = SimulateLight(new VectorRC(row, 0), VectorRC.Right);
                 if (maxEnergy < leftToRight)
                 {
                     maxEnergy = leftToRight;
                 }
-                long rightToLeft = SimulateLight(new VectorRC(row, grid[0].Length - 1), new VectorRC(0, -1));
+                long rightToLeft = SimulateLight(new VectorRC(row, grid[0].Length - 1), VectorRC.Left);
                 if (maxEnergy < rightToLeft)
                 {
                     maxEnergy = rightToLeft;
@@ -43,12 +43,12 @@ namespace Aoc2023
             }
             for (int col = 0; col < grid[0].Length; col++)
             {
-                long topToBottom = SimulateLight(new VectorRC(0, col), new VectorRC(+1, 0));
+                long topToBottom = SimulateLight(new VectorRC(0, col), VectorRC.Down);
                 if (maxEnergy < topToBottom)
                 {
                     maxEnergy = topToBottom;
                 }
-                long bottomToTop = SimulateLight(new VectorRC(grid.Length - 1, col), new VectorRC(-1, 0));
+                long bottomToTop = SimulateLight(new VectorRC(grid.Length - 1, col), VectorRC.Up);
                 if (maxEnergy < bottomToTop)
                 {
                     maxEnergy = bottomToTop;
@@ -102,8 +102,8 @@ namespace Aoc2023
                         }
                         else
                         {
-                            photons.Push((pos, new VectorRC(+1, 0)));
-                            photons.Push((pos, new VectorRC(-1, 0)));
+                            photons.Push((pos, VectorRC.Up));
+                            photons.Push((pos, VectorRC.Down));
                         }
                         break;
                     case '-':
@@ -113,8 +113,8 @@ namespace Aoc2023
                         }
                         else
                         {
-                            photons.Push((pos, new VectorRC(0, +1)));
-                            photons.Push((pos, new VectorRC(0, -1)));
+                            photons.Push((pos, VectorRC.Left));
+                            photons.Push((pos, VectorRC.Right));
                         }
                         break;
                     case '\0':

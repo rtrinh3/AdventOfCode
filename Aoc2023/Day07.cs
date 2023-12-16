@@ -109,7 +109,7 @@ namespace Aoc2023
                 // - if the other cards are AABC, this creates a three-of-a-kind, which is better than a two-pair
                 // - if the other cards are AABB, this creates a full-house
                 // - if the other cards are AAAB, replacing with A creates a four-of-a-kind; this is better than replacing with B which creates a full-house
-                char mostCommonNonJoker = hand.Where(c => c != 'J').GroupBy(c => c).MaxBy(g => g.Count()).Key;
+                char mostCommonNonJoker = hand.Where(c => c != 'J').GroupBy(c => c).MaxBy(g => g.Count())!.Key;
                 string handWithSubstitutions = hand.Replace('J', mostCommonNonJoker);
                 return EvaluateHand(handWithSubstitutions);
             }
