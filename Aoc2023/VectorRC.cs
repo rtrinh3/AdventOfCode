@@ -40,6 +40,15 @@ namespace Aoc2023
             return new VectorRC(Col, -Row);
         }
 
+        public readonly int ManhattanMetric()
+        {
+            return Math.Abs(Row) + Math.Abs(Col);
+        }
+        public readonly int ChebyshevMetric()
+        {
+            return Math.Max(Math.Abs(Row), Math.Abs(Col));
+        }
+
         public readonly VectorRC NextUp()
         {
             return this + Up;
