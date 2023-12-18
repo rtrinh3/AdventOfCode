@@ -30,6 +30,71 @@ namespace Aoc2023
             return parentsDistances;
         }
 
+        public static (int, IEnumerable<T>) BfsToEnd<T>(T start, Func<T, IEnumerable<T>> getNeighbors, Predicate<T> isEnd)
+            where T : notnull
+        {
+            Queue<T> queue = new();
+            queue.Enqueue(start);
+            Dictionary<T, (T, int)> parentsDistances = new();
+            parentsDistances[start] = (start, 0);
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                if (isEnd(current))
+                {
+                    IEnumerable<T> GetSteps()
+                    {
+                        T cursor = current;
+                        while (!object.Equals(cursor, start))
+                        {
+                            yield return cursor;
+                            cursor = parentsDistances[cursor].Item1;
+                        }
+                    }
+                    return (parentsDistances[current].Item2, GetSteps());
+                }
+                foreach (var next in getNeighbors(current))
+                {
+                    if (!parentsDistances.ContainsKey(next))
+                    {
+                        parentsDistances[next] = (current, parentsDistances[current].Item2 + 1);
+                        queue.Enqueue(next);
+                    }
+                }
+            }
+            return (-1, Enumerable.Empty<T>());
+        }
+
+        public static Dictionary<T, (T parent, int distance)> DijkstraToAll<T>(T start, Func<T, IEnumerable<(T, int)>> getNeighbors)
+            where T : notnull
+        {
+            PriorityQueue<T, int> queue = new();
+            queue.Enqueue(start, 0);
+            Dictionary<T, (T, int)> parentsDistances = new();
+            parentsDistances[start] = (start, 0);
+            while (queue.TryDequeue(out var current, out var currentDistance))
+            {
+                if (parentsDistances[current].Item2 < currentDistance)
+                {
+                    continue;
+                }
+                if (parentsDistances[current].Item2 > currentDistance)
+                {
+                    throw new Exception("?");
+                }
+                foreach (var (neighbor, distanceToNext) in getNeighbors(current))
+                {
+                    var nextDistance = currentDistance + distanceToNext;
+                    if (!parentsDistances.TryGetValue(neighbor, out var distanceInPD) || nextDistance < distanceInPD.Item2)
+                    {
+                        parentsDistances[neighbor] = (current, nextDistance);
+                        queue.Enqueue(neighbor, nextDistance);
+                    }
+                }
+            }
+            return parentsDistances;
+        }
+
         public static (int distance, IEnumerable<T> path) DijkstraToEnd<T>(T start, Func<T, IEnumerable<(T, int)>> getNeighbors, Predicate<T> isEnd)
             where T : notnull
         {
@@ -37,9 +102,8 @@ namespace Aoc2023
             queue.Enqueue(start, 0);
             Dictionary<T, (T parent, int distance)> parentsDistances = new();
             parentsDistances[start] = (start, 0);
-            while (queue.Count > 0)
+            while (queue.TryDequeue(out var current, out var currentDistance))
             {
-                queue.TryDequeue(out var current, out var currentDistance);
                 if (parentsDistances[current].distance < currentDistance)
                 {
                     continue;
