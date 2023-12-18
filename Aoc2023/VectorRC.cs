@@ -27,6 +27,10 @@ namespace Aoc2023
             return new VectorRC(-val.Row, -val.Col);
         }
 
+        public readonly VectorRC Scale(int factor)
+        {
+            return new VectorRC(Row * factor, Col * factor);
+        }
         public readonly int Dot(VectorRC that)
         {
             return this.Row * that.Row + this.Col * that.Col;
