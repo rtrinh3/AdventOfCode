@@ -16,7 +16,6 @@ namespace Aoc2023
 
         public long Part1()
         {
-            // Parse
             List<(VectorRC start, VectorRC end)> edges = new();
             VectorRC position = VectorRC.Zero;
             foreach (string line in lines)
@@ -36,23 +35,13 @@ namespace Aoc2023
                 position = newPosition;
             }
             Debug.Assert(edges.First().start == edges.Last().end);
-            // Pick's theorem ( https://en.wikipedia.org/wiki/Pick%27s_theorem ) states that:
-            // Area = Interior + Boundary/2 - 1
-            // We're looking for Interior + Boundary
-            // We can calculate Area and Boundary, so the sum we're looking for is:
-            // Interior + Boundary = Area + Boundary/2 + 1
-            var boundary = edges.Sum(e => (e.end - e.start).ManhattanMetric());
-            var area = PolygonArea(edges);
-            decimal sum = area + (decimal)boundary / 2 + 1;
-            return (long)sum;
+            return CalculateVolume(edges);
         }
 
         public long Part2()
         {
-            // Parse
             List<(VectorRC start, VectorRC end)> edges = new();
             VectorRC position = VectorRC.Zero;
-            decimal boundary = 0;
             foreach (string line in lines)
             {
                 string[] parts = line.Split(' ');
@@ -65,26 +54,29 @@ namespace Aoc2023
                     '3' => VectorRC.Up,
                     _ => throw new Exception("What is this direction " + line)
                 };
-                int length = int.Parse(word[2..^2], System.Globalization.NumberStyles.HexNumber);
-                Debug.Assert(length > 0);
-                boundary += length;
+                int length = int.Parse(word.Substring(2, 5), System.Globalization.NumberStyles.HexNumber);
                 VectorRC newPosition = position + direction.Scale(length);
                 edges.Add((position, newPosition));
                 position = newPosition;
             }
             Debug.Assert(edges.First().start == edges.Last().end);
+            return CalculateVolume(edges);
+        }
+
+        private static long CalculateVolume(IEnumerable<(VectorRC start, VectorRC end)> edges)
+        {
             // Pick's theorem ( https://en.wikipedia.org/wiki/Pick%27s_theorem ) states that:
-            // Area = Interior + Boundary/2 - 1
-            // We're looking for Interior + Boundary
+            // Area = Interior + Boundary/2 - 1 .
+            // We're looking for Interior + Boundary .
             // We can calculate Area and Boundary, so the sum we're looking for is:
-            // Interior + Boundary = Area + Boundary/2 + 1
-            //var boundary = edges.Sum(e => (e.end - e.start).ManhattanMetric());
-            var area = PolygonArea(edges);
+            // Interior + Boundary = Area + Boundary/2 + 1 .
+            decimal boundary = edges.Sum(e => (decimal)(e.end - e.start).ManhattanMetric()); // Manhattan is fine, our edges are grid-aligned
+            decimal area = PolygonArea(edges);
             decimal sum = area + boundary / 2 + 1;
             return (long)sum;
         }
 
-        private decimal PolygonArea(IEnumerable<(VectorRC start, VectorRC end)> edges)
+        private static decimal PolygonArea(IEnumerable<(VectorRC start, VectorRC end)> edges)
         {
             // https://en.wikipedia.org/wiki/Shoelace_formula
             decimal doubleArea = 0;
