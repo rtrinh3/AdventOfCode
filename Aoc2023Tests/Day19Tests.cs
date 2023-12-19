@@ -39,8 +39,7 @@ namespace Aoc2023.Tests
         {
             var instance = new Day19(File.ReadAllText("day19-input.txt"));
             var answer = instance.Part2();
-            //Assert.AreEqual(82712746433310, answer);
-            Assert.Inconclusive(answer.ToString());
+            Assert.AreEqual(126107942006821, answer);
         }
     }
 }
