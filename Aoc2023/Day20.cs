@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,9 +11,9 @@ namespace Aoc2023
     public class Day20 : IAocDay
     {
         private Dictionary<string, IModule> modules = new();
+        private Dictionary<string, List<string>> targetToSourceMap = new();
         public Day20(string input)
         {
-            Dictionary<string, List<string>> targetToSourceMap = new();
             void AddTargetToSourceConnection(string dst, string src)
             {
                 if (!targetToSourceMap.TryGetValue(dst, out var value))
@@ -99,34 +100,30 @@ namespace Aoc2023
         {
             ResetModules();
             Queue<Impulse> pulseQueue = new();
-            long i = 0;
-            bool done = false;
-            Task.Run(() =>
-            {
-                while (!done)
-                {
-                    Console.WriteLine($"Button {i}");
-                    Thread.Sleep(1000);
-                }
-            });
+            long button = 0;
+            string parentOfRx = targetToSourceMap["rx"].Single();
+            Debug.Assert(modules[parentOfRx] is NandModule);
+            var grandparentsOfRx = targetToSourceMap[parentOfRx];
+            Dictionary<string, long> cycles = new();
             while (true)
             {
-                i++;
+                button++;
                 pulseQueue.Enqueue(new Impulse("button", "broadcaster", false));
                 while (pulseQueue.TryDequeue(out var pulse))
                 {
-                    //Console.WriteLine(pulse);
-                    if (pulse.Target == "rx")
+                    if (pulse.Target == parentOfRx && pulse.Pulse)
                     {
-                        if (!pulse.Pulse)
+                        cycles.TryAdd(pulse.Source, button);
+                        if (grandparentsOfRx.All(gp => cycles.ContainsKey(gp)))
                         {
-                            done = true;
-                            return i;
+                            // We've found the cycles of each grandparent of rx
+                            return cycles.Values.Aggregate(1L, (acc, val) => acc * val);
                         }
-                        //else
-                        //{
-                        //    Console.WriteLine("rx got high pulse");
-                        //}
+                    }
+                    if (pulse.Target == "rx" && !pulse.Pulse)
+                    {
+                        // Found out the hard way
+                        return button;
                     }
                     var outputs = modules[pulse.Target].SendPulse(pulse.Source, pulse.Pulse);
                     foreach (var output in outputs)
@@ -135,7 +132,6 @@ namespace Aoc2023
                     }
                 }
             }
-            // TODO Cycle detection of the sources of the source of "rx"
         }
 
         private void ResetModules()

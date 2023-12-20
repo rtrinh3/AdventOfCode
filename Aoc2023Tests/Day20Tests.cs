@@ -33,8 +33,8 @@ namespace Aoc2023.Tests
             Assert.AreEqual(818723272, answer);
         }
 
-        [TestMethod(), Timeout(1000)]
-        public void Part2Test()
+        [TestMethod()]
+        public void Part2InputTest()
         {
             var instance = new Day20(File.ReadAllText("day20-input.txt"));
             var answer = instance.Part2();

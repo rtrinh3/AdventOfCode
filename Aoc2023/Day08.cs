@@ -51,26 +51,8 @@ namespace Aoc2023
             // the paths are cycles that bring the ghosts back to the beginning right after they reach their destinations,
             // and it doesn't matter whether they go left or right at each step.
             var paths = starts.Select(start => FindPathLength(start, n => n.EndsWith('Z')));
-            var commonMultipleOfPaths = paths.Aggregate(1L, (acc, path) => Lcm(acc, path));
+            var commonMultipleOfPaths = paths.Aggregate(1L, (acc, path) => MoreMath.Lcm(acc, path));
             return commonMultipleOfPaths;
-        }
-
-        // https://en.wikipedia.org/wiki/Euclidean_algorithm#Implementations
-        private static long Gcd(long a, long b)
-        {
-            while (b != 0)
-            {
-                var t = b;
-                b = a % b;
-                a = t;
-            }
-            return a;
-        }
-
-        // https://en.wikipedia.org/wiki/Least_common_multiple#Using_the_greatest_common_divisor
-        private static long Lcm(long a, long b)
-        {
-            return (a * b) / Gcd(a, b);
         }
 
         public long Part2BruteForce()
