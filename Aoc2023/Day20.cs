@@ -53,10 +53,6 @@ namespace Aoc2023
                     AddTargetToSourceConnection(target, actualName);
                 }
             }
-            foreach (string target in targetToSourceMap.Keys)
-            {
-                modules.TryAdd(target, new BroadcastModule(target, []));
-            }
             foreach (var (name, nand) in nandModules)
             {
                 foreach (var src in targetToSourceMap[name])
@@ -77,7 +73,6 @@ namespace Aoc2023
                 pulseQueue.Enqueue(new Impulse("button", "broadcaster", false));
                 while (pulseQueue.TryDequeue(out var pulse))
                 {
-                    //Console.WriteLine(pulse);
                     if (pulse.Pulse)
                     {
                         highs++;
@@ -86,23 +81,26 @@ namespace Aoc2023
                     {
                         lows++;
                     }
-                    var outputs = modules[pulse.Target].SendPulse(pulse.Source, pulse.Pulse);
-                    foreach (var output in outputs)
+                    if (modules.TryGetValue(pulse.Target, out var receiver))
                     {
-                        pulseQueue.Enqueue(output);
+                        var outputs = receiver.SendPulse(pulse.Source, pulse.Pulse);
+                        foreach (var output in outputs)
+                        {
+                            pulseQueue.Enqueue(output);
+                        }
                     }
                 }
             }
-
             return lows * highs;
         }
+
         public long Part2()
         {
             ResetModules();
             Queue<Impulse> pulseQueue = new();
             long button = 0;
-            string parentOfRx = targetToSourceMap["rx"].Single();
-            Debug.Assert(modules[parentOfRx] is NandModule);
+            string parentOfRx = targetToSourceMap["rx"].First();
+            bool simplificationCheck = targetToSourceMap["rx"].Count == 1 && (modules[parentOfRx] is NandModule);
             var grandparentsOfRx = targetToSourceMap[parentOfRx];
             Dictionary<string, long> cycles = new();
             while (true)
@@ -111,7 +109,7 @@ namespace Aoc2023
                 pulseQueue.Enqueue(new Impulse("button", "broadcaster", false));
                 while (pulseQueue.TryDequeue(out var pulse))
                 {
-                    if (pulse.Target == parentOfRx && pulse.Pulse)
+                    if (simplificationCheck && pulse.Target == parentOfRx && pulse.Pulse)
                     {
                         cycles.TryAdd(pulse.Source, button);
                         if (grandparentsOfRx.All(gp => cycles.ContainsKey(gp)))
@@ -125,10 +123,13 @@ namespace Aoc2023
                         // Found out the hard way
                         return button;
                     }
-                    var outputs = modules[pulse.Target].SendPulse(pulse.Source, pulse.Pulse);
-                    foreach (var output in outputs)
+                    if (modules.TryGetValue(pulse.Target, out var receiver))
                     {
-                        pulseQueue.Enqueue(output);
+                        var outputs = receiver.SendPulse(pulse.Source, pulse.Pulse);
+                        foreach (var output in outputs)
+                        {
+                            pulseQueue.Enqueue(output);
+                        }
                     }
                 }
             }
