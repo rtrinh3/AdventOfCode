@@ -30,5 +30,16 @@ namespace Aoc2023
         {
             return Get(coord.Row, coord.Col);
         }
+
+        public IEnumerable<(VectorRC Position, char Value)> Iterate()
+        {
+            for (int row = 0; row < Height; row++)
+            {
+                for (int col = 0; col < Width; col++)
+                {
+                    yield return (new VectorRC(row, col), Get(row, col));
+                }
+            }
+        }
     }
 }
