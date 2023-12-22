@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Aoc2023
 {
-    internal record struct VectorRC(int Row, int Col)
+    internal readonly record struct VectorRC(int Row, int Col)
     {
         public static readonly VectorRC Zero = new VectorRC(0, 0);
         public static readonly VectorRC Up = new VectorRC(-1, 0);
@@ -21,10 +21,6 @@ namespace Aoc2023
         public static VectorRC operator -(VectorRC left, VectorRC right)
         {
             return new VectorRC(left.Row - right.Row, left.Col - right.Col);
-        }
-        public static VectorRC operator -(VectorRC val)
-        {
-            return new VectorRC(-val.Row, -val.Col);
         }
 
         public readonly VectorRC Scale(int factor)
