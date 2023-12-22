@@ -9,10 +9,13 @@ namespace Aoc2023
     // https://adventofcode.com/2023/day/22
     public class Day22 : IAocDay
     {
-        private (VectorXYZ, VectorXYZ)[] bricks;
+        // If A rests on B, then aRestOnB[A].Contains(B) and aSupportB[B].Contains(A)
+        private HashSet<int>[] aRestOnB;
+        private HashSet<int>[] aSupportB;
+
         public Day22(string input)
         {
-            bricks = input.ReplaceLineEndings("\n").Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(line =>
+            (VectorXYZ, VectorXYZ)[] bricks = input.ReplaceLineEndings("\n").Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(line =>
             {
                 string[] coords = line.Split('~');
                 string[] coordsA = coords[0].Split(',');
@@ -21,12 +24,9 @@ namespace Aoc2023
                 VectorXYZ pointB = new VectorXYZ(int.Parse(coordsB[0]), int.Parse(coordsB[1]), int.Parse(coordsB[2]));
                 return (pointA, pointB);
             }).ToArray();
-        }
-        public long Part1()
-        {
-            // If A rests on B, then aRestOnB[A].Contains(B) and aSupportB[B].Contains(A)
-            HashSet<int>[] aRestOnB = new HashSet<int>[bricks.Length];
-            HashSet<int>[] aSupportB = new HashSet<int>[bricks.Length];
+
+            aRestOnB = new HashSet<int>[bricks.Length];
+            aSupportB = new HashSet<int>[bricks.Length];
             Dictionary<VectorXY, (int height, int blockNumber)> heightMap = new();
             (VectorXYZ, VectorXYZ)[] orderedBricks = bricks.OrderBy(b => Math.Min(b.Item1.Z, b.Item2.Z)).ToArray();
             for (int i = 0; i < orderedBricks.Length; i++)
@@ -77,7 +77,18 @@ namespace Aoc2023
                     aSupportB[supportBrick].Add(i);
                 }
             }
+            // Add ground
+            foreach (var supports in aRestOnB)
+            {
+                if (supports.Count == 0)
+                {
+                    supports.Add(-1);
+                }
+            }
+        }
 
+        public long Part1()
+        {
             // Find bricks which are safe to disintegrate
             int safeToDisintegrate = 0;
             for (int support = 0; support < aSupportB.Length; support++)
@@ -90,9 +101,23 @@ namespace Aoc2023
 
             return safeToDisintegrate;
         }
+
         public long Part2()
         {
-            return -2;
+            long sumFallen = 0;
+            for (int brick = 0; brick < aSupportB.Length; brick++)
+            {
+                HashSet<int> fallen = [brick];
+                for (int otherBrick = brick + 1; otherBrick < aSupportB.Length; otherBrick++)
+                {
+                    if (!aRestOnB[otherBrick].Except(fallen).Any())
+                    {
+                        fallen.Add(otherBrick);
+                        sumFallen++;
+                    }
+                }
+            }
+            return sumFallen;
         }
     }
 }

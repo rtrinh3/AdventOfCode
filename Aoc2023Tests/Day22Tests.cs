@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Aoc2023.Tests
 {
+    // https://adventofcode.com/2023/day/22
     [TestClass()]
     public class Day22Tests
     {
@@ -24,6 +25,21 @@ namespace Aoc2023.Tests
             var instance = new Day22(File.ReadAllText("day22-input.txt"));
             var answer = instance.Part1();
             Assert.AreEqual(395, answer);
+        }
+
+        [TestMethod()]
+        public void Part2ExampleTest()
+        {
+            var instance = new Day22(File.ReadAllText("day22-example.txt"));
+            var answer = instance.Part2();
+            Assert.AreEqual(7, answer);
+        }
+        [TestMethod()]
+        public void Part2InputTest()
+        {
+            var instance = new Day22(File.ReadAllText("day22-input.txt"));
+            var answer = instance.Part2();
+            Assert.AreEqual(64714, answer);
         }
     }
 }
