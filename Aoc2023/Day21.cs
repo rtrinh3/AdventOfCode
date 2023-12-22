@@ -39,15 +39,15 @@ namespace Aoc2023
 
         public long Part2()
         {
-            const int steps = 26501365;
+            const int PART_TWO_STEPS = 26501365;
 
             // Check assumptions
-            long repetitions = steps / maze.Height;
+            int repetitions = PART_TWO_STEPS / maze.Height;
             int halfMaze = maze.Height / 2;
             Debug.Assert(maze.Height == maze.Width);
             Debug.Assert(maze.Height % 2 == 1);
             Debug.Assert(halfMaze % 2 == 1);
-            Debug.Assert(steps % maze.Height == halfMaze);
+            Debug.Assert(PART_TWO_STEPS % maze.Height == halfMaze);
             Debug.Assert(repetitions % 2 == 0);
             Debug.Assert(start.Row == halfMaze && start.Col == halfMaze);
 
