@@ -111,20 +111,33 @@ namespace Aoc2023
                 }
             }
             // Step 3: eliminate nodes that have exactly 2 neighbors
-            foreach (var node in nodes.Values.Where(n => n.Neighbors.Count == 2))
+            foreach (var node in nodes.Values.Where(n => n.Neighbors.Count == 2).ToList())
             {
                 var connectionA = node.Neighbors.First();
                 var connectionB = node.Neighbors.Last();
                 int totalLength = connectionA.Length + connectionB.Length;
-                connectionA.Other.Neighbors.RemoveWhere(c => c.Other == node);
-                connectionA.Other.Neighbors.Add(new PartTwoEdge(connectionB.Other, totalLength));
-                connectionB.Other.Neighbors.RemoveWhere(c => c.Other == node);
-                connectionB.Other.Neighbors.Add(new PartTwoEdge(connectionA.Other, totalLength));
+                var removeA = connectionA.Other.Neighbors.RemoveWhere(c => c.Other == node);
+                var addA = connectionA.Other.Neighbors.Add(new PartTwoEdge(connectionB.Other, totalLength));
+                var removeB = connectionB.Other.Neighbors.RemoveWhere(c => c.Other == node);
+                var addB = connectionB.Other.Neighbors.Add(new PartTwoEdge(connectionA.Other, totalLength));
+                Debug.Assert(removeA == 1);
+                Debug.Assert(addA);
+                Debug.Assert(removeB == 1);
+                Debug.Assert(addB);
+                node.Neighbors.Clear();
             }
-            // Step 4: DFS!
+            // Step 4: If we step on the only node connected to the exit,
+            // we must go to the exit, since otherwise we'd block it off.
+            // To reflect this, change that node so that it only has one neighbor: the exit.
+            // From https://www.reddit.com/r/adventofcode/comments/18p0tcn/comment/kel1jmx/?utm_source=reddit&utm_medium=web2x&context=3
+            // (This turns the graph back into a directed graph.)
+            PartTwoNode endNode = nodes[end];
+            Debug.Assert(endNode.Neighbors.Count == 1);
+            var nodeConnectedToEnd = endNode.Neighbors.Single().Other;
+            nodeConnectedToEnd.Neighbors.RemoveWhere(n => n.Other != endNode);
+            // Step 5: DFS!
             int maxPath = 0;
             PartTwoNode startNode = nodes[start];
-            PartTwoNode endNode = nodes[end];
             HashSet<PartTwoNode> visited = [startNode];
             void Visit(PartTwoNode node, int length)
             {
