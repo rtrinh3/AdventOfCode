@@ -77,46 +77,79 @@ namespace Aoc2023
             return maxPath;
         }
 
+        private class PartTwoNode
+        {
+            public readonly HashSet<PartTwoEdge> Neighbors = new();
+        }
+        private record struct PartTwoEdge(PartTwoNode Other, int Length);
+
         public long Part2()
         {
             var timer = Stopwatch.StartNew();
-            // Naive algo
-            int maxPath = 0;
-            Stack<(VectorRC position, ImmutableHashSet<VectorRC> visited)> queue = new();
-            queue.Push((start, ImmutableHashSet<VectorRC>.Empty));
-            var observer = Task.Run(() =>
+            // Step 1: create all the nodes
+            Dictionary<VectorRC, PartTwoNode> nodes = new();
+            foreach (var (position, value) in maze.Iterate())
             {
-                while (queue.Count > 0)
+                if (value != '#')
                 {
-                    Console.WriteLine($"{timer.Elapsed} - Max {maxPath}\tQueue {queue.Count}");
-                    Thread.Sleep(1000);
+                    nodes[position] = new PartTwoNode();
                 }
-            });
+            }
+            // Step 2: connect the nodes
+            foreach (var (position, node) in nodes)
+            {
+                foreach (var next in position.NextFour())
+                {
+                    if (nodes.TryGetValue(next, out var otherNode))
+                    {
+                        node.Neighbors.Add(new PartTwoEdge(otherNode, 1));
+                        otherNode.Neighbors.Add(new PartTwoEdge(node, 1));
+                    }
+                }
+            }
+            // Step 3: eliminate nodes that have exactly 2 neighbors
+            foreach (var node in nodes.Values.Where(n => n.Neighbors.Count == 2))
+            {
+                var connectionA = node.Neighbors.First();
+                var connectionB = node.Neighbors.Last();
+                int totalLength = connectionA.Length + connectionB.Length;
+                connectionA.Other.Neighbors.RemoveWhere(c => c.Other == node);
+                connectionA.Other.Neighbors.Add(new PartTwoEdge(connectionB.Other, totalLength));
+                connectionB.Other.Neighbors.RemoveWhere(c => c.Other == node);
+                connectionB.Other.Neighbors.Add(new PartTwoEdge(connectionA.Other, totalLength));
+            }
+            // Step 4: DFS!
+            int maxPath = 0;
+            Stack<(PartTwoNode node, ImmutableHashSet<PartTwoNode> visited, int length)> queue = new();
+            PartTwoNode startNode = nodes[start];
+            PartTwoNode endNode = nodes[end];
+            queue.Push((startNode, ImmutableHashSet.Create(startNode), 0));
+            //var observer = Task.Run(() =>
+            //{
+            //    while (queue.Count > 0)
+            //    {
+            //        Console.WriteLine($"{timer.Elapsed} - Max {maxPath}\tQueue {queue.Count}");
+            //        Thread.Sleep(1000);
+            //    }
+            //});
             while (queue.TryPop(out var current))
             {
-                if (current.position == end)
+                if (current.node == endNode)
                 {
-                    int path = current.visited.Count;
+                    int path = current.length;
                     if (maxPath < path)
                     {
                         maxPath = path;
                     }
-                    continue;
                 }
-                var visited = current.visited.Add(current.position);
-                char tile = maze.Get(current.position);
-                if (tile != '#')
+                foreach (var next in current.node.Neighbors)
                 {
-                    foreach (VectorRC next in current.position.NextFour())
+                    if (!current.visited.Contains(next.Other))
                     {
-                        if (maze.Get(next) != '#' && !visited.Contains(next))
-                        {
-                            queue.Push((next, visited));
-                        }
+                        queue.Push((next.Other, current.visited.Add(next.Other), current.length + next.Length));
                     }
                 }
             }
-
             return maxPath;
         }
     }
