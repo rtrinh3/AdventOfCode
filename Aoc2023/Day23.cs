@@ -29,50 +29,53 @@ namespace Aoc2023
             // It turns out we don't need this insight from Wikipedia:
             // https://en.wikipedia.org/wiki/Longest_path_problem#Acyclic_graphs
             int maxPath = 0;
-            Stack<(VectorRC position, ImmutableHashSet<VectorRC> visited)> queue = new();
-            queue.Push((start, ImmutableHashSet<VectorRC>.Empty));
-            while (queue.TryPop(out var current))
+            HashSet<VectorRC> visited = [start];
+            void Visit(VectorRC position)
             {
-                if (current.position == end)
+                if (position == end)
                 {
-                    int path = current.visited.Count;
-                    if (maxPath < path)
+                    int length = visited.Count - 1;
+                    if (maxPath < length)
                     {
-                        maxPath = path;
+                        maxPath = length;
                     }
+                    return;
                 }
-                var visited = current.visited.Add(current.position);
-                char tile = maze.Get(current.position);
+                char tile = maze.Get(position);
+                List<VectorRC> placesToVisit = new();
                 if (tile == '.')
                 {
-                    foreach (VectorRC next in current.position.NextFour())
+                    foreach (VectorRC next in position.NextFour())
                     {
                         if (maze.Get(next) != '#' && !visited.Contains(next))
                         {
-                            queue.Push((next, visited));
+                            placesToVisit.Add(next);
                         }
                     }
-                }
-                else if (tile == '#')
-                {
-                    continue;
                 }
                 else
                 {
                     VectorRC next = tile switch
                     {
-                        '^' => current.position.NextUp(),
-                        'v' => current.position.NextDown(),
-                        '<' => current.position.NextLeft(),
-                        '>' => current.position.NextRight(),
+                        '^' => position.NextUp(),
+                        'v' => position.NextDown(),
+                        '<' => position.NextLeft(),
+                        '>' => position.NextRight(),
                         _ => throw new Exception(tile.ToString())
                     };
                     if (!visited.Contains(next))
                     {
-                        queue.Push((next, visited));
+                        placesToVisit.Add(next);
                     }
                 }
+                foreach (VectorRC next in placesToVisit)
+                {
+                    visited.Add(next);
+                    Visit(next);
+                    visited.Remove(next);
+                }
             }
+            Visit(start);
 
             return maxPath;
         }
@@ -120,36 +123,30 @@ namespace Aoc2023
             }
             // Step 4: DFS!
             int maxPath = 0;
-            Stack<(PartTwoNode node, ImmutableHashSet<PartTwoNode> visited, int length)> queue = new();
             PartTwoNode startNode = nodes[start];
             PartTwoNode endNode = nodes[end];
-            queue.Push((startNode, ImmutableHashSet.Create(startNode), 0));
-            //var observer = Task.Run(() =>
-            //{
-            //    while (queue.Count > 0)
-            //    {
-            //        Console.WriteLine($"{timer.Elapsed} - Max {maxPath}\tQueue {queue.Count}");
-            //        Thread.Sleep(1000);
-            //    }
-            //});
-            while (queue.TryPop(out var current))
+            HashSet<PartTwoNode> visited = [startNode];
+            void Visit(PartTwoNode node, int length)
             {
-                if (current.node == endNode)
+                if (node == endNode)
                 {
-                    int path = current.length;
-                    if (maxPath < path)
+                    if (maxPath < length)
                     {
-                        maxPath = path;
+                        maxPath = length;
                     }
+                    return;
                 }
-                foreach (var next in current.node.Neighbors)
+                foreach (var next in node.Neighbors)
                 {
-                    if (!current.visited.Contains(next.Other))
+                    if (!visited.Contains(next.Other))
                     {
-                        queue.Push((next.Other, current.visited.Add(next.Other), current.length + next.Length));
+                        visited.Add(next.Other);
+                        Visit(next.Other, length + next.Length);
+                        visited.Remove(next.Other);
                     }
                 }
             }
+            Visit(startNode, 0);
             return maxPath;
         }
     }
