@@ -10,37 +10,31 @@ namespace Aoc2023
 {
     public class Day24 : IAocDay
     {
-        private long[][] hailstones;
+        private readonly double[][] hailstones;
         public Day24(string input)
         {
-            // EXAMPLE
-//            input = @"19, 13, 30 @ -2,  1, -2
-//18, 19, 22 @ -1, -1, -2
-//20, 25, 34 @ -2, -2, -4
-//12, 31, 28 @ -1, -2, -1
-//20, 19, 15 @  1, -5, -3
-//";
-            hailstones = input.ReplaceLineEndings("\n").Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(line =>
+            var lines = input.ReplaceLineEndings("\n").Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            hailstones = lines.Select(line =>
             {
-                long[] numbers = line.Split('@').SelectMany(s => s.Split(',')).Select(s => long.Parse(s)).ToArray();
+                double[] numbers = line.Split('@').SelectMany(s => s.Split(',')).Select(s => double.Parse(s)).ToArray();
                 return numbers;
             }).ToArray();
         }
 
-        private enum IntersectionType { INTERSECT, COINCIDE, NEVER };
         public long Part1()
+        {
+            return DoPart1(200000000000000, 400000000000000);
+        }
+        public long DoPart1(double lowerBound, double upperBound)
         {
             (Vector<double> position, Vector<double> velocity)[] flatHailstones = hailstones.Select(h =>
             {
-                var position = Vector<double>.Build.DenseOfEnumerable(h[0..2].Select(x => (double)x));
-                var velocity = Vector<double>.Build.DenseOfEnumerable(h[3..5].Select(x => (double)x));
+                var position = Vector<double>.Build.Dense(h[0..2]);
+                var velocity = Vector<double>.Build.Dense(h[3..5]);
                 Debug.Assert(position.Count == 2);
                 Debug.Assert(velocity.Count == 2);
                 return (position, velocity);
             }).ToArray();
-            // EXAMPLE
-            double lowerBound = 200000000000000; // 7;
-            double upperBound = 400000000000000; // 27;
             long intersections = 0;
             for (int i = 0; i < hailstones.Length; i++)
             {
@@ -63,11 +57,12 @@ namespace Aoc2023
                             }
                         }
                     }
-                    
+
                 }
             }
             return intersections;
         }
+
         public long Part2()
         {
             return -2;
