@@ -26,14 +26,14 @@ namespace Aoc2023.Tests
             Assert.AreEqual(2178, answer);
         }
 
-        [TestMethod()]
+        [TestMethod(), Timeout(1000)]
         public void Part2ExampleTest()
         {
             var instance = new Day23(File.ReadAllText("day23-example.txt"));
             var answer = instance.Part2();
             Assert.AreEqual(154, answer);
         }
-        [TestMethod(), Timeout(5_000)]
+        [TestMethod(), Timeout(5000)]
         public void Part2InputTest()
         {
             var instance = new Day23(File.ReadAllText("day23-input.txt"));

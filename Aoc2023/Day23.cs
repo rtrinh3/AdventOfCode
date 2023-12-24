@@ -111,6 +111,7 @@ namespace Aoc2023
                 }
             }
             // Step 3: eliminate nodes that have exactly 2 neighbors
+            // This is known as edge contraction
             foreach (var node in nodes.Values.Where(n => n.Neighbors.Count == 2).ToList())
             {
                 var connectionA = node.Neighbors.First();
@@ -129,7 +130,7 @@ namespace Aoc2023
             // Step 4: If we step on the only node connected to the exit,
             // we must go to the exit, since otherwise we'd block it off.
             // To reflect this, change that node so that it only has one neighbor: the exit.
-            // From https://www.reddit.com/r/adventofcode/comments/18p0tcn/comment/kel1jmx/?utm_source=reddit&utm_medium=web2x&context=3
+            // From https://www.reddit.com/r/adventofcode/comments/18p0tcn/comment/kel1jmx/
             // (This turns the graph back into a directed graph.)
             PartTwoNode endNode = nodes[end];
             Debug.Assert(endNode.Neighbors.Count == 1);
