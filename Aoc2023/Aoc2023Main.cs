@@ -43,7 +43,7 @@ namespace Aoc2023
             var dayClass = typeof(Aoc2023Main).Assembly.GetType(dayClassName);
             var dayConstructor = dayClass.GetConstructor([typeof(string)]);
             IAocDay dayInstance = (IAocDay)dayConstructor.Invoke([input]);
-            Console.WriteLine($"Initialization time: {initTimer.Elapsed}");
+            Console.WriteLine($"Time: {initTimer.Elapsed}");
 
             Console.WriteLine("Part 1");
             var partOneTimer = Stopwatch.StartNew();
@@ -54,7 +54,7 @@ namespace Aoc2023
             Console.WriteLine("Part 2");
             var partTwoTimer = Stopwatch.StartNew();
             var partTwoAnswer = dayInstance.Part2();
-            Console.WriteLine($"Time: {partOneTimer.Elapsed}");
+            Console.WriteLine($"Time: {partTwoTimer.Elapsed}");
             Console.WriteLine(partTwoAnswer);
         }
     }
