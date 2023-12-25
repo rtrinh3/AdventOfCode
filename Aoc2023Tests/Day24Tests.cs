@@ -22,7 +22,7 @@ namespace Aoc2023.Tests
         public void Part1InputTest()
         {
             var instance = new Day24(File.ReadAllText("day24-input.txt"));
-            var answer = instance.Part1();
+            var answer = instance.DoPart1(200000000000000, 400000000000000);
             Assert.AreEqual(12938, answer);
         }
 
