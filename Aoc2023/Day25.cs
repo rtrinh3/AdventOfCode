@@ -39,10 +39,10 @@ namespace Aoc2023
                     neighbors[tail].Add(head);
                 }
             }
-
-        // From a random node, find the furthest node A
-        LABEL_START:
             List<string> nodes = neighbors.Keys.ToList();
+
+        LABEL_START:
+            // From a random node, find the furthest node A
             string? furthestA = null;
             {
                 string start = nodes[Random.Shared.Next(nodes.Count)];
@@ -122,27 +122,26 @@ namespace Aoc2023
                 goto LABEL_START;
             }
 
-            // Cut the links
-            edges.ExceptWith(edgesStraddlingMiddle);
-            foreach (var edge in edgesStraddlingMiddle)
-            {
-                neighbors[edge.Item1].Remove(edge.Item2);
-                neighbors[edge.Item2].Remove(edge.Item1);
-            }
-
-            // Find the connected components
-            UnionFind<string> connectionTracker = new();
+            // Count the clusters
+            long leftCluster = 0;
+            long rightCluster = 0;
             foreach (var node in nodes)
             {
-                foreach (var next in neighbors[node])
+                if (nodePos[node] < 0.5)
                 {
-                    connectionTracker.Union(node, next);
+                    leftCluster++;
+                }
+                if (nodePos[node] > 0.5)
+                {
+                    rightCluster++;
+                }
+                if (nodePos[node] == 0.5)
+                {
+                    throw new Exception("How is this still in the middle");
                 }
             }
-            var components = nodes.GroupBy(n => connectionTracker.Find(n)).ToList();
-            Debug.Assert(components.Count == 2);
-            long answer = components[0].LongCount() * components[1].LongCount();
-            return answer;
+
+            return leftCluster * rightCluster;
         }
 
         public long Part2()
