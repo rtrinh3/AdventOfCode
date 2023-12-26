@@ -75,51 +75,36 @@ namespace Aoc2023
             }).ToArray();
             // Inspired by https://reddit.com/r/adventofcode/comments/18q40he/2023_day_24_part_2_a_straightforward_nonsolver/
             // and this comment https://www.reddit.com/r/adventofcode/comments/18q40he/comment/kesv08n/
-            List<int> hailstoneIndices = new();
-            while (hailstoneIndices.Count < 3)
+            List<double[]> coefficientList = new();
+            List<double> constantList = new();
+            for (int i = 0; i < hailstoneVectors.Length - 1; i++)
             {
-                int index = Random.Shared.Next(hailstones.Length);
-                if (!hailstoneIndices.Contains(index))
-                {
-                    hailstoneIndices.Add(index);
-                }
+                var hailA = hailstoneVectors[i];
+                var hailB = hailstoneVectors[i + 1];
+                var row0 = new double[6];
+                row0[0] = hailA.velocity[1] - hailB.velocity[1];
+                row0[1] = hailB.velocity[0] - hailA.velocity[0];
+                row0[3] = hailB.position[1] - hailA.position[1];
+                row0[4] = hailA.position[0] - hailB.position[0];
+                coefficientList.Add(row0);
+                constantList.Add(hailB.position[1] * hailB.velocity[0] - hailB.position[0] * hailB.velocity[1] - hailA.position[1] * hailA.velocity[0] + hailA.position[0] * hailA.velocity[1]);
+                var row1 = new double[6];
+                row1[0] = hailA.velocity[2] - hailB.velocity[2];
+                row1[2] = hailB.velocity[0] - hailA.velocity[0];
+                row1[3] = hailB.position[2] - hailA.position[2];
+                row1[5] = hailA.position[0] - hailB.position[0];
+                coefficientList.Add(row1);
+                constantList.Add(hailB.position[2] * hailB.velocity[0] - hailB.position[0] * hailB.velocity[2] - hailA.position[2] * hailA.velocity[0] + hailA.position[0] * hailA.velocity[2]);
+                var row2 = new double[6];
+                row2[1] = hailA.velocity[2] - hailB.velocity[2];
+                row2[2] = hailB.velocity[1] - hailA.velocity[1];
+                row2[4] = hailB.position[2] - hailA.position[2];
+                row2[5] = hailA.position[1] - hailB.position[1];
+                coefficientList.Add(row2);
+                constantList.Add(hailB.position[2] * hailB.velocity[1] - hailB.position[1] * hailB.velocity[2] - hailA.position[2] * hailA.velocity[1] + hailA.position[1] * hailA.velocity[2]);
             }
-            var hailA = hailstoneVectors[hailstoneIndices[0]];
-            var hailB = hailstoneVectors[hailstoneIndices[1]];
-            var hailC = hailstoneVectors[hailstoneIndices[2]];
-            var coefficients = Matrix<double>.Build.Dense(6, 6);
-            var constants = Vector<double>.Build.Dense(6);
-            coefficients[0, 0] = hailA.velocity[1] - hailB.velocity[1];
-            coefficients[0, 1] = hailB.velocity[0] - hailA.velocity[0];
-            coefficients[0, 3] = hailB.position[1] - hailA.position[1];
-            coefficients[0, 4] = hailA.position[0] - hailB.position[0];
-            constants[0] = hailB.position[1] * hailB.velocity[0] - hailB.position[0] * hailB.velocity[1] - hailA.position[1] * hailA.velocity[0] + hailA.position[0] * hailA.velocity[1];
-            coefficients[1, 0] = hailA.velocity[2] - hailB.velocity[2];
-            coefficients[1, 2] = hailB.velocity[0] - hailA.velocity[0];
-            coefficients[1, 3] = hailB.position[2] - hailA.position[2];
-            coefficients[1, 5] = hailA.position[0] - hailB.position[0];
-            constants[1] = hailB.position[2] * hailB.velocity[0] - hailB.position[0] * hailB.velocity[2] - hailA.position[2] * hailA.velocity[0] + hailA.position[0] * hailA.velocity[2];
-            coefficients[2, 1] = hailA.velocity[2] - hailB.velocity[2];
-            coefficients[2, 2] = hailB.velocity[1] - hailA.velocity[1];
-            coefficients[2, 4] = hailB.position[2] - hailA.position[2];
-            coefficients[2, 5] = hailA.position[1] - hailB.position[1];
-            constants[2] = hailB.position[2] * hailB.velocity[1] - hailB.position[1] * hailB.velocity[2] - hailA.position[2] * hailA.velocity[1] + hailA.position[1] * hailA.velocity[2];
-            coefficients[3, 0] = hailA.velocity[1] - hailC.velocity[1];
-            coefficients[3, 1] = hailC.velocity[0] - hailA.velocity[0];
-            coefficients[3, 3] = hailC.position[1] - hailA.position[1];
-            coefficients[3, 4] = hailA.position[0] - hailC.position[0];
-            constants[3] = hailC.position[1] * hailC.velocity[0] - hailC.position[0] * hailC.velocity[1] - hailA.position[1] * hailA.velocity[0] + hailA.position[0] * hailA.velocity[1];
-            coefficients[4, 0] = hailA.velocity[2] - hailC.velocity[2];
-            coefficients[4, 2] = hailC.velocity[0] - hailA.velocity[0];
-            coefficients[4, 3] = hailC.position[2] - hailA.position[2];
-            coefficients[4, 5] = hailA.position[0] - hailC.position[0];
-            constants[4] = hailC.position[2] * hailC.velocity[0] - hailC.position[0] * hailC.velocity[2] - hailA.position[2] * hailA.velocity[0] + hailA.position[0] * hailA.velocity[2];
-            coefficients[5, 1] = hailA.velocity[2] - hailC.velocity[2];
-            coefficients[5, 2] = hailC.velocity[1] - hailA.velocity[1];
-            coefficients[5, 4] = hailC.position[2] - hailA.position[2];
-            coefficients[5, 5] = hailA.position[1] - hailC.position[1];
-            constants[5] = hailC.position[2] * hailC.velocity[1] - hailC.position[1] * hailC.velocity[2] - hailA.position[2] * hailA.velocity[1] + hailA.position[1] * hailA.velocity[2];
-
+            var coefficients = Matrix<double>.Build.DenseOfRowArrays(coefficientList);
+            var constants = Vector<double>.Build.DenseOfEnumerable(constantList);
             var solution = coefficients.Solve(constants);
             var coords = solution.Take(3).Select(x => (long)Math.Round(x)).ToList();
             return coords.Sum();
