@@ -75,6 +75,9 @@ namespace Aoc2023
             }).ToArray();
             // Inspired by https://reddit.com/r/adventofcode/comments/18q40he/2023_day_24_part_2_a_straightforward_nonsolver/
             // and this comment https://www.reddit.com/r/adventofcode/comments/18q40he/comment/kesv08n/
+            // In theory, each pair of hailstones corresponds to 3 equations, and we only need 6 to completely determine the 6 unknowns.
+            // However, it turns out that taking 2 pairs out of 3 random hailstones isn't precise enough; the test had only around 10% success rate.
+            // So we generate a lot more equations, using the pairs AB, BC, CD and so on until the end of the list.
             List<double[]> coefficientList = new();
             List<double> constantList = new();
             for (int i = 0; i < hailstoneVectors.Length - 1; i++)
