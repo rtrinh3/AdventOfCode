@@ -40,7 +40,8 @@ namespace Aoc2023
                 }
             }
 
-            // From a random node, find the furthest node A
+        // From a random node, find the furthest node A
+        LABEL_START:
             List<string> nodes = neighbors.Keys.ToList();
             string? furthestA = null;
             {
@@ -91,9 +92,6 @@ namespace Aoc2023
             nodePos[furthestB] = 1;
 
             // Pull the nodes towards nodes A and B until the three links are visible
-            // I should only need 1 iteration, but I can't guarantee it, so I put it in a loop.
-            List<(string, string)>? edgesStraddlingMiddle = null;
-            while (edgesStraddlingMiddle == null || edgesStraddlingMiddle.Count > 3)
             {
                 HashSet<string> visited = new();
                 Queue<string> queue = new();
@@ -116,10 +114,13 @@ namespace Aoc2023
                         }
                     }
                 }
-
-                edgesStraddlingMiddle = edges.Where(e => (nodePos[e.Item1] < 0.5 && 0.5 < nodePos[e.Item2]) || (nodePos[e.Item2] < 0.5 && 0.5 < nodePos[e.Item1])).ToList();
             }
-            Debug.Assert(edgesStraddlingMiddle.Count == 3);
+            List<(string, string)> edgesStraddlingMiddle = edges.Where(e => (nodePos[e.Item1] < 0.5 && 0.5 < nodePos[e.Item2]) || (nodePos[e.Item2] < 0.5 && 0.5 < nodePos[e.Item1])).ToList();
+            // If I failed to make a clean cut, try again with another node
+            if (edgesStraddlingMiddle.Count != 3)
+            {
+                goto LABEL_START;
+            }
 
             // Cut the links
             edges.ExceptWith(edgesStraddlingMiddle);
