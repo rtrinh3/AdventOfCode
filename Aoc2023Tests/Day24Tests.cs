@@ -26,20 +26,19 @@ namespace Aoc2023.Tests
             Assert.AreEqual(12938, answer);
         }
 
-        [TestMethod()]
+        [TestMethod(), Timeout(1000)]
         public void Part2ExampleTest()
         {
             var instance = new Day24(File.ReadAllText("day24-example.txt"));
             var answer = instance.Part2();
             Assert.AreEqual(47, answer);
         }
-        [TestMethod()]
+        [TestMethod(), Timeout(1000)]
         public void Part2InputTest()
         {
             var instance = new Day24(File.ReadAllText("day24-input.txt"));
             var answer = instance.Part2();
-            //Assert.AreEqual(258826, answer);
-            Assert.Inconclusive(answer.ToString());
+            Assert.AreEqual(976976197397181, answer);
         }
     }
 }
