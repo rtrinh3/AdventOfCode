@@ -20,11 +20,11 @@ namespace Aoc2023
             }
             else
             {
-                if (args.Length < 1)
+                if (day == null)
                 {
                     throw new Exception($"Missing day");
                 }
-                if (args.Length < 2)
+                if (input == null)
                 {
                     throw new Exception($"Missing input");
                 }
@@ -45,13 +45,13 @@ namespace Aoc2023
             IAocDay dayInstance = (IAocDay)dayConstructor.Invoke([input]);
             Console.WriteLine($"Time: {initTimer.Elapsed}");
 
-            Console.WriteLine("Part 1");
+            Console.WriteLine("\nPart 1");
             var partOneTimer = Stopwatch.StartNew();
             var partOneAnswer = dayInstance.Part1();
             Console.WriteLine($"Time: {partOneTimer.Elapsed}");
             Console.WriteLine(partOneAnswer);
 
-            Console.WriteLine("Part 2");
+            Console.WriteLine("\nPart 2");
             var partTwoTimer = Stopwatch.StartNew();
             var partTwoAnswer = dayInstance.Part2();
             Console.WriteLine($"Time: {partTwoTimer.Elapsed}");
