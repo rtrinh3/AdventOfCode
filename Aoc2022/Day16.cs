@@ -32,7 +32,7 @@ namespace Aoc2022
                     neighbors[i] = neighbors[i] | 1UL << valveNameIndexMap[next];
                 }
             }
-            memoBfsToAll = Memoization.Make((int pos) =>
+            memoBfsToAll = Memoization.MakeInt((int pos) =>
             {
                 var parentsDistances = GraphAlgos.BfsToAll(pos, p => Enumerable.Range(0, nbValves).Where(i => (neighbors[p] & 1UL << i) != 0));
                 int[] distances = new int[nbValves];
