@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 
 namespace AocCommon
 {
     public static class Memoization
     {
         public static Func<int, TR> MakeInt<TR>(Func<int, TR> fn)
+            where TR : notnull
         {
             List<TR?> memo = new();
             return x1 =>
@@ -18,21 +14,14 @@ namespace AocCommon
                 {
                     throw new ArgumentException("Argument must be zero or greater");
                 }
-                //lock (memo)
+                lock (memo)
                 {
                     if (memo.Count <= x1)
                     {
                         memo.AddRange(Enumerable.Repeat(default(TR?), x1 - memo.Count + 1));
                     }
                 }
-                if (memo[x1] != null)
-                {
-                    return memo[x1];
-                }
-                else
-                {
-                    return memo[x1] = fn(x1);
-                }
+                return memo[x1] ?? (memo[x1] = fn(x1));
             };
         }
 
