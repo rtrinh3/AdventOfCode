@@ -22,6 +22,10 @@ namespace AocCommon
         {
             return new VectorRC(left.Row - right.Row, left.Col - right.Col);
         }
+        public static VectorRC operator -(VectorRC vec)
+        {
+            return new VectorRC(-vec.Row, -vec.Col);
+        }
 
         public readonly VectorRC Scale(int factor)
         {
