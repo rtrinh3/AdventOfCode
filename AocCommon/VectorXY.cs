@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aoc2023
+namespace AocCommon
 {
-    internal readonly record struct VectorXY(int X, int Y)
+    public readonly record struct VectorXY(int X, int Y)
     {
         public static VectorXY operator +(VectorXY left, VectorXY right)
         {

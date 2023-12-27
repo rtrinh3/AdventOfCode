@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aoc2023
+namespace AocCommon
 {
-    internal readonly record struct VectorRC(int Row, int Col)
+    public readonly record struct VectorRC(int Row, int Col)
     {
         public static readonly VectorRC Zero = new VectorRC(0, 0);
         public static readonly VectorRC Up = new VectorRC(-1, 0);

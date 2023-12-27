@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aoc2023
+namespace AocCommon
 {
-    internal readonly struct EquatableArray<T>: IEquatable<EquatableArray<T>>
+    public readonly struct EquatableArray<T>: IEquatable<EquatableArray<T>>
     {
         public readonly ImmutableArray<T> Data;
 

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aoc2023
+namespace AocCommon
 {
-    internal static class GraphAlgos
+    public static class GraphAlgos
     {
         public static Dictionary<T, (T parent, int distance)> BfsToAll<T>(T start, Func<T, IEnumerable<T>> getNeighbors)
             where T : notnull

@@ -5,9 +5,9 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aoc2023
+namespace AocCommon
 {
-    internal static class MoreMath
+    public static class MoreMath
     {
         // https://en.wikipedia.org/wiki/Euclidean_algorithm#Implementations
         public static long Gcd(long a, long b)

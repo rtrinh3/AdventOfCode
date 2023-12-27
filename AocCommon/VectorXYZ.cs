@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aoc2023
+namespace AocCommon
 {
-    internal record class VectorXYZ(int X, int Y, int Z)
+    public record class VectorXYZ(int X, int Y, int Z)
     {
         public static VectorXYZ operator +(VectorXYZ left, VectorXYZ right)
         {

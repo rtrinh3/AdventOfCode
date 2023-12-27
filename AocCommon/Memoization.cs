@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aoc2023
+namespace AocCommon
 {
-    internal static class Memoization
+    public static class Memoization
     {
         public static Func<T1, TR> Make<T1, TR>(Func<T1, TR> fn)
             where T1 : notnull

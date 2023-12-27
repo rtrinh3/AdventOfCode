@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Aoc2023
+namespace AocCommon
 {
-    internal class DefaultDict<TKey, TValue> : IDictionary<TKey, TValue>
+    public class DefaultDict<TKey, TValue> : IDictionary<TKey, TValue>
         where TKey: notnull
     {
         private readonly Dictionary<TKey, TValue> _dictionary = new();

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Immutable;
 
-namespace Aoc2023
+namespace AocCommon
 {
-    internal class Grid
+    public class Grid
     {
         public ImmutableArray<string> Data { get; init; }
         public int Height { get => Data.Length; }
