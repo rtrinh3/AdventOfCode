@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MathNet.Symbolics" Version="0.25.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AocCommon\AocCommon.csproj" />
   </ItemGroup>
 
