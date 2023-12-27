@@ -21,7 +21,7 @@
 
         public string Part1()
         {
-            var commons = input.Split('\n', AocCommon.Constants.TrimAndDiscard).Select(line => {
+            var commons = AocCommon.Constants.SplitLines(input).Select(line => {
                 var firstHalf = line.Take(line.Length / 2);
                 var secondHalf = line.Skip(line.Length / 2);
                 var common = firstHalf.Distinct().Intersect(secondHalf.Distinct()).Single();
@@ -31,7 +31,7 @@
         }
         public string Part2()
         {
-            var inputs = input.Split('\n', AocCommon.Constants.TrimAndDiscard);
+            var inputs = AocCommon.Constants.SplitLines(input);
             int sum = 0;
             for (int i = 0; i < inputs.Length; i += 3)
             {

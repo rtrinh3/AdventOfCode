@@ -30,7 +30,7 @@ namespace AocCommon
             return parentsDistances;
         }
 
-        public static (int, IEnumerable<T>) BfsToEnd<T>(T start, Func<T, IEnumerable<T>> getNeighbors, Predicate<T> isEnd)
+        public static (int distance, IEnumerable<T> path) BfsToEnd<T>(T start, Func<T, IEnumerable<T>> getNeighbors, Predicate<T> isEnd)
             where T : notnull
         {
             Queue<T> queue = new();

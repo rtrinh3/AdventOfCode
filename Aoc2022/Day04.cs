@@ -5,7 +5,7 @@ namespace Aoc2022
     // https://adventofcode.com/2022/day/4
     public class Day04(string input) : IAocDay
     {
-        private readonly IEnumerable<(int, int, int, int)> inputs = input.Split('\n', AocCommon.Constants.TrimAndDiscard).Select(line =>
+        private readonly IEnumerable<(int, int, int, int)> inputs = AocCommon.Constants.SplitLines(input).Select(line =>
         {
             var parsed = Regex.Match(line, @"^(\d+)-(\d+),(\d+)-(\d+)");
             int leftStart = int.Parse(parsed.Groups[1].ValueSpan);
