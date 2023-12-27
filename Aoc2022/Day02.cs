@@ -1,5 +1,6 @@
 ﻿namespace Aoc2022
 {
+    // https://adventofcode.com/2022/day/2
     public class Day02(string input) : IAocDay
     {
         private string[] lines = input.ReplaceLineEndings("\n").Split('\n', AocCommon.Constants.TrimAndDiscard);
