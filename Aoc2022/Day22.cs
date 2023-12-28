@@ -230,6 +230,14 @@ namespace Aoc2022
                         var nextPos = position + orientation;
                         var nextDir = orientation;
                         var nextFace = face;
+                        // These normalizedPos are the opposite of the calculations in MapToOtherFace.
+                        // Consider these two adjacent faces:
+                        //  <-   <-
+                        // |  ^ |  ^
+                        // v  | v  |
+                        //  ->   ->
+                        // The two parts of the loops which are adjacent to each other are going in opposite directions,
+                        // and this holds for all pairs of adjacent faces.
                         if (nextPos.Row < 0)
                         {
                             // OOB Up
