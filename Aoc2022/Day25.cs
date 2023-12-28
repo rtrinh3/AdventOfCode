@@ -126,7 +126,7 @@
                 );
             }
 
-            public static Snafu Zero = new Snafu(new sbyte[] { 0 });
+            public static Snafu Zero = new Snafu([]);
         }
     }
 }
