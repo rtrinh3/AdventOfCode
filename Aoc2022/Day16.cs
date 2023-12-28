@@ -44,20 +44,20 @@ namespace Aoc2022
             });
             evaluateMaxRelease = Memoization.Make((int pos, EquatableArray<int> myValves, int timeLimit) =>
             {
-                if (timeLimit <= 0 || myValves.Data.Length == 0)
+                if (timeLimit <= 0 || myValves.Count == 0)
                 {
                     return 0;
                 }
                 int maxRelease = 0;
                 var distances = memoBfsToAll(pos);
-                foreach (int i in myValves.Data)
+                foreach (int i in myValves)
                 {
                     int distance = distances[i];
                     int remainingTime = (timeLimit - distance - 1);
                     if (remainingTime > 0)
                     {
                         int flowReleased = remainingTime * flows[i];
-                        int remainingPotential = evaluateMaxRelease(i, new EquatableArray<int>(myValves.Data.Remove(i)), remainingTime);
+                        int remainingPotential = evaluateMaxRelease(i, myValves.Remove(i), remainingTime);
                         int totalFlow = flowReleased + remainingPotential;
                         if (totalFlow > maxRelease)
                         {
