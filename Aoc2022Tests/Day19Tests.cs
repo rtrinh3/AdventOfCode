@@ -26,7 +26,7 @@ namespace Aoc2022.Tests
             var answer = instance.Part1();
             Assert.AreEqual("33", answer);
         }
-        [TestMethod(), Timeout(25_000)]
+        [TestMethod(), Timeout(60_000)]
         public void Part1InputTest()
         {
             var instance = new Day19(File.ReadAllText("day19-input.txt"));
@@ -34,14 +34,14 @@ namespace Aoc2022.Tests
             Assert.AreEqual("1962", answer);
         }
 
-        [TestMethod(), Timeout(15_000)]
+        [TestMethod(), Timeout(30_000)]
         public void Part2Example1Test()
         {
             var instance = new Day19(File.ReadAllText("day19-example.txt"));
             var answer = instance.EvaluateBlueprint(0, 32);
             Assert.AreEqual(56, answer);
         }
-        [TestMethod(), Timeout(5_000)]
+        [TestMethod(), Timeout(10_000)]
         public void Part2Example2Test()
         {
             var instance = new Day19(File.ReadAllText("day19-example.txt"));

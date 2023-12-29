@@ -57,10 +57,7 @@ namespace Aoc2022
             Parallel.For(0, blueprints.Length, i =>
             {
                 var geodeOutput = EvaluateBlueprint(i, 24);
-                lock (this)
-                {
-                    answer += geodeOutput * (i + 1);
-                }
+                Interlocked.Add(ref answer, geodeOutput * (i + 1));
             });
             return answer.ToString();
         }
