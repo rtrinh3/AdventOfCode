@@ -10,9 +10,10 @@ namespace AocCommon
     public static class MoreMath
     {
         // https://en.wikipedia.org/wiki/Euclidean_algorithm#Implementations
-        public static long Gcd(long a, long b)
+        public static TInt Gcd<TInt>(TInt a, TInt b)
+            where TInt : IBinaryInteger<TInt>
         {
-            while (b != 0)
+            while (!TInt.IsZero(b))
             {
                 var t = b;
                 b = a % b;
@@ -22,7 +23,8 @@ namespace AocCommon
         }
 
         // https://en.wikipedia.org/wiki/Least_common_multiple#Using_the_greatest_common_divisor
-        public static long Lcm(long a, long b)
+        public static TInt Lcm<TInt>(TInt a, TInt b)
+            where TInt : IBinaryInteger<TInt>
         {
             return (a * b) / Gcd(a, b);
         }

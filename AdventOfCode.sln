@@ -11,7 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aoc2022", "Aoc2022\Aoc2022.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aoc2022Tests", "Aoc2022Tests\Aoc2022Tests.csproj", "{5FE94532-D7CF-471B-B025-A5158B7CA734}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AocCommon", "AocCommon\AocCommon.csproj", "{CAEAB969-055A-4CD0-9DA3-DB778F46BA58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AocCommon", "AocCommon\AocCommon.csproj", "{CAEAB969-055A-4CD0-9DA3-DB778F46BA58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aoc2019", "Aoc2019\Aoc2019.csproj", "{19BEB827-FAA8-4C25-8C63-15578FA32EA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aoc2019Tests", "Aoc2019Tests\Aoc2019Tests.csproj", "{B6401820-E86F-4362-A69A-4ADCAA2B4113}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{CAEAB969-055A-4CD0-9DA3-DB778F46BA58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAEAB969-055A-4CD0-9DA3-DB778F46BA58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAEAB969-055A-4CD0-9DA3-DB778F46BA58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19BEB827-FAA8-4C25-8C63-15578FA32EA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19BEB827-FAA8-4C25-8C63-15578FA32EA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19BEB827-FAA8-4C25-8C63-15578FA32EA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19BEB827-FAA8-4C25-8C63-15578FA32EA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6401820-E86F-4362-A69A-4ADCAA2B4113}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6401820-E86F-4362-A69A-4ADCAA2B4113}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6401820-E86F-4362-A69A-4ADCAA2B4113}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6401820-E86F-4362-A69A-4ADCAA2B4113}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
