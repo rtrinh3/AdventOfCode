@@ -3,8 +3,8 @@
     // https://adventofcode.com/2019/day/4
     public class Day04(string input) : IAocDay
     {
-        private string lowerBound = input.Split('-')[0].Trim();
-        private string upperBound = input.Split('-')[1].Trim();
+        private readonly string lowerBound = input.Split('-')[0].Trim();
+        private readonly string upperBound = input.Split('-')[1].Trim();
 
         private static bool AdjacentCriterion(string s)
         {

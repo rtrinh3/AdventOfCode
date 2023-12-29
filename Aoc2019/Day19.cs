@@ -5,7 +5,7 @@ namespace Aoc2019
     // https://adventofcode.com/2019/day/19
     public class Day19(string input) : IAocDay
     {
-        IntcodeInterpreter interpreter = new(input);
+        readonly IntcodeInterpreter interpreter = new(input);
 
         public string Part1()
         {

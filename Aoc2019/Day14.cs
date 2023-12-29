@@ -7,7 +7,7 @@ namespace Aoc2019
     {
         private record Reaction(int ProductQuantity, Dictionary<string, int> Reactants);
 
-        Dictionary<string, Reaction> reactions = new();
+        readonly Dictionary<string, Reaction> reactions = new();
 
         public Day14(string input)
         {

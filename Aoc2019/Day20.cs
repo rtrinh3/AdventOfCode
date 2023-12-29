@@ -6,9 +6,9 @@ namespace Aoc2019
     // https://adventofcode.com/2019/day/20
     public class Day20 : IAocDay
     {
-        private Grid maze;
-        DefaultDict<VectorRC, HashSet<VectorRC>> neighbors = new();
-        DefaultDict<string, List<VectorRC>> portals = new();
+        private readonly Grid maze;
+        readonly DefaultDict<VectorRC, HashSet<VectorRC>> neighbors = new();
+        readonly DefaultDict<string, List<VectorRC>> portals = new();
 
         public Day20(string input)
         {

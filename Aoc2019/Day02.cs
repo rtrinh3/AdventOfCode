@@ -3,7 +3,7 @@
     // https://adventofcode.com/2019/day/2
     public class Day02(string input) : IAocDay
     {
-        private IntcodeInterpreter interpreter = new(input);
+        private readonly IntcodeInterpreter interpreter = new(input);
 
         public string Part1()
         {
