@@ -8,6 +8,12 @@ namespace AocCommon
 {
     public readonly record struct VectorXY(int X, int Y)
     {
+        public static readonly VectorXY Zero = new(0, 0);
+        public static readonly VectorXY Up = new(0, +1);
+        public static readonly VectorXY Down = new(0, -1);
+        public static readonly VectorXY Left = new(-1, 0);
+        public static readonly VectorXY Right = new(+1, 0);
+
         public static VectorXY operator +(VectorXY left, VectorXY right)
         {
             return new VectorXY(left.X + right.X, left.Y + right.Y);
@@ -43,6 +49,47 @@ namespace AocCommon
         public int ChebyshevMetric()
         {
             return Math.Max(Math.Abs(X), Math.Abs(Y));
+        }
+
+        public readonly VectorXY NextUp()
+        {
+            return this + Up;
+        }
+        public readonly VectorXY NextDown()
+        {
+            return this + Down;
+        }
+        public readonly VectorXY NextLeft()
+        {
+            return this + Left;
+        }
+        public readonly VectorXY NextRight()
+        {
+            return this + Right;
+        }
+        public readonly VectorXY[] NextFour()
+        {
+            return
+                [
+                    this + Up,
+                    this + Down,
+                    this + Left,
+                    this + Right,
+                ];
+        }
+        public readonly VectorXY[] NextEight()
+        {
+            return
+                [
+                    this + Up + Left,
+                    this + Up,
+                    this + Up + Right,
+                    this + Left,
+                    this + Right,
+                    this + Down + Left,
+                    this + Down,
+                    this + Down + Right,
+                ];
         }
     }
 }

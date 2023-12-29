@@ -8,6 +8,8 @@ namespace AocCommon
 {
     public record class VectorXYZ(int X, int Y, int Z)
     {
+        public static readonly VectorXYZ Zero = new(0, 0, 0);
+
         public static VectorXYZ operator +(VectorXYZ left, VectorXYZ right)
         {
             return new VectorXYZ(left.X + right.X, left.Y + right.Y, left.Z + right.Z);

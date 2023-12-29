@@ -21,6 +21,10 @@ namespace AocCommon
             }
             return a;
         }
+        public static BigInteger Gcd(BigInteger a, BigInteger b)
+        {
+            return BigInteger.GreatestCommonDivisor(a, b);
+        }
 
         // https://en.wikipedia.org/wiki/Least_common_multiple#Using_the_greatest_common_divisor
         public static TInt Lcm<TInt>(TInt a, TInt b)
