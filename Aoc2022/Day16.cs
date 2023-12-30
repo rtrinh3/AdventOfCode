@@ -9,7 +9,7 @@ namespace Aoc2022
         readonly int[] flows;
         readonly int[] allWorkingValves;
         readonly Func<int, int[]> memoBfsToAll;
-        readonly Func<int, EquatableArray<int>, int, int> evaluateMaxRelease;
+        readonly Func<int, ulong, int, int> evaluateMaxRelease;
 
         public Day16(string input)
         {
@@ -29,12 +29,12 @@ namespace Aoc2022
             {
                 foreach (string next in lines[i][10..])
                 {
-                    neighbors[i] = neighbors[i] | 1UL << valveNameIndexMap[next];
+                    neighbors[i] |= 1UL << valveNameIndexMap[next];
                 }
             }
             memoBfsToAll = Memoization.MakeInt((int pos) =>
             {
-                var parentsDistances = GraphAlgos.BfsToAll(pos, p => Enumerable.Range(0, nbValves).Where(i => (neighbors[p] & 1UL << i) != 0));
+                var parentsDistances = GraphAlgos.BfsToAll(pos, p => Enumerable.Range(0, nbValves).Where(i => (neighbors[p] & (1UL << i)) != 0));
                 int[] distances = new int[nbValves];
                 for (int i = 0; i < nbValves; i++)
                 {
@@ -42,26 +42,30 @@ namespace Aoc2022
                 }
                 return distances;
             });
-            evaluateMaxRelease = Memoization.Make((int pos, EquatableArray<int> myValves, int timeLimit) =>
+            evaluateMaxRelease = Memoization.Make((int pos, ulong myValves, int timeLimit) =>
             {
-                if (timeLimit <= 0 || myValves.Count == 0)
+                if (timeLimit <= 0 || myValves == 0)
                 {
                     return 0;
                 }
                 int maxRelease = 0;
                 var distances = memoBfsToAll(pos);
-                foreach (int i in myValves)
+                for (int i = 0; i < nbValves; i++)
                 {
-                    int distance = distances[i];
-                    int remainingTime = (timeLimit - distance - 1);
-                    if (remainingTime > 0)
+                    if ((myValves & (1UL << i)) != 0)
                     {
-                        int flowReleased = remainingTime * flows[i];
-                        int remainingPotential = evaluateMaxRelease(i, myValves.Remove(i), remainingTime);
-                        int totalFlow = flowReleased + remainingPotential;
-                        if (totalFlow > maxRelease)
+                        int distance = distances[i];
+                        int remainingTime = (timeLimit - distance - 1);
+                        if (remainingTime > 0)
                         {
-                            maxRelease = totalFlow;
+                            int flowReleased = remainingTime * flows[i];
+                            ulong oneLessValve = myValves & ~(1UL << i);
+                            int remainingPotential = evaluateMaxRelease(i, oneLessValve, remainingTime);
+                            int totalFlow = flowReleased + remainingPotential;
+                            if (totalFlow > maxRelease)
+                            {
+                                maxRelease = totalFlow;
+                            }
                         }
                     }
                 }
@@ -69,43 +73,47 @@ namespace Aoc2022
             });
         }
 
-        private int EvaluateValveCombination(IEnumerable<int> myValves, int timeLimit)
+        private int EvaluateValveCombination(ulong myValves, int timeLimit)
         {
-            return evaluateMaxRelease(valveAApos, new EquatableArray<int>(myValves), timeLimit);
+            return evaluateMaxRelease(valveAApos, myValves, timeLimit);
         }
 
         public string Part1()
         {
-            int partOneMaxRelease = EvaluateValveCombination(allWorkingValves, 30);
+            ulong allWorkingValvesMask = 0UL;
+            foreach (int i in allWorkingValves)
+            {
+                allWorkingValvesMask |= 1UL << i;
+            }
+            int partOneMaxRelease = EvaluateValveCombination(allWorkingValvesMask, 30);
             return partOneMaxRelease.ToString();
         }
         public string Part2()
         {
-            int maxIteration = 1 << allWorkingValves.Length - 1;
+            int maxIteration = 1 << (allWorkingValves.Length - 1);
             ConcurrentBag<int> maxReleases = new();
             int completed = 0;
             Parallel.For(0, maxIteration, partTwoIteration =>
             {
-                List<int> humanValves = new();
-                List<int> elephantValves = new();
+                ulong humanValves = 0UL;
+                ulong elephantValves = 0UL;
                 for (int j = 0; j < allWorkingValves.Length; j++)
                 {
-                    if ((partTwoIteration & 1 << j) != 0)
+                    if ((partTwoIteration & (1 << j)) != 0)
                     {
-                        humanValves.Add(allWorkingValves[j]);
+                        humanValves |= 1UL << allWorkingValves[j];
                     }
                     else
                     {
-                        elephantValves.Add(allWorkingValves[j]);
+                        elephantValves |= 1UL << allWorkingValves[j];
                     }
                 }
                 int humanRelease = EvaluateValveCombination(humanValves, 26);
                 int elephantRelease = EvaluateValveCombination(elephantValves, 26);
                 int totalRelease = humanRelease + elephantRelease;
-                //Console.WriteLine($"Human {string.Join("-", humanValves.Select(n => lines[n][1]))} Elephant {string.Join("-", elephantValves.Select(n => lines[n][1]))} released {totalRelease}");
                 maxReleases.Add(totalRelease);
                 var localCompleted = Interlocked.Increment(ref completed);
-                if (localCompleted % 500 == 0)
+                if ((localCompleted & 0x3FF) == 0)
                 {
                     Console.WriteLine($"Completed {localCompleted}/{maxIteration}");
                 }
