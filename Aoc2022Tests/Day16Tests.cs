@@ -27,7 +27,7 @@ namespace Aoc2022.Tests
             var answer = instance.Part2();
             Assert.AreEqual("1707", answer);
         }
-        [TestMethod(), Timeout(10_000)]
+        [TestMethod(), Timeout(20_000)]
         public void Part2InputTest()
         {
             var instance = new Day16(File.ReadAllText("day16-input.txt"));

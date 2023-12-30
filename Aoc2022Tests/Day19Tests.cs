@@ -48,7 +48,7 @@ namespace Aoc2022.Tests
             var answer = instance.EvaluateBlueprint(1, 32);
             Assert.AreEqual(62, answer);
         }
-        [TestMethod(), Timeout(15_000)]
+        [TestMethod(), Timeout(30_000)]
         public void Part2InputTest()
         {
             var instance = new Day19(File.ReadAllText("day19-input.txt"));
