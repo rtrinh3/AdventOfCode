@@ -64,6 +64,14 @@ namespace Aoc2023
 
         public long Part2()
         {
+            var scanlineAnswer = Part2Scanline();
+            var pickAnswer = Part2Pick();
+            Debug.Assert(scanlineAnswer == pickAnswer);
+            return scanlineAnswer;
+        }
+
+        public long Part2Scanline()
+        {
             // Prepare startActualShape and GetTilePlainStart
             char startActualShape;
             var startConnections = GetConnections(startCoord);
@@ -184,6 +192,53 @@ namespace Aoc2023
             //}
 
             return enclosedTiles.Count;
+        }
+
+        public long Part2Pick()
+        {
+            // Pick's theorem ( https://en.wikipedia.org/wiki/Pick%27s_theorem ) states that:
+            // Area = Interior + Boundary/2 - 1 .
+            // We're looking for Interior, and we can calculate Area and Boundary.
+            // So the sum we're looking for is:
+            // Interior = Area + 1 - Boundary/2
+
+            // Sort vertices into a single loop
+            List<VectorRC> loop = [];
+            HashSet<VectorRC> visited = [];
+            Stack<VectorRC> queue = new();
+            queue.Push(startCoord);
+            while (queue.TryPop(out var current))
+            {
+                if (visited.Add(current))
+                {
+                    loop.Add(current);
+                    foreach (var next in GetConnections(current))
+                    {
+                        queue.Push(next);
+                    }
+                }
+            }
+            Debug.Assert(loop.Count == loopDistances.Count);
+
+            decimal area = PolygonArea(loop);
+            decimal boundary = loop.Count;
+            decimal interior = area + 1 - boundary / 2;
+            long integerInterior = (long)Math.Round(interior);
+            return integerInterior;
+        }
+
+        private static decimal PolygonArea(IList<VectorRC> vertices)
+        {
+            // https://en.wikipedia.org/wiki/Shoelace_formula
+            long doubleArea = 0;
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                var start = vertices[i];
+                var end = vertices[(i + 1) % vertices.Count];
+                Debug.Assert((end - start).ManhattanMetric() == 1);
+                doubleArea += (long)start.Row * end.Col - (long)start.Col * end.Row;
+            }
+            return Math.Abs((decimal)doubleArea / 2);
         }
     }
 }
