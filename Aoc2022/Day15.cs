@@ -1,5 +1,4 @@
 ﻿using AocCommon;
-using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace Aoc2022
@@ -90,7 +89,7 @@ namespace Aoc2022
             {
                 var center = sensors[i];
                 int distance = 1 + distances[i];
-                for (int a = 0; a <= distance; ++a)
+                for (int a = 0; a <= distance && !state.ShouldExitCurrentIteration; ++a)
                 {
                     VectorXY displacement = new VectorXY(a, distance - a);
                     foreach (var flip in flips)
@@ -99,12 +98,12 @@ namespace Aoc2022
                         if (0 <= coords.X && coords.X <= upperX && 0 <= coords.Y && coords.Y <= upperY && SignalStrength(coords) == 0)
                         {
                             emptySpot = coords;
-                            state.Break();
+                            state.Stop();
                         }
                     }
                 }
             });
-            long tuning = (long)emptySpot.X * (long)4000000 + (long)emptySpot.Y;
+            long tuning = (long)emptySpot.X * 4000000L + (long)emptySpot.Y;
             return tuning;
         }
     }
