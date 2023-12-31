@@ -39,30 +39,22 @@ namespace Aoc2022
         {
             int margin = distances.Max();
             int noBeacon = 0;
-            for (int x = minX - margin; x <= maxX + margin; ++x)
+            Parallel.For(minX - margin, maxX + margin + 1, x =>
             {
                 VectorXY coords = new VectorXY(x, row);
-                if (beacons.Contains(coords))
-                {
-                    //Console.Write("B");
-                }
-                else
+                if (!beacons.Contains(coords))
                 {
                     for (int i = 0; i < sensors.Count; ++i)
                     {
                         int distance = (coords - sensors[i]).ManhattanMetric();
                         if (distance <= distances[i])
                         {
-                            ++noBeacon;
-                            //Console.Write("#");
-                            goto FOUND;
+                            Interlocked.Increment(ref noBeacon);
+                            break;
                         }
                     }
-                //Console.Write(".");
-                FOUND:
-                    ;
                 }
-            }
+            });
             return noBeacon;
         }
         public string Part2()
@@ -94,7 +86,7 @@ namespace Aoc2022
                 new (-1, -1),
                 new (-1, +1),
             };
-            for (int i = 0; i < sensors.Count; ++i)
+            var result = Parallel.For(0, sensors.Count, (i, state) =>
             {
                 var center = sensors[i];
                 int distance = 1 + distances[i];
@@ -107,18 +99,12 @@ namespace Aoc2022
                         if (0 <= coords.X && coords.X <= upperX && 0 <= coords.Y && coords.Y <= upperY && SignalStrength(coords) == 0)
                         {
                             emptySpot = coords;
-                            goto EMPTY_SPOT;
+                            state.Break();
                         }
                     }
                 }
-            }
-
-        EMPTY_SPOT:
-            //emptySpot.Dump("Part 2 Coords");
-            //SignalStrength(emptySpot).Dump("Part 2 Strength");
+            });
             long tuning = (long)emptySpot.X * (long)4000000 + (long)emptySpot.Y;
-            //tuning.Dump("Part 2 Tuning");
-            //hop.Dump("Hops");
             return tuning;
         }
     }
