@@ -24,15 +24,15 @@ namespace Aoc2022.Tests
         public void Part2ExampleTest()
         {
             var instance = new Day22(File.ReadAllText("day22-example.txt"));
-            var answer = instance.DoPart2(Day22.ConnectionType.EXAMPLE);
-            Assert.AreEqual(5031, answer);
+            var answer = instance.Part2();
+            Assert.AreEqual("5031", answer);
         }
         [TestMethod()]
         public void Part2InputTest()
         {
             var instance = new Day22(File.ReadAllText("day22-input.txt"));
-            var answer = instance.DoPart2(Day22.ConnectionType.PUZZLE);
-            Assert.AreEqual(36540, answer);
+            var answer = instance.Part2();
+            Assert.AreEqual("36540", answer);
         }
     }
 }

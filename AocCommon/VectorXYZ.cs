@@ -18,6 +18,10 @@ namespace AocCommon
         {
             return new VectorXYZ(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
         }
+        public static VectorXYZ operator -(VectorXYZ vec)
+        {
+            return new VectorXYZ(-vec.X, -vec.Y, -vec.Z);
+        }
         public VectorXYZ Scale(int factor)
         {
             return new VectorXYZ(X * factor, Y * factor, Z * factor);

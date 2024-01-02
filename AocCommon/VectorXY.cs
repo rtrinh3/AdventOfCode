@@ -22,6 +22,10 @@ namespace AocCommon
         {
             return new VectorXY(left.X - right.X, left.Y - right.Y);
         }
+        public static VectorXY operator -(VectorXY vec)
+        {
+            return new VectorXY(-vec.X, -vec.Y);
+        }
         public VectorXY Scale(int factor)
         {
             return new VectorXY(X * factor, Y * factor);

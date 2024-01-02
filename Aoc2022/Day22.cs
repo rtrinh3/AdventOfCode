@@ -113,206 +113,188 @@ namespace Aoc2022
 
         public string Part2()
         {
-            var answer = DoPart2(ConnectionType.PUZZLE);
-            return answer.ToString();
-        }
-
-        public enum ConnectionType
-        {
-            EXAMPLE,
-            PUZZLE
-        }
-
-        private enum ConnectionSide
-        {
-            UP,
-            DOWN,
-            LEFT,
-            RIGHT
-        }
-
-        private class Face
-        {
-            public VectorRC origin;
-            public int UpFace;
-            public ConnectionSide UpSide;
-            public int DownFace;
-            public ConnectionSide DownSide;
-            public int LeftFace;
-            public ConnectionSide LeftSide;
-            public int RightFace;
-            public ConnectionSide RightSide;
-        }
-
-        public int DoPart2(ConnectionType connectionType)
-        {
             int numberOfTiles = mazeText.Count(c => !char.IsWhiteSpace(c));
             int tilesPerFace = Math.DivRem(numberOfTiles, 6, out int remainder);
             Debug.Assert(remainder == 0);
             int sideLength = (int)Math.Sqrt(tilesPerFace);
             Debug.Assert(sideLength * sideLength == tilesPerFace);
             //Console.WriteLine($"{numberOfTiles} {tilesPerFace} {sideLength}");
-            List<VectorRC> faceOrigins = new();
-            for (int row = 0; row < maze.Length; row += sideLength)
+
+            // Initialize the cube with placeholders
+            Dictionary<VectorXYZ, (VectorRC FlatCoord, VectorXYZ OriginalUp, char Value)> cube = new();
+            for (int i = 0; i < sideLength; i++)
             {
-                for (int col = 0; col < maze[row].Length; col += sideLength)
+                for (int j = 0; j < sideLength; j++)
                 {
-                    if (!char.IsWhiteSpace(maze[row][col]))
-                    {
-                        faceOrigins.Add(new VectorRC(row, col));
-                    }
+                    cube[new VectorXYZ(i + 1, j + 1, 0)] = (VectorRC.Zero, VectorXYZ.Zero, '\0');
+                    cube[new VectorXYZ(i + 1, j + 1, sideLength + 1)] = (VectorRC.Zero, VectorXYZ.Zero, '\0');
+                    cube[new VectorXYZ(i + 1, 0, j + 1)] = (VectorRC.Zero, VectorXYZ.Zero, '\0');
+                    cube[new VectorXYZ(i + 1, sideLength + 1, j + 1)] = (VectorRC.Zero, VectorXYZ.Zero, '\0');
+                    cube[new VectorXYZ(0, i + 1, j + 1)] = (VectorRC.Zero, VectorXYZ.Zero, '\0');
+                    cube[new VectorXYZ(sideLength + 1, i + 1, j + 1)] = (VectorRC.Zero, VectorXYZ.Zero, '\0');
                 }
             }
-            Debug.Assert(faceOrigins.Count == 6);
-            //Console.WriteLine(string.Join(",", faceOrigins));
-
-            Face[] faces;
-            if (connectionType == ConnectionType.EXAMPLE)
+            Debug.Assert(cube.Count == numberOfTiles);
+            (VectorXYZ nextCubePos, VectorXYZ nextNormal, VectorXYZ nextDir, VectorXYZ nextUpVector) GetNextPosition(VectorXYZ cubePos, VectorXYZ normal, VectorXYZ dir, VectorXYZ optionalUpVector)
             {
-                faces = [
-                    new Face { origin = faceOrigins[0], UpFace = 1, UpSide = ConnectionSide.UP, LeftFace = 2, LeftSide = ConnectionSide.UP, RightFace = 5, RightSide = ConnectionSide.RIGHT, DownFace = 3, DownSide = ConnectionSide.UP },
-                    new Face { origin = faceOrigins[1], UpFace = 0, UpSide = ConnectionSide.UP, LeftFace = 5, LeftSide = ConnectionSide.DOWN, RightFace = 2, RightSide = ConnectionSide.LEFT, DownFace = 4, DownSide = ConnectionSide.DOWN },
-                    new Face { origin = faceOrigins[2], UpFace = 0, UpSide = ConnectionSide.LEFT, LeftFace = 1, LeftSide = ConnectionSide.RIGHT, RightFace = 3, RightSide = ConnectionSide.LEFT, DownFace = 4, DownSide = ConnectionSide.LEFT },
-                    new Face { origin = faceOrigins[3], UpFace = 0, UpSide = ConnectionSide.DOWN, LeftFace = 2, LeftSide = ConnectionSide.RIGHT, RightFace = 5, RightSide = ConnectionSide.UP, DownFace = 4, DownSide = ConnectionSide.UP },
-                    new Face { origin = faceOrigins[4], UpFace = 3, UpSide = ConnectionSide.DOWN, LeftFace = 2, LeftSide = ConnectionSide.DOWN, RightFace = 5, RightSide = ConnectionSide.LEFT, DownFace = 1, DownSide = ConnectionSide.DOWN },
-                    new Face { origin = faceOrigins[5], UpFace = 3, UpSide = ConnectionSide.RIGHT, LeftFace = 4, LeftSide = ConnectionSide.RIGHT, RightFace = 0, RightSide = ConnectionSide.RIGHT, DownFace = 1, DownSide = ConnectionSide.LEFT },
-                ];
-            }
-            else if (connectionType == ConnectionType.PUZZLE)
-            {
-                faces = [
-                    new Face { origin = faceOrigins[0], UpFace = 5, UpSide = ConnectionSide.LEFT, LeftFace = 3, LeftSide = ConnectionSide.LEFT, RightFace = 1, RightSide = ConnectionSide.LEFT, DownFace = 2, DownSide = ConnectionSide.UP },
-                    new Face { origin = faceOrigins[1], UpFace = 5, UpSide = ConnectionSide.DOWN, LeftFace = 0, LeftSide = ConnectionSide.RIGHT, RightFace = 4, RightSide = ConnectionSide.RIGHT, DownFace = 2, DownSide = ConnectionSide.RIGHT },
-                    new Face { origin = faceOrigins[2], UpFace = 0, UpSide = ConnectionSide.DOWN, LeftFace = 3, LeftSide = ConnectionSide.UP, RightFace = 1, RightSide = ConnectionSide.DOWN, DownFace = 4, DownSide = ConnectionSide.UP },
-                    new Face { origin = faceOrigins[3], UpFace = 2, UpSide = ConnectionSide.LEFT, LeftFace = 0, LeftSide = ConnectionSide.LEFT, RightFace = 4, RightSide = ConnectionSide.LEFT, DownFace = 5, DownSide = ConnectionSide.UP },
-                    new Face { origin = faceOrigins[4], UpFace = 2, UpSide = ConnectionSide.DOWN, LeftFace = 3, LeftSide = ConnectionSide.RIGHT, RightFace = 1, RightSide = ConnectionSide.RIGHT, DownFace = 5, DownSide = ConnectionSide.RIGHT },
-                    new Face { origin = faceOrigins[5], UpFace = 3, UpSide = ConnectionSide.DOWN, LeftFace = 0, LeftSide = ConnectionSide.UP, RightFace = 4, RightSide = ConnectionSide.DOWN, DownFace = 1, DownSide = ConnectionSide.UP }
-                ];
-            }
-            else
-            {
-                throw new ArgumentException(nameof(connectionType));
-            }
-
-            (VectorRC Position, VectorRC Direction) MapToOtherFace(int edgeCoordinate, ConnectionSide side)
-            {
-                VectorRC pos = side switch
+                VectorXYZ next = cubePos + dir;
+                if (cube.ContainsKey(next))
                 {
-                    ConnectionSide.UP => new VectorRC(0, edgeCoordinate),
-                    ConnectionSide.DOWN => new VectorRC(sideLength - 1, sideLength - edgeCoordinate - 1),
-                    ConnectionSide.LEFT => new VectorRC(sideLength - edgeCoordinate - 1, 0),
-                    ConnectionSide.RIGHT => new VectorRC(edgeCoordinate, sideLength - 1),
-                    _ => throw new Exception("WTF")
-                };
-                VectorRC dir = side switch
+                    return (next, normal, dir, optionalUpVector);
+                }
+                else
                 {
-                    ConnectionSide.UP => VectorRC.Down,
-                    ConnectionSide.DOWN => VectorRC.Up,
-                    ConnectionSide.LEFT => VectorRC.Right,
-                    ConnectionSide.RIGHT => VectorRC.Left,
-                    _ => throw new Exception("WTF")
-                };
-                return (pos, dir);
+                    // We stepped off the cube, rotate onto the next face
+                    var axis = normal.Cross(dir);
+                    Debug.Assert(axis.ManhattanMetric() == 1);
+                    var nextNormal = RotateCounterClockwise(normal, axis);
+                    var nextDir = RotateCounterClockwise(dir, axis);
+                    var nextUpVector = RotateCounterClockwise(optionalUpVector, axis);
+                    next += nextDir;
+                    return (next, nextNormal, nextDir, nextUpVector);
+                }
             }
 
-            int face = 0;
-            VectorRC position = VectorRC.Zero;
-            VectorRC orientation = VectorRC.Right;
-            //HashSet<VectorRC> visited = new(); // For visualisation
+            // Paint the map onto the cube
+            VectorRC initMapPos = new VectorRC(0, maze[0].IndexOf('.'));
+            VectorXYZ initCubePos = new VectorXYZ(1, 1, 0);
+            VectorXYZ initNormal = new VectorXYZ(0, 0, -1);
+            VectorXYZ initUpVector = new VectorXYZ(0, -1, 0);
+            HashSet<VectorRC> visited = new();
+            Stack<(VectorRC mapPos, VectorXYZ cubePos, VectorXYZ normal, VectorXYZ upVector)> queue = new();
+            queue.Push((initMapPos, initCubePos, initNormal, initUpVector));
+            while (queue.TryPop(out var state))
+            {
+                if (!visited.Add(state.mapPos))
+                {
+                    continue;
+                }
+                // Assign data
+                var existing = cube[state.cubePos];
+                Debug.Assert(existing.Value == '\0', "Should be placeholder");
+                cube[state.cubePos] = (state.mapPos, state.upVector, GetTile(state.mapPos));
+                // Neighbors
+                Debug.Assert(state.normal.ManhattanMetric() == 1);
+                Debug.Assert(state.upVector.ManhattanMetric() == 1);
+                var leftVector = state.normal.Cross(state.upVector);
+                Debug.Assert(leftVector.ManhattanMetric() == 1);
+                (VectorRC, VectorXYZ)[] directionMap =
+                [
+                    (VectorRC.Up, state.upVector),
+                    (VectorRC.Down, -state.upVector),
+                    (VectorRC.Left, leftVector),
+                    (VectorRC.Right, -leftVector),
+                ];
+                foreach (var (mapDir, cubeDir) in directionMap)
+                {
+                    var next = state.mapPos + mapDir;
+                    if (visited.Contains(next) || char.IsWhiteSpace(GetTile(next)))
+                    {
+                        continue;
+                    }
+                    var nextState = GetNextPosition(state.cubePos, state.normal, cubeDir, state.upVector);
+                    queue.Push((next, nextState.nextCubePos, nextState.nextNormal, nextState.nextUpVector));
+                }
+            }
+            Debug.Assert(cube.Count == numberOfTiles);
+            var unmapped = cube.Where(x => x.Value.Value != '.' && x.Value.Value != '#').ToList();
+            Debug.Assert(unmapped.Count == 0);
+
+            // Execute the moves
+            VectorXYZ cubePos = initCubePos;
+            VectorXYZ normal = initNormal;
+            VectorXYZ direction = initUpVector.Cross(initNormal); // right
             foreach (var move in moves)
             {
-                //visited.Add(faces[face].origin + position); // For visualisation
+                //Console.WriteLine(move);
                 if (move is int steps)
                 {
                     for (int i = 0; i < steps; i++)
                     {
-                        //visited.Add(faces[face].origin + position); // For visualisation
-                        var nextPos = position + orientation;
-                        var nextDir = orientation;
-                        var nextFace = face;
-                        // These normalizedPos are the opposite of the calculations in MapToOtherFace.
-                        // Consider these two adjacent faces:
-                        //  <-   <-
-                        // |  ^ |  ^
-                        // v  | v  |
-                        //  ->   ->
-                        // The two parts of the loops which are adjacent to each other are going in opposite directions,
-                        // and this holds for all pairs of adjacent faces.
-                        if (nextPos.Row < 0)
-                        {
-                            // OOB Up
-                            nextFace = faces[face].UpFace;
-                            int normalizedPos = sideLength - nextPos.Col - 1;
-                            (nextPos, nextDir) = MapToOtherFace(normalizedPos, faces[face].UpSide);
-                        }
-                        else if (sideLength <= nextPos.Row)
-                        {
-                            // OOB Down
-                            nextFace = faces[face].DownFace;
-                            int normalizedPos = nextPos.Col;
-                            (nextPos, nextDir) = MapToOtherFace(normalizedPos, faces[face].DownSide);
-                        }
-                        else if (nextPos.Col < 0)
-                        {
-                            // OOB Left
-                            nextFace = faces[face].LeftFace;
-                            int normalizedPos = nextPos.Row;
-                            (nextPos, nextDir) = MapToOtherFace(normalizedPos, faces[face].LeftSide);
-                        }
-                        else if (sideLength <= nextPos.Col)
-                        {
-                            // OOB Right
-                            nextFace = faces[face].RightFace;
-                            int normalizedPos = sideLength - nextPos.Row - 1;
-                            (nextPos, nextDir) = MapToOtherFace(normalizedPos, faces[face].RightSide);
-                        }
-                        char nextTile = GetTile(faces[nextFace].origin + nextPos);
+                        var nextState = GetNextPosition(cubePos, normal, direction, VectorXYZ.Zero);
+                        char nextTile = cube[nextState.nextCubePos].Value;
                         if (nextTile == '#')
                         {
                             break;
                         }
-                        if (nextTile != '.')
-                        {
-                            throw new Exception("What is this tile");
-                        }
-                        (face, position, orientation) = (nextFace, nextPos, nextDir);
+                        Debug.Assert(nextTile == '.', "What is this tile " + cube[nextState.nextCubePos]);
+                        (cubePos, normal, direction, _) = nextState;
                     }
                 }
                 else if ("L".Equals(move))
                 {
-                    orientation = orientation.RotatedLeft();
+                    direction = normal.Cross(direction);
                 }
                 else if ("R".Equals(move))
                 {
-                    orientation = orientation.RotatedRight();
+                    direction = direction.Cross(normal);
                 }
                 else
                 {
-                    throw new Exception("What is this move");
+                    throw new Exception("What is this move " + move);
                 }
             }
+            VectorRC finalDir;
+            var finalSpace = cube[cubePos];
+            VectorXYZ leftDir = normal.Cross(finalSpace.OriginalUp);
+            if (direction == finalSpace.OriginalUp)
+            {
+                finalDir = VectorRC.Up;
+            }
+            else if (direction == leftDir)
+            {
+                finalDir = VectorRC.Left;
+            }
+            else if (direction == -leftDir)
+            {
+                finalDir = VectorRC.Right;
+            }
+            else if (direction == -finalSpace.OriginalUp)
+            {
+                finalDir = VectorRC.Down;
+            }
+            else
+            {
+                throw new Exception("What is this direction");
+            }
+            var password = CalculatePassword(cube[cubePos].FlatCoord, finalDir);
+            return password.ToString();
+        }
 
-            //// Visualisation
-            //for (int row = 0; row < maze.Length; row++)
-            //{
-            //    for (int col = 0; col < maze[row].Length; col++)
-            //    {
-            //        VectorRC pos = new(row, col);
-            //        if (visited.Contains(pos))
-            //        {
-            //            Console.ForegroundColor = ConsoleColor.Red;
-            //        }
-            //        else
-            //        {
-            //            Console.ResetColor();
-            //        }
-            //        Console.Write(GetTile(pos));
-            //    }
-            //    Console.WriteLine();
-            //}
+        private static VectorXYZ MatrixMultiply(int[,] matrix, VectorXYZ vector)
+        {
+            if (matrix.GetLength(0) != 3)
+            {
+                throw new ArgumentException("Matrix must have height of 3");
+            }
+            if (matrix.GetLength(1) != 3)
+            {
+                throw new ArgumentException("Matrix must have width of 3");
+            }
+            return new VectorXYZ(
+                matrix[0, 0] * vector.X + matrix[0, 1] * vector.Y + matrix[0, 2] * vector.Z,
+                matrix[1, 0] * vector.X + matrix[1, 1] * vector.Y + matrix[1, 2] * vector.Z,
+                matrix[2, 0] * vector.X + matrix[2, 1] * vector.Y + matrix[2, 2] * vector.Z
+            );
+        }
 
-            var password = CalculatePassword(faces[face].origin + position, orientation);
-            return password;
+        private static VectorXYZ RotateCounterClockwise(VectorXYZ vector, VectorXYZ axis)
+        {
+            if (axis.ManhattanMetric() != 1)
+            {
+                throw new ArgumentException("Axis must be unit vector", nameof(axis));
+            }
+            // https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
+            const int CosAngle = 0;
+            const int SinAngle = 1;
+            int[,] matrix = new int[3, 3]
+            {
+                { CosAngle + axis.X * axis.X * (1 - CosAngle), axis.X * axis.Y * (1 - CosAngle) - axis.Z * SinAngle, axis.X * axis.Z * (1 - CosAngle) + axis.Y * SinAngle },
+                { axis.Y * axis.X * (1 - CosAngle) + axis.Z * SinAngle, CosAngle + axis.Y * axis.Y * (1 - CosAngle), axis.Y * axis.Z * (1 - CosAngle) - axis.X * SinAngle },
+                { axis.Z * axis.X * (1 - CosAngle) - axis.Y * SinAngle, axis.Z * axis.Y * (1 - CosAngle) + axis.X * SinAngle, CosAngle + axis.Z * axis.Z * (1 - CosAngle) }
+            };
+            var answer = MatrixMultiply(matrix, vector);
+            return answer;
         }
     }
 }
