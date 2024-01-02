@@ -156,7 +156,7 @@ namespace Aoc2022
             }
 
             // Paint the map onto the cube
-            VectorRC initMapPos = new VectorRC(0, maze[0].IndexOf('.'));
+            VectorRC initMapPos = new VectorRC(0, maze[0].IndexOfAny(['.', '#']));
             VectorXYZ initCubePos = new VectorXYZ(1, 1, 0);
             VectorXYZ initNormal = new VectorXYZ(0, 0, -1);
             VectorXYZ initUpVector = new VectorXYZ(0, -1, 0);
@@ -204,6 +204,11 @@ namespace Aoc2022
             VectorXYZ cubePos = initCubePos;
             VectorXYZ normal = initNormal;
             VectorXYZ direction = initUpVector.Cross(initNormal); // right
+            // "You begin the path in the leftmost open tile of the top row of tiles."
+            while (cube[cubePos].Value != '.')
+            {
+                cubePos += direction;
+            }
             foreach (var move in moves)
             {
                 //Console.WriteLine(move);
