@@ -72,7 +72,7 @@ namespace Aoc2019
                 {
                     while (true)
                     {
-                        Thread.Sleep(1);
+                        Thread.Sleep(50);
                         if (waitingComputers == NUMBER_COMPUTERS)
                         {
                             break;
