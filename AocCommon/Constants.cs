@@ -8,7 +8,7 @@ namespace AocCommon
 {
     public static class Constants
     {
-        public static StringSplitOptions TrimAndDiscard = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
+        public const StringSplitOptions TrimAndDiscard = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
 
         public static string[] SplitLines(string input)
         {

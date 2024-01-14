@@ -22,17 +22,18 @@ namespace Aoc2019
             };
         }
         private readonly IReadOnlyList<BigInteger> prgm;
-        private readonly Dictionary<BigInteger, BigInteger> mask = new Dictionary<BigInteger, BigInteger>();
+        private readonly List<BigInteger> mem;
         private BigInteger Ip = 0;
         private BigInteger Rb = 0;
 
         public IntcodeInterpreter(IReadOnlyList<BigInteger> program)
         {
             prgm = program;
+            mem = new List<BigInteger>(program);
         }
-        public IntcodeInterpreter(string program)
+        public IntcodeInterpreter(string program) :
+            this(program.Split(',').Select(BigInteger.Parse).ToArray())
         {
-            prgm = program.Split(',').Select(BigInteger.Parse).ToArray();
         }
 
         public BigInteger? RunUntilOutputImpl(IEnumerator<BigInteger> inputIterator)
@@ -150,12 +151,8 @@ namespace Aoc2019
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             sb.AppendLine($"IP {Ip} \tRBO {Rb}");
-            BigInteger cursor = 0;
-            var addressesAfterPrgm = mask.Keys.Where(a => a >= prgm.Count).ToList();
-            addressesAfterPrgm.Sort();
-            var maxAddressAfterPrgm = addressesAfterPrgm.Any() ? addressesAfterPrgm[^1] : 0;
-            BigInteger upperBound = (prgm.Count > maxAddressAfterPrgm + 1) ? prgm.Count : maxAddressAfterPrgm + 1;
-            while (cursor < upperBound)
+            int cursor = 0;
+            while (cursor < mem.Count)
             {
                 sb.Append(cursor.ToString());
                 sb.Append(":\t");
@@ -203,41 +200,40 @@ namespace Aoc2019
 
                 // Cursor adjustment
                 cursor += parameterCount + 1;
-                if (cursor >= prgm.Count)
-                {
-                    var remainingAddresses = addressesAfterPrgm.SkipWhile(a => a < cursor);
-                    if (remainingAddresses.Any())
-                    {
-                        cursor = remainingAddresses.First();
-                    }
-                }
             }
             return sb.ToString();
         }
         public void Reset()
         {
-            mask.Clear();
+            mem.Clear();
+            mem.AddRange(prgm);
             Ip = 0;
             Rb = 0;
         }
         public BigInteger Peek(BigInteger address)
         {
-            if (mask.TryGetValue(address, out var value))
+            if (address < 0)
             {
-                return value;
+                throw new ArgumentOutOfRangeException(nameof(address), "Address must be zero or greater");
             }
-            else if (0 <= address && address < prgm.Count)
+            if (address >= mem.Count)
             {
-                return prgm[(int)address];
+                return BigInteger.Zero;
             }
-            else
-            {
-                return mask[address] = BigInteger.Zero;
-            }
+            return mem[(int)address];
         }
         public void Poke(BigInteger address, BigInteger val)
         {
-            mask[address] = val;
+            if (address < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(address), "Address must be zero or greater");
+            }
+            if (address >= mem.Count)
+            {
+                int extension = (int)address - mem.Count + 1;
+                mem.AddRange(Enumerable.Repeat(BigInteger.Zero, extension));
+            }
+            mem[(int)address] = val;
         }
     }
 }
