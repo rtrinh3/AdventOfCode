@@ -66,7 +66,7 @@ namespace Aoc2022
         private class Monkey
         {
             private readonly Queue<long> items;
-            private readonly SymbolicExpression operation;
+            private readonly Func<double, double> operation;
             public readonly int divisibilityTest;
             private readonly int goodMonkey;
             private readonly int badMonkey;
@@ -74,7 +74,7 @@ namespace Aoc2022
             public Monkey(Match match)
             {
                 items = new(match.Groups[2].Value.Split(',').Select(long.Parse));
-                operation = SymbolicExpression.Parse(match.Groups[3].Value);
+                operation = SymbolicExpression.Parse(match.Groups[3].Value).Compile("old");
                 divisibilityTest = int.Parse(match.Groups[4].Value);
                 goodMonkey = int.Parse(match.Groups[5].Value);
                 badMonkey = int.Parse(match.Groups[6].Value);
@@ -91,11 +91,7 @@ namespace Aoc2022
 
             private long DoOperation(long item)
             {
-                var values = new Dictionary<string, FloatingPoint>
-                {
-                    ["old"] = item
-                };
-                var newValue = operation.Evaluate(values).RealValue;
+                var newValue = operation(item);
                 var newValueLong = (long)Math.Round(newValue);
                 return newValueLong;
             }
