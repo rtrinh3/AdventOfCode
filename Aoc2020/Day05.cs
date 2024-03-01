@@ -2,6 +2,8 @@
 
 namespace Aoc2020
 {
+    // https://adventofcode.com/2020/day/5
+    // --- Day 5: Binary Boarding ---
     public class Day05(string input) : IAocDay
     {
         private readonly HashSet<int> seats = new(input.TrimEnd().ReplaceLineEndings("\n").Split('\n').Select(line =>
