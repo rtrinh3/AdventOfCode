@@ -1,12 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Aoc2020;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Aoc2020.Tests
+﻿namespace Aoc2020.Tests
 {
     [TestClass()]
     public class Day04Tests
