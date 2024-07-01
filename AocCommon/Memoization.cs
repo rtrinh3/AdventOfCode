@@ -5,7 +5,7 @@ namespace AocCommon
     public static class Memoization
     {
         public static Func<int, TR> MakeInt<TR>(Func<int, TR> fn)
-            where TR : notnull
+            where TR : class
         {
             List<TR?> memo = new();
             return x1 =>
