@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -59,7 +60,8 @@ namespace Aoc2020
         public long Part2()
         {
             Dictionary<long, long> memory = new();
-            string mask = "000000000000000000000000000000000000";
+            long onesMask = 0L;
+            long wildMask = 0L;
             foreach (string line in lines)
             {
                 if (line.StartsWith("mask"))
@@ -67,7 +69,21 @@ namespace Aoc2020
                     var parse = line.Split('=');
                     string newMask = parse[1].Trim();
                     Debug.Assert(newMask.Length == 36);
-                    mask = newMask;
+                    onesMask = 0L;
+                    wildMask = 0L;
+                    foreach (char bit in newMask)
+                    {
+                        onesMask <<= 1;
+                        wildMask <<= 1;
+                        if (bit == '1')
+                        {
+                            onesMask |= 1;
+                        }
+                        if (bit == 'X')
+                        {
+                            wildMask |= 1;
+                        }
+                    }
                 }
                 else if (line.StartsWith("mem"))
                 {
@@ -78,24 +94,10 @@ namespace Aoc2020
                     }
                     long address = long.Parse(parse.Groups[1].Value);
                     long value = long.Parse(parse.Groups[2].Value);
-                    
-                    StringBuilder addressBuilder = new();
-                    for (int i = 0; i < mask.Length; i++)
-                    {
-                        if (mask[i] == '0')
-                        {
-                            long bitExtractor = 1L << (mask.Length - i - 1);
-                            char bit = (address & bitExtractor) == 0 ? '0' : '1';
-                            addressBuilder.Append(bit);
-                        }
-                        else
-                        {
-                            addressBuilder.Append(mask[i]);
-                        }
-                    }
-                    string addressPattern = addressBuilder.ToString();
-                    var addresses = GenerateAddresses(addressPattern, 0).Select(BinaryToNumber);
-                    foreach (long finalAddress in addresses)
+
+                    long addressBase = address | onesMask;
+                    var adresses = GenerateAddresses(addressBase, wildMask);
+                    foreach (long finalAddress in adresses)
                     {
                         memory[finalAddress] = value;
                     }
@@ -109,35 +111,23 @@ namespace Aoc2020
             return sum;
         }
 
-        private static IEnumerable<string> GenerateAddresses(string pattern, int index)
+        private static IEnumerable<long> GenerateAddresses(long baseNumber, long mask)
         {
-            if (index >= pattern.Length)
+            if (mask == 0)
             {
-                return [""];
+                return [baseNumber];
             }
-            char current = pattern[index];
-            if (current == '0' || current == '1')
+            long highBitMask = (long)BitOperations.RoundUpToPowerOf2((ulong)mask);
+            if (highBitMask > mask)
             {
-                return GenerateAddresses(pattern, index + 1).Select(a => current + a);
+                highBitMask >>= 1;
             }
-            if (current == 'X')
-            {
-                var zeroes = GenerateAddresses(pattern, index + 1).Select(a => '0' + a);
-                var ones = GenerateAddresses(pattern, index + 1).Select(a => '1' + a);
-                return zeroes.Concat(ones);
-            }
-            throw new Exception("Unknown char " + current + " at position " + index);
-        }
-
-        private static long BinaryToNumber(string bitString)
-        {
-            long number = 0L;
-            foreach (char c in bitString)
-            {
-                number <<= 1;
-                number |= (c == '1') ? 1L : 0L;
-            }
-            return number;
+            long nextBitMask = mask & ~highBitMask;
+            long baseUnset = baseNumber & ~highBitMask;
+            var unsetAddresses = GenerateAddresses(baseUnset, nextBitMask);
+            long baseSet = baseNumber | highBitMask;
+            var setAddresses = GenerateAddresses(baseSet, nextBitMask);
+            return unsetAddresses.Concat(setAddresses);
         }
     }
 }
