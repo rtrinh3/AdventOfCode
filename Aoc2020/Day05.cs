@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Aoc2020
+﻿namespace Aoc2020
 {
     // https://adventofcode.com/2020/day/5
     // --- Day 5: Binary Boarding ---
