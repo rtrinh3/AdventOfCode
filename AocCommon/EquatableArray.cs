@@ -22,7 +22,7 @@ namespace AocCommon
 
         public bool Equals(EquatableArray<T> other)
         {
-            return Data.SequenceEqual(other.Data);
+            return Data.Equals(other.Data) || Data.SequenceEqual(other.Data);
         }
         public override int GetHashCode()
         {
