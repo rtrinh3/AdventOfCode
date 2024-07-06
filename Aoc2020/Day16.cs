@@ -72,6 +72,9 @@ namespace Aoc2020
                 )
                 .Append(yourTicket)
                 .ToList();
+            long[][] validTicketsTranspose = Enumerable.Range(0, validTickets[0].Length)
+                .Select(i => validTickets.Select(ticket => ticket[i]).ToArray())
+                .ToArray();
 
             Func<EquatableArray<string>, string[]?> FindFieldOrderImpl = _ => throw new NotImplementedException();
             FindFieldOrderImpl = Memoization.Make((EquatableArray<string> unassignedFields) =>
@@ -80,11 +83,11 @@ namespace Aoc2020
                 {
                     return Array.Empty<string>();
                 }
-                int index = fields.Length - unassignedFields.Count;
-                var values = validTickets.Select(ticket => ticket[index]);
+                int fieldIndex = fields.Length - unassignedFields.Count;
+                var values = validTicketsTranspose[fieldIndex];
                 foreach (string field in unassignedFields)
                 {
-                    var ranges = fields.Single(f => f.Name == field).Ranges;
+                    var ranges = fields.First(f => f.Name == field).Ranges;
                     if (values.All(v => ranges.Any(r => r.Min <= v && v <= r.Max)))
                     {
                         var nextFields = unassignedFields.Remove(field);
