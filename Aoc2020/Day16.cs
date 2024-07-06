@@ -1,4 +1,5 @@
 ﻿using AocCommon;
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace Aoc2020
@@ -76,36 +77,42 @@ namespace Aoc2020
                 .Select(i => validTickets.Select(ticket => ticket[i]).ToArray())
                 .ToArray();
 
-            Func<string, int, bool> ValuesFitField = Memoization.Make((string fieldName, int fieldIndex) =>
+            Func<int, int, bool> ValuesFitField = Memoization.Make((int candidateFieldIndex, int ticketFieldIndex) =>
             {
-                var values = validTicketsTranspose[fieldIndex];
-                var ranges = fields.First(f => f.Name == fieldName).Ranges;
+                var values = validTicketsTranspose[ticketFieldIndex];
+                var ranges = fields[candidateFieldIndex].Ranges;
                 return values.All(v => ranges.Any(r => r.Min <= v && v <= r.Max));
             });
 
-            Func<EquatableArray<string>, string[]?> FindFieldOrderImpl = _ => throw new NotImplementedException();
-            FindFieldOrderImpl = Memoization.Make((EquatableArray<string> unassignedFields) =>
+            Func<ulong, int[]?> FindFieldOrderImpl = _ => throw new NotImplementedException();
+            FindFieldOrderImpl = Memoization.Make((ulong unassignedFields) =>
             {
-                if (unassignedFields.Count == 0)
+                int unassignedFieldsCount = BitOperations.PopCount(unassignedFields);
+                if (unassignedFieldsCount == 0)
                 {
-                    return Array.Empty<string>();
+                    return Array.Empty<int>();
                 }
-                int fieldIndex = fields.Length - unassignedFields.Count;
-                foreach (string fieldName in unassignedFields)
+                int fieldIndex = fields.Length - unassignedFieldsCount;
+                for (int candidateField = 0; candidateField < fields.Length; candidateField++)
                 {
-                    if (ValuesFitField(fieldName, fieldIndex))
+                    ulong candidateFieldMask = 1UL << candidateField;
+                    if (0 != (unassignedFields & candidateFieldMask))
                     {
-                        var nextFields = unassignedFields.Remove(fieldName);
-                        var nextOrder = FindFieldOrderImpl(nextFields);
-                        if (nextOrder != null)
+                        if (ValuesFitField(candidateField, fieldIndex))
                         {
-                            return nextOrder.Prepend(fieldName).ToArray();
+                            var nextFields = unassignedFields & ~candidateFieldMask;
+                            var nextOrder = FindFieldOrderImpl(nextFields);
+                            if (nextOrder != null)
+                            {
+                                return nextOrder.Prepend(candidateField).ToArray();
+                            }
                         }
                     }
                 }
                 return null;
             });
-            return FindFieldOrderImpl(new EquatableArray<string>(fields.Select(f => f.Name)));
+            var answerIndexes = FindFieldOrderImpl((1UL << fields.Length) - 1);
+            return answerIndexes.Select(i => fields[i].Name).ToArray();
         }
     }
 }
