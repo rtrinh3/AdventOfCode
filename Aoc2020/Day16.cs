@@ -76,6 +76,13 @@ namespace Aoc2020
                 .Select(i => validTickets.Select(ticket => ticket[i]).ToArray())
                 .ToArray();
 
+            Func<string, int, bool> ValuesFitField = Memoization.Make((string fieldName, int fieldIndex) =>
+            {
+                var values = validTicketsTranspose[fieldIndex];
+                var ranges = fields.First(f => f.Name == fieldName).Ranges;
+                return values.All(v => ranges.Any(r => r.Min <= v && v <= r.Max));
+            });
+
             Func<EquatableArray<string>, string[]?> FindFieldOrderImpl = _ => throw new NotImplementedException();
             FindFieldOrderImpl = Memoization.Make((EquatableArray<string> unassignedFields) =>
             {
@@ -84,17 +91,15 @@ namespace Aoc2020
                     return Array.Empty<string>();
                 }
                 int fieldIndex = fields.Length - unassignedFields.Count;
-                var values = validTicketsTranspose[fieldIndex];
-                foreach (string field in unassignedFields)
+                foreach (string fieldName in unassignedFields)
                 {
-                    var ranges = fields.First(f => f.Name == field).Ranges;
-                    if (values.All(v => ranges.Any(r => r.Min <= v && v <= r.Max)))
+                    if (ValuesFitField(fieldName, fieldIndex))
                     {
-                        var nextFields = unassignedFields.Remove(field);
+                        var nextFields = unassignedFields.Remove(fieldName);
                         var nextOrder = FindFieldOrderImpl(nextFields);
                         if (nextOrder != null)
                         {
-                            return nextOrder.Prepend(field).ToArray();
+                            return nextOrder.Prepend(fieldName).ToArray();
                         }
                     }
                 }

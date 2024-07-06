@@ -25,7 +25,7 @@
             var answer = instance.FindFieldOrder();
             Assert.IsTrue(answer.SequenceEqual(["row", "class", "seat"]));
         }
-        [TestMethod(), Timeout(20_000)]
+        [TestMethod(), Timeout(5_000)]
         public void Day16_Part2_InputTest()
         {
             var instance = new Day16(File.ReadAllText("day16-input.txt"));
