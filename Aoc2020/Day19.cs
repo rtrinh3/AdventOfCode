@@ -1,6 +1,4 @@
-﻿using AocCommon;
-
-namespace Aoc2020
+﻿namespace Aoc2020
 {
     // https://adventofcode.com/2020/day/19
     // --- Day 19: Monster Messages ---
@@ -28,38 +26,13 @@ namespace Aoc2020
 
         public long Part1()
         {
-            Dictionary<string, Func<string, int, int>> partOneRules = new();
-            foreach (var (ruleNumber, alternatives) in rules)
-            {
-                partOneRules[ruleNumber] = (string message, int index) =>
-                {
-                    foreach (var alt in alternatives)
-                    {
-                        int current = index;
-                        foreach (var subrule in alt)
-                        {
-                            current = partOneRules[subrule](message, current);
-                            if (current < 0)
-                            {
-                                break;
-                            }
-                        }
-                        if (current >= index)
-                        {
-                            return current;
-                        }
-                    }
-                    return -1;
-                };
-            }
-            partOneRules["\"a\""] = (string message, int index) => message[index] == 'a' ? index + 1 : -1;
-            partOneRules["\"b\""] = (string message, int index) => message[index] == 'b' ? index + 1 : -1;
-
+            rules["8"] = [["42"]];
+            rules["11"] = [["42", "31"]];
             int answer = 0;
             foreach (string message in messages)
             {
-                var test = partOneRules["0"](message, 0);
-                if (test == message.Length)
+                var test = EvaluateRule("0", message, 0);
+                if (test.Contains(message.Length))
                 {
                     answer++;
                 }
@@ -69,95 +42,44 @@ namespace Aoc2020
 
         public long Part2()
         {
-            Dictionary<string, Func<string, int, HashSet<int>>> partTwoRules = new();
-            foreach (var (ruleNumber, alternatives) in rules)
-            {
-                partTwoRules[ruleNumber] = (string message, int index) =>
-                {
-                    HashSet<int> results = new();
-                    foreach (var alt in alternatives)
-                    {
-                        IEnumerable<int> altResults = [index];
-                        for (int i = 0; i < alt.Length; i++)
-                        {
-                            var subrule = alt[i];
-                            altResults = altResults.SelectMany(intermediate => partTwoRules[subrule](message, intermediate)).ToHashSet();
-                        }
-                        results.UnionWith(altResults);
-                    }
-                    return results;
-                };
-            }
-            partTwoRules["\"a\""] = (string message, int index) => (index < message.Length && message[index] == 'a') ? [index + 1] : [];
-            partTwoRules["\"b\""] = (string message, int index) => (index < message.Length && message[index] == 'b') ? [index + 1] : [];
-            partTwoRules["8"] = (string message, int index) =>
-            {
-                HashSet<int> results = new();
-                HashSet<int> intermediates = [index];
-                while (true)
-                {
-                    var newIntermediates = intermediates.SelectMany(intermediate => partTwoRules["42"](message, intermediate)).ToHashSet();
-                    int oldSize = results.Count;
-                    results.UnionWith(newIntermediates);
-                    if (results.Count == oldSize)
-                    {
-                        break;
-                    }
-                    intermediates = newIntermediates;
-                }
-                return results;
-            };
-            partTwoRules["11"] = (string message, int index) =>
-            {
-                if (index >= message.Length)
-                {
-                    return [];
-                }
-                List<HashSet<int>> matches42 = new()
-                {
-                    new() { index }
-                };
-                while (true)
-                {
-                    var intermediates = matches42.Last().SelectMany(intermediate => partTwoRules["42"](message, intermediate)).ToHashSet();
-                    if (intermediates.Count > 0)
-                    {
-                        matches42.Add(intermediates);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                HashSet<int> results = new();
-                for (int repetitions = 1; repetitions < matches42.Count; repetitions++)
-                {
-                    HashSet<int> intermediates = matches42[repetitions];
-                    for (int i = 0; i < repetitions; i++)
-                    {
-                        intermediates = intermediates.SelectMany(intermediate => partTwoRules["31"](message, intermediate)).ToHashSet();
-                    }
-                    results.UnionWith(intermediates);
-                }
-                return results;
-            };
-
-            foreach (var ruleNumber in partTwoRules.Keys.ToList())
-            {
-                partTwoRules[ruleNumber] = Memoization.Make(partTwoRules[ruleNumber]);
-            }
-
+            rules["8"] = [["42"], ["42", "8"]];
+            rules["11"] = [["42", "31"], ["42", "11", "31"]];
             int answer = 0;
             foreach (string message in messages)
             {
-                var test = partTwoRules["0"](message, 0);
+                var test = EvaluateRule("0", message, 0);
                 if (test.Contains(message.Length))
                 {
-                    //Console.WriteLine(message);
                     answer++;
                 }
             }
             return answer;
+        }
+
+        private HashSet<int> EvaluateRule(string ruleNumber, string message, int index)
+        {
+            HashSet<int> results = new();
+            if (ruleNumber.Length == 3 && ruleNumber.StartsWith('"') && ruleNumber.EndsWith('"'))
+            {
+                if (index < message.Length && message[index] == ruleNumber[1])
+                {
+                    results.Add(index + 1);
+                }
+            }
+            else if (index < message.Length)
+            {
+                foreach (var alt in rules[ruleNumber])
+                {
+                    IEnumerable<int> altResults = [index];
+                    for (int i = 0; i < alt.Length; i++)
+                    {
+                        var subrule = alt[i];
+                        altResults = altResults.SelectMany(intermediate => EvaluateRule(subrule, message, intermediate));
+                    }
+                    results.UnionWith(altResults);
+                }
+            }
+            return results;
         }
     }
 }
