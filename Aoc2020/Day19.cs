@@ -113,24 +113,31 @@ namespace Aoc2020
                 {
                     return [];
                 }
-                HashSet<int> results = new();
-                int repetitions = 1;
-                while (repetitions < 10) // TODO better handle repetitions
+                List<HashSet<int>> matches42 = new()
                 {
-                    HashSet<int> intermediates = [index];
-                    for (int i = 0; i < repetitions; i++)
-                    {
-                        intermediates = intermediates.SelectMany(intermediate => partTwoRules["42"](message, intermediate)).ToHashSet();
-                    }
+                    new() { index }
+                };
+                while (true)
+                {
+                    var intermediates = matches42.Last().SelectMany(intermediate => partTwoRules["42"](message, intermediate)).ToHashSet();
                     if (intermediates.Count > 0)
                     {
-                        for (int i = 0; i < repetitions; i++)
-                        {
-                            intermediates = intermediates.SelectMany(intermediate => partTwoRules["31"](message, intermediate)).ToHashSet();
-                        }
-                        results.UnionWith(intermediates);
+                        matches42.Add(intermediates);
                     }
-                    repetitions++;
+                    else
+                    {
+                        break;
+                    }
+                }
+                HashSet<int> results = new();
+                for (int repetitions = 1; repetitions < matches42.Count; repetitions++)
+                {
+                    HashSet<int> intermediates = matches42[repetitions];
+                    for (int i = 0; i < repetitions; i++)
+                    {
+                        intermediates = intermediates.SelectMany(intermediate => partTwoRules["31"](message, intermediate)).ToHashSet();
+                    }
+                    results.UnionWith(intermediates);
                 }
                 return results;
             };
