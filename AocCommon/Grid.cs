@@ -17,6 +17,13 @@ namespace AocCommon
             Width = Data.Max(row => row.Length);
         }
 
+        public Grid(string[] input, char outsideChar)
+        {
+            Data = input.ToImmutableArray();
+            this.outsideChar = outsideChar;
+            Width = Data.Max(row => row.Length);
+        }
+
         public char Get(int row, int col)
         {
             if (row < 0 || row >= Data.Length || col < 0 || col >= Data[row].Length)

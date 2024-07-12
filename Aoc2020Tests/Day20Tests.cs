@@ -25,7 +25,7 @@
         {
             var instance = new Day20(File.ReadAllText("day20-example.txt"));
             var answer = instance.Part2();
-            Assert.AreEqual(2, answer);
+            Assert.AreEqual(273, answer);
         }
         [TestMethod()]
         public void Day20_Part2_InputTest()
