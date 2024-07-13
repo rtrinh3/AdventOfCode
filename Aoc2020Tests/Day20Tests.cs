@@ -33,7 +33,7 @@
             var instance = new Day20(File.ReadAllText("day20-input.txt"));
             var answer = instance.Part2();
             //Assert.AreEqual("107", answer);
-            Assert.Inconclusive(answer.ToString());
+            Assert.Inconclusive(answer);
         }
     }
 }
