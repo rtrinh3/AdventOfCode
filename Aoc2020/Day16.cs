@@ -39,16 +39,16 @@ namespace Aoc2020
                 .ToArray();
         }
 
-        public long Part1()
+        public string Part1()
         {
             var fieldRanges = fields.SelectMany(f => f.Ranges).Order().ToList();
             var nearbyValues = nearbyTickets.SelectMany(x => x);
             long answer = nearbyValues.Where(v => !fieldRanges.Any(r => r.Min <= v && v <= r.Max)).Sum();
 
-            return answer;
+            return answer.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             var fieldOrder = FindFieldOrder();
             long answer = 1L;
@@ -59,7 +59,7 @@ namespace Aoc2020
                     answer *= yourTicket[i];
                 }
             }
-            return answer;
+            return answer.ToString();
         }
 
         public string[] FindFieldOrder()

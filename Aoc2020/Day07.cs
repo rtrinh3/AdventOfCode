@@ -10,7 +10,7 @@ namespace Aoc2020
         private const string TARGET = "shiny gold";
         private readonly string[] lines = input.TrimEnd().ReplaceLineEndings("\n").Split('\n');
 
-        public long Part1()
+        public string Part1()
         {
             DefaultDict<string, List<string>> ContainedMap = new();
             foreach (string line in lines)
@@ -40,10 +40,10 @@ namespace Aoc2020
             Visit(TARGET);
             visited.Remove(TARGET);
             var answer = visited.Count;
-            return answer;
+            return answer.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             DefaultDict<string, List<(long quantity, string color)>> ContainsMap = new();
             foreach (string line in lines)
@@ -72,7 +72,7 @@ namespace Aoc2020
             });
 
             var answer = numberOfBagsInColor(TARGET);
-            return answer;
+            return answer.ToString();
         }
     }
 }

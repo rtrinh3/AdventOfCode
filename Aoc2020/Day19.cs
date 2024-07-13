@@ -24,7 +24,7 @@
             messages = messagesPart.Split('\n');
         }
 
-        public long Part1()
+        public string Part1()
         {
             rules["8"] = [["42"]];
             rules["11"] = [["42", "31"]];
@@ -37,10 +37,10 @@
                     answer++;
                 }
             }
-            return answer;
+            return answer.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             rules["8"] = [["42"], ["42", "8"]];
             rules["11"] = [["42", "31"], ["42", "11", "31"]];
@@ -53,7 +53,7 @@
                     answer++;
                 }
             }
-            return answer;
+            return answer.ToString();
         }
 
         private HashSet<int> EvaluateRule(string ruleNumber, string message, int index)

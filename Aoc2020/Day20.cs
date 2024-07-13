@@ -36,15 +36,15 @@ namespace Aoc2020
             }
         }
 
-        public long Part1()
+        public string Part1()
         {
             var corners = tiles.Where(t => t.Matches.Count == 2).ToList();
             Debug.Assert(corners.Count == 4);
             long product = corners.Select(c => c.ID).Aggregate(1L, (acc, id) => acc * id);
-            return product;
+            return product.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             // Step 1: Assemble the puzzle
             DefaultDict<short, List<Tile>> edgeToTileMap = new();
@@ -167,7 +167,7 @@ namespace Aoc2020
             // Step 4: Determine roughness
             var monsterPixels = maxMonsterPositions.SelectMany(x => MonsterPatternPoints.Select(p => x + p)).ToHashSet();
             int countWaves = maxMonsterGrid.Iterate().Where(x => x.Value == '#' && !monsterPixels.Contains(x.Position)).Count();
-            return countWaves;
+            return countWaves.ToString();
         }
 
         protected static string[] Transform(string[] image, Transformation t)

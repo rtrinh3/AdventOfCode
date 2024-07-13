@@ -10,14 +10,14 @@
         {
             var instance = new Day12(File.ReadAllText("day12-example.txt"));
             var answer = instance.Part1();
-            Assert.AreEqual(25, answer);
+            Assert.AreEqual("25", answer);
         }
         [TestMethod()]
         public void Day12_Part1_InputTest()
         {
             var instance = new Day12(File.ReadAllText("day12-input.txt"));
             var answer = instance.Part1();
-            Assert.AreEqual(1319, answer);
+            Assert.AreEqual("1319", answer);
         }
 
         [TestMethod()]
@@ -25,14 +25,14 @@
         {
             var instance = new Day12(File.ReadAllText("day12-example.txt"));
             var answer = instance.Part2();
-            Assert.AreEqual(286, answer);
+            Assert.AreEqual("286", answer);
         }
         [TestMethod()]
         public void Day12_Part2_InputTest()
         {
             var instance = new Day12(File.ReadAllText("day12-input.txt"));
             var answer = instance.Part2();
-            Assert.AreEqual(62434, answer);
+            Assert.AreEqual("62434", answer);
         }
     }
 }

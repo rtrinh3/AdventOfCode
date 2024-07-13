@@ -19,7 +19,7 @@
         {
             var instance = new Day09(File.ReadAllText("day09-input.txt"));
             var answer = instance.Part1();
-            Assert.AreEqual(1930745883, answer);
+            Assert.AreEqual("1930745883", answer);
         }
 
         [TestMethod()]
@@ -34,7 +34,7 @@
         {
             var instance = new Day09(File.ReadAllText("day09-input.txt"));
             var answer = instance.Part2();
-            Assert.AreEqual(268878261, answer);
+            Assert.AreEqual("268878261", answer);
         }
     }
 }

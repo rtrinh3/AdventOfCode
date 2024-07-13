@@ -2,18 +2,18 @@
 {
     // https://adventofcode.com/2020/day/3
     // --- Day 3: Toboggan Trajectory ---
-    public class Day03(string input): IAocDay
+    public class Day03(string input) : IAocDay
     {
         private readonly AocCommon.Grid forest = new(input, '.');
 
-        public long Part1()
+        public string Part1()
         {
-            return CheckSlope(3, 1);
+            return CheckSlope(3, 1).ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
-            return CheckSlope(1, 1) * CheckSlope(3, 1) * CheckSlope(5, 1) * CheckSlope(7, 1) * CheckSlope(1, 2);
+            return (CheckSlope(1, 1) * CheckSlope(3, 1) * CheckSlope(5, 1) * CheckSlope(7, 1) * CheckSlope(1, 2)).ToString();
         }
 
         private long CheckSlope(int right, int down)

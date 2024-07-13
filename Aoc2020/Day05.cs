@@ -8,18 +8,18 @@
             Convert.ToInt32(line.Replace('F', '0').Replace('B', '1').Replace('L', '0').Replace('R', '1'), 2)
         ));
 
-        public long Part1()
+        public string Part1()
         {
-            return seats.Max();
+            return seats.Max().ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             for (int i = 0; i < (1 << 10); i++)
             {
                 if (!seats.Contains(i) && seats.Contains(i + 1) && seats.Contains(i - 1))
                 {
-                    return i;
+                    return i.ToString();
                 }
             }
             throw new Exception("Answer not found");

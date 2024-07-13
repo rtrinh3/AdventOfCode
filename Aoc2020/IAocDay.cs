@@ -2,7 +2,7 @@
 {
     internal interface IAocDay
     {
-        long Part1();
-        long Part2();
+        string Part1();
+        string Part2();
     }
 }

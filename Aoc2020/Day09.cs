@@ -8,9 +8,9 @@
 
         private readonly long[] numbers = input.TrimEnd().Split('\n').Select(long.Parse).ToArray();
 
-        public long Part1()
+        public string Part1()
         {
-            return DoPart1(PREAMBLE_LENGTH);
+            return DoPart1(PREAMBLE_LENGTH).ToString();
         }
 
         public long DoPart1(int preambleLength)
@@ -27,9 +27,9 @@
             throw new Exception("No answer found");
         }
 
-        public long Part2()
+        public string Part2()
         {
-            return DoPart2(PREAMBLE_LENGTH);
+            return DoPart2(PREAMBLE_LENGTH).ToString();
         }
 
         public long DoPart2(int preambleLength)

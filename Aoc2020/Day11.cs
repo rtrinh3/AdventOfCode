@@ -7,7 +7,7 @@ namespace Aoc2020
     // --- Day 11: Seating System ---
     public class Day11(string input) : IAocDay
     {
-        public long Part1()
+        public string Part1()
         {
             string state = input.TrimEnd().ReplaceLineEndings("\n") + '\n';
             while (true)
@@ -61,10 +61,10 @@ namespace Aoc2020
             }
 
             var answer = state.Count(c => c == '#');
-            return answer;
+            return answer.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             string state = input.TrimEnd().ReplaceLineEndings("\n") + '\n';
             while (true)
@@ -120,7 +120,7 @@ namespace Aoc2020
             }
 
             var answer = state.Count(c => c == '#');
-            return answer;
+            return answer.ToString();
         }
 
         private static int CountOccupiedSeatsSightLine(Grid grid, VectorRC pos)

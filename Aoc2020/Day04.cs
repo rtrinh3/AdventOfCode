@@ -8,15 +8,15 @@ namespace Aoc2020
     {
         private readonly string[] passports = input.TrimEnd().ReplaceLineEndings("\n").Split("\n\n");
 
-        public long Part1()
+        public string Part1()
         {
             string[] REQUIRED_FIELDS = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
             bool isPassportValid(string p) => REQUIRED_FIELDS.All(f => p.Contains(f));
             int count = passports.Count(isPassportValid);
-            return count;
+            return count.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             int count = 0;
             foreach (string p in passports)
@@ -84,7 +84,7 @@ namespace Aoc2020
                     count++;
                 }
             }
-            return count;
+            return count.ToString();
         }
     }
 }

@@ -44,7 +44,7 @@ namespace Aoc2020
             });
         }
 
-        public long Part1()
+        public string Part1()
         {
             long answer = 0;
             foreach (var ingredient in AllIngredients)
@@ -54,10 +54,10 @@ namespace Aoc2020
                     answer += Foods.Count(f => f.Ingredients.Contains(ingredient));
                 }
             }
-            return answer;
+            return answer.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             IEnumerable<IEnumerable<(string Ingredient, string Allergen)>> AssignAllergens(EquatableSet<string> ingredients, EquatableSet<string> allergens)
             {
@@ -84,8 +84,7 @@ namespace Aoc2020
             Debug.Assert(assignments.Count == 1);
 
             var answer = string.Join(',', assignments[0].OrderBy(x => x.Allergen).Select(x => x.Ingredient));
-            Console.WriteLine(answer);
-            return answer.GetHashCode();
+            return answer;
         }
     }
 }

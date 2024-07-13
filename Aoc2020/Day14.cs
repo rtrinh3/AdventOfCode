@@ -10,7 +10,7 @@ namespace Aoc2020
     {
         private readonly string[] lines = input.TrimEnd().ReplaceLineEndings("\n").Split('\n');
 
-        public long Part1()
+        public string Part1()
         {
             Dictionary<long, long> memory = new();
             long onesMask = 0L;
@@ -53,10 +53,10 @@ namespace Aoc2020
                 }
             }
             var sum = memory.Values.Sum();
-            return sum;
+            return sum.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             Dictionary<long, long> memory = new();
             long onesMask = 0L;
@@ -107,7 +107,7 @@ namespace Aoc2020
                 }
             }
             var sum = memory.Values.Sum();
-            return sum;
+            return sum.ToString();
         }
 
         private static IEnumerable<long> GenerateAddresses(long baseNumber, long mask)

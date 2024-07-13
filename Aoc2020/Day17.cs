@@ -31,7 +31,7 @@ namespace Aoc2020
             columns = lines[0].Length;
         }
 
-        public long Part1()
+        public string Part1()
         {
             HashSet<VectorXYZ> activeCells = initialCells.Select(rc => new VectorXYZ(rc.Row, rc.Col, 0)).ToHashSet();
             int minX = 0;
@@ -70,7 +70,7 @@ namespace Aoc2020
                 }
                 activeCells = newActiveCells;
             }
-            return activeCells.Count;
+            return activeCells.Count.ToString();
         }
 
         private static IEnumerable<VectorXYZ> Next26(VectorXYZ vec)
@@ -83,7 +83,7 @@ namespace Aoc2020
             return next;
         }
 
-        public long Part2()
+        public string Part2()
         {
             HashSet<(int, int, int, int)> activeCells = initialCells.Select(rc => (rc.Row, rc.Col, 0, 0)).ToHashSet();
             int minW = 0;
@@ -127,7 +127,7 @@ namespace Aoc2020
                 }
                 activeCells = newActiveCells;
             }
-            return activeCells.Count;
+            return activeCells.Count.ToString();
         }
 
         private static IEnumerable<(int, int, int, int)> Next80((int, int, int, int) vec)

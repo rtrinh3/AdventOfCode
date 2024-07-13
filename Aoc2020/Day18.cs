@@ -21,7 +21,7 @@ namespace Aoc2020
             }).ToArray();
         }
 
-        public long Part1()
+        public string Part1()
         {
             Dictionary<string, int> partOnePrecedence = new Dictionary<string, int>()
             {
@@ -29,10 +29,10 @@ namespace Aoc2020
                 ["*"] = 1,
             };
             var answer = expressions.Sum(expr => EvaluateRpn(ShuntingYardAlgorithm(expr, partOnePrecedence)));
-            return answer;
+            return answer.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             Dictionary<string, int> partTwoPrecedence = new Dictionary<string, int>()
             {
@@ -40,7 +40,7 @@ namespace Aoc2020
                 ["*"] = 1,
             };
             var answer = expressions.Sum(expr => EvaluateRpn(ShuntingYardAlgorithm(expr, partTwoPrecedence)));
-            return answer;
+            return answer.ToString();
         }
 
         // https://en.wikipedia.org/wiki/Shunting_yard_algorithm

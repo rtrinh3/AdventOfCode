@@ -8,7 +8,7 @@ namespace Aoc2020
     {
         private readonly (char Move, int Length)[] moves = input.TrimEnd().Split('\n').Select(line => (line[0], int.Parse(line.AsSpan()[1..]))).ToArray();
 
-        public long Part1()
+        public string Part1()
         {
             VectorXY position = VectorXY.Zero;
             VectorXY orientation = VectorXY.Right;
@@ -63,10 +63,10 @@ namespace Aoc2020
                         throw new Exception("What is this move " + move + length.ToString());
                 }
             }
-            return position.ManhattanMetric();
+            return position.ManhattanMetric().ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             VectorXY ship = new(0, 0);
             VectorXY waypoint = new(10, 1);
@@ -127,7 +127,7 @@ namespace Aoc2020
                         throw new Exception("What is this move " + move + length.ToString());
                 }
             }
-            return ship.ManhattanMetric();
+            return ship.ManhattanMetric().ToString();
         }
     }
 }

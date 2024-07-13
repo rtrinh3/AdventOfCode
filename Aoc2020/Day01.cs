@@ -2,13 +2,13 @@
 {
     // https://adventofcode.com/2020/day/1
     // --- Day 1: Report Repair ---
-    public class Day01(string input): IAocDay
+    public class Day01(string input) : IAocDay
     {
         const long SUM = 2020L;
 
         private readonly long[] entries = input.TrimEnd().Split('\n').Select(long.Parse).ToArray();
 
-        public long Part1()
+        public string Part1()
         {
             var entriesHash = new HashSet<long>(entries);
             foreach (var entry in entries)
@@ -17,13 +17,13 @@
                 if (entriesHash.Contains(complement))
                 {
                     var product = entry * complement;
-                    return product;
+                    return product.ToString();
                 }
             }
             throw new Exception("Answer not found");
         }
 
-        public long Part2()
+        public string Part2()
         {
             var entriesHash = new HashSet<long>(entries);
             for (int i = 0; i < entries.Length; i++)
@@ -34,7 +34,7 @@
                     if (entriesHash.Contains(complement))
                     {
                         var product = entries[i] * entries[j] * complement;
-                        return product;
+                        return product.ToString();
                     }
                 }
             }

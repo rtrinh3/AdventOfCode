@@ -7,7 +7,7 @@ namespace Aoc2020
     // --- Day 13: Shuttle Search ---
     public class Day13(string input) : IAocDay
     {
-        public long Part1()
+        public string Part1()
         {
             var lines = input.TrimEnd().ReplaceLineEndings("\n").Split('\n');
             long now = long.Parse(lines[0]);
@@ -33,10 +33,10 @@ namespace Aoc2020
             }
             long wait = earliestPassage - now;
             long answer = earliestBus * wait;
-            return answer;
+            return answer.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             var lines = input.TrimEnd().ReplaceLineEndings("\n").Split('\n');
             // (The first line in your input is no longer relevant.)
@@ -64,7 +64,7 @@ namespace Aoc2020
                 remainderA = ((newRemainderA % factorA) + factorA) % factorA;
             }
             Debug.Assert(remainderA < long.MaxValue);
-            return (long)remainderA;
+            return remainderA.ToString();
         }
 
         // https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm#Pseudocode

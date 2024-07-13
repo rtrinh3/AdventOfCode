@@ -8,7 +8,7 @@ namespace Aoc2020
     {
         private readonly string[] entries = input.TrimEnd().ReplaceLineEndings("\n").Split('\n');
 
-        public long Part1()
+        public string Part1()
         {
             long counter = 0;
             foreach (var entry in entries)
@@ -29,10 +29,10 @@ namespace Aoc2020
                     counter++;
                 }
             }
-            return counter;
+            return counter.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             long counter = 0;
             foreach (var entry in entries)
@@ -54,7 +54,7 @@ namespace Aoc2020
                     counter++;
                 }
             }
-            return counter;
+            return counter.ToString();
         }
     }
 }

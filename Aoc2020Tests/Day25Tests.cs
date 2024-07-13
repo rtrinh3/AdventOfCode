@@ -10,7 +10,7 @@
         {
             var instance = new Day25(File.ReadAllText("day25-example.txt"));
             var answer = instance.Part1();
-            Assert.AreEqual(14897079, answer);
+            Assert.AreEqual("14897079", answer);
         }
 
         [TestMethod()]
@@ -18,7 +18,7 @@
         {
             var instance = new Day25(File.ReadAllText("day25-input.txt"));
             var answer = instance.Part1();
-            Assert.AreEqual(16933668, answer);
+            Assert.AreEqual("16933668", answer);
         }
     }
 }

@@ -16,7 +16,7 @@
             {
                 var instance = new Day05(input);
                 var answer = instance.Part1();
-                Assert.AreEqual(expected, answer);
+                Assert.AreEqual(expected.ToString(), answer);
             }
         }
         [TestMethod()]
@@ -24,7 +24,7 @@
         {
             var instance = new Day05(File.ReadAllText("day05-input.txt"));
             var answer = instance.Part1();
-            Assert.AreEqual(842, answer);
+            Assert.AreEqual("842", answer);
         }
 
         [TestMethod()]
@@ -32,7 +32,7 @@
         {
             var instance = new Day05(File.ReadAllText("day05-input.txt"));
             var answer = instance.Part2();
-            Assert.AreEqual(617, answer);
+            Assert.AreEqual("617", answer);
         }
     }
 }

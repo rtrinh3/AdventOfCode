@@ -4,14 +4,14 @@
     // --- Day 15: Rambunctious Recitation ---
     public class Day15(string input) : IAocDay
     {
-        public long Part1()
+        public string Part1()
         {
-            return DoPuzzle(2020);
+            return DoPuzzle(2020).ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
-            return DoPuzzle(30_000_000);
+            return DoPuzzle(30_000_000).ToString();
         }
 
         private long DoPuzzle(int iterations)

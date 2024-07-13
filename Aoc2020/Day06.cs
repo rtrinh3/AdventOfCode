@@ -6,13 +6,13 @@
     {
         private readonly string[] groups = input.TrimEnd().ReplaceLineEndings("\n").Split("\n\n");
 
-        public long Part1()
+        public string Part1()
         {
             var sum = groups.Sum(g => g.Where(char.IsLetter).Distinct().Count());
-            return sum;
+            return sum.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             int sum = 0;
             foreach (var g in groups)
@@ -27,7 +27,7 @@
                     }
                 }
             }
-            return sum;
+            return sum.ToString();
         }
     }
 }

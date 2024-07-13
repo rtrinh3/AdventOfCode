@@ -14,7 +14,7 @@
             player2Init = split[1].Split('\n').Skip(1).Select(int.Parse).ToArray();
         }
 
-        public long Part1()
+        public string Part1()
         {
             var player1 = new Queue<int>(player1Init);
             var player2 = new Queue<int>(player2Init);
@@ -39,10 +39,10 @@
             {
                 score += Math.BigMul(winningHand[i], (winningHand.Length - i));
             }
-            return score;
+            return score.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             throw new NotImplementedException();
         }

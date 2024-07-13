@@ -16,11 +16,11 @@ namespace Aoc2020
             maxAdapter = adapters[^1];
         }
 
-        public long Part1()
+        public string Part1()
         {
             var (Ones, Threes) = DoPart1();
             var answer = Math.BigMul(Ones, Threes);
-            return answer;
+            return answer.ToString();
         }
 
         public (int Ones, int Threes) DoPart1()
@@ -36,7 +36,7 @@ namespace Aoc2020
             return (counts.GetValueOrDefault(1), counts.GetValueOrDefault(3));
         }
 
-        public long Part2()
+        public string Part2()
         {
             Func<int, long> countPossibilities = x => throw new NotImplementedException();
             countPossibilities = Memoization.Make((int joltage) =>
@@ -56,7 +56,7 @@ namespace Aoc2020
                 }
                 return possibilities;
             });
-            return countPossibilities(0);
+            return countPossibilities(0).ToString();
         }
     }
 }

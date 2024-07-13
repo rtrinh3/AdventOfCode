@@ -32,7 +32,7 @@ namespace Aoc2020
             return ret;
         }
 
-        public long Part1()
+        public string Part1()
         {
             string[] keys = input.Split('\n');
             int cardPublicKey = int.Parse(keys[0]);
@@ -42,12 +42,12 @@ namespace Aoc2020
             int cardDoorEncryptionKey = Transform(cardPublicKey, doorLoopSize);
             int doorCardEncryptionKey = Transform(doorPublicKey, cardLoopSize);
             Debug.Assert(cardDoorEncryptionKey == doorCardEncryptionKey);
-            return cardDoorEncryptionKey;
+            return cardDoorEncryptionKey.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
-            return MODULUS;
+            return "Merry Christmas!";
         }
     }
 }

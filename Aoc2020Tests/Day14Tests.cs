@@ -8,14 +8,14 @@
         {
             var instance = new Day14(File.ReadAllText("day14-example1.txt"));
             var answer = instance.Part1();
-            Assert.AreEqual(165, answer);
+            Assert.AreEqual("165", answer);
         }
         [TestMethod()]
         public void Part1InputTest()
         {
             var instance = new Day14(File.ReadAllText("day14-input.txt"));
             var answer = instance.Part1();
-            Assert.AreEqual(16003257187056, answer);
+            Assert.AreEqual("16003257187056", answer);
         }
 
         [TestMethod()]
@@ -23,14 +23,14 @@
         {
             var instance = new Day14(File.ReadAllText("day14-example2.txt"));
             var answer = instance.Part2();
-            Assert.AreEqual(208, answer);
+            Assert.AreEqual("208", answer);
         }
         [TestMethod()]
         public void Part2InputTest()
         {
             var instance = new Day14(File.ReadAllText("day14-input.txt"));
             var answer = instance.Part2();
-            Assert.AreEqual(3219837697833, answer);
+            Assert.AreEqual("3219837697833", answer);
         }
     }
 }

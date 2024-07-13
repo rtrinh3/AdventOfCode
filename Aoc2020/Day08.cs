@@ -14,14 +14,14 @@ namespace Aoc2020
             .Select(line => line.Split(' '))
             .Select(line => new Instruction(line[0], int.Parse(line[1]))).ToArray();
 
-        public long Part1()
+        public string Part1()
         {
             var result = Interpret(Program);
             Debug.Assert(!result.Terminated);
-            return result.Accumulator;
+            return result.Accumulator.ToString();
         }
 
-        public long Part2()
+        public string Part2()
         {
             Instruction[] programCopy = [..Program];
             for (int i = 0; i < programCopy.Length; i++)
@@ -32,7 +32,7 @@ namespace Aoc2020
                     var result = Interpret(programCopy);
                     if (result.Terminated)
                     {
-                        return result.Accumulator;
+                        return result.Accumulator.ToString();
                     }
                     programCopy[i] = Program[i];
                 }
@@ -42,7 +42,7 @@ namespace Aoc2020
                     var result = Interpret(programCopy);
                     if (result.Terminated)
                     {
-                        return result.Accumulator;
+                        return result.Accumulator.ToString();
                     }
                     programCopy[i] = Program[i];
                 }
