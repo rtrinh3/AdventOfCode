@@ -25,16 +25,14 @@
         {
             var instance = new Day21(File.ReadAllText("day21-example.txt"));
             var answer = instance.Part2();
-            //Assert.AreEqual(54755174472007, answer);
-            Assert.Inconclusive(answer.ToString());
+            Assert.AreEqual("mxmxvkd,sqjhc,fvjkl".GetHashCode(), answer); // TODO Change Aoc2020.IAocDay to use strings
         }
         [TestMethod()]
         public void Day21_Part2_InputTest()
         {
             var instance = new Day21(File.ReadAllText("day21-input.txt"));
             var answer = instance.Part2();
-            //Assert.AreEqual(54755174472007, answer);
-            Assert.Inconclusive(answer.ToString());
+            Assert.AreEqual("lmzg,cxk,bsqh,bdvmx,cpbzbx,drbm,cfnt,kqprv".GetHashCode(), answer); // TODO Change Aoc2020.IAocDay to use strings
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AocCommon;
+using System.Diagnostics;
 
 namespace Aoc2020
 {
@@ -58,7 +59,33 @@ namespace Aoc2020
 
         public long Part2()
         {
-            throw new NotImplementedException();
+            IEnumerable<IEnumerable<(string Ingredient, string Allergen)>> AssignAllergens(EquatableSet<string> ingredients, EquatableSet<string> allergens)
+            {
+                if (allergens.Count == 0)
+                {
+                    return [[]];
+                }
+                IEnumerable<IEnumerable<(string Ingredient, string Allergen)>> results = [];
+                string allergen = allergens.First();
+                var nextAllergens = allergens.Remove(allergen);
+                foreach (var ingredient in ingredients)
+                {
+                    if (IsIngredientCompatibleWithAllergen(ingredient, allergen))
+                    {
+                        var nextIngredients = ingredients.Remove(ingredient);
+                        var nextAssignments = AssignAllergens(nextIngredients, nextAllergens);
+                        results = results.Concat(nextAssignments.Select(n => n.Prepend((ingredient, allergen))));
+                    }
+                }
+                return results;
+            }
+
+            var assignments = AssignAllergens(new(AllIngredients), new(AllAllergens)).ToList();
+            Debug.Assert(assignments.Count == 1);
+
+            var answer = string.Join(',', assignments[0].OrderBy(x => x.Allergen).Select(x => x.Ingredient));
+            Console.WriteLine(answer);
+            return answer.GetHashCode();
         }
     }
 }
