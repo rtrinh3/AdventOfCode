@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
 
 namespace Aoc2020
@@ -10,12 +9,47 @@ namespace Aoc2020
     {
         public string Part1()
         {
+            int[] labels = input.Trim().Select(c => c - '0').ToArray();
+            var answerStart = DoPuzzle(labels, 100);
+
+            StringBuilder answerBuilder = new();
+            Node answerCurrent = answerStart.Next!;
+            while (answerCurrent != answerStart)
+            {
+                answerBuilder.Append(answerCurrent.Value);
+                answerCurrent = answerCurrent.Next!;
+            }
+
+            string answer = answerBuilder.ToString();
+            return answer;
+        }
+
+        public string Part2()
+        {
+            List<int> labels = input.Trim().Select(c => c - '0').ToList();
+            int initMax = labels.Max();
+            labels.AddRange(Enumerable.Range(initMax + 1, 1_000_000 - initMax));
+            Debug.Assert(labels.Count == 1_000_000);
+            Debug.Assert(labels.Max() == 1_000_000);
+            Debug.Assert(labels.Last() == 1_000_000);
+
+            var node1 = DoPuzzle(labels.ToArray(), 10_000_000);
+            var answer = Math.BigMul(node1.Next.Value, node1.Next.Next.Value);
+            return answer.ToString();
+        }
+
+        private class Node
+        {
+            public int Value;
+            public Node? Next;
+        }
+
+        private static Node DoPuzzle(int[] labels, int iterations)
+        {
             Node seed = new() { Value = 0 };
             seed.Next = seed;
-            int[] labels = input.Trim().Select(c => c - '0').ToArray();
             int maxLabel = labels.Max();
             Node[] nodes = new Node[labels.Length + 1];
-            nodes[0] = seed;
             Node previous = seed;
             foreach (int label in labels)
             {
@@ -28,7 +62,7 @@ namespace Aoc2020
             Debug.Assert(nodes.Skip(1).All(x => x != null));
 
             Node current = nodes[labels[0]];
-            for (int move = 0; move < 100; move++)
+            for (int move = 0; move < iterations; move++)
             {
                 // The crab picks up the three cups that are immediately clockwise of the current cup.
                 // They are removed from the circle; cup spacing is adjusted as necessary to maintain the circle.
@@ -46,7 +80,7 @@ namespace Aoc2020
                 // If at any point in this process the value goes below the lowest value on any cup's label,
                 // it wraps around to the highest value on any cup's label instead.
                 int destination = current.Value;
-                while (destination == current.Value || pickups.Contains(destination))
+                do
                 {
                     destination--;
                     if (destination < 1)
@@ -54,6 +88,7 @@ namespace Aoc2020
                         destination = maxLabel;
                     }
                 }
+                while (pickups.Contains(destination));
                 // The crab places the cups it just picked up so that they are immediately clockwise of the destination cup.
                 // They keep the same order as when they were picked up.
                 Node insertAfter = nodes[destination];
@@ -64,28 +99,7 @@ namespace Aoc2020
                 current = current.Next!;
             }
 
-            StringBuilder answerBuilder = new();
-            Node answerStart = nodes[1];
-            Node answerCurrent = answerStart.Next!;
-            while (answerCurrent != answerStart)
-            {
-                answerBuilder.Append(answerCurrent.Value);
-                answerCurrent = answerCurrent.Next!;
-            }
-
-            string answer = answerBuilder.ToString();
-            return answer;
-        }
-
-        private class Node
-        {
-            public int Value;
-            public Node? Next;
-        }
-
-        public string Part2()
-        {
-            throw new NotImplementedException();
+            return nodes[1];
         }
     }
 }
