@@ -1,8 +1,6 @@
 ﻿namespace Aoc2022
 {
-    internal interface IAocDay
+    internal interface IAocDay : AocCommon.IAocDay
     {
-        string Part1();
-        string Part2();
     }
 }
