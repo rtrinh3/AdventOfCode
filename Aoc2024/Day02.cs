@@ -12,7 +12,7 @@
             ).ToArray();
         }
 
-        private bool isSafe(IList<int> levels)
+        private static bool IsSafe(IList<int> levels)
         {
             int direction = 0;
             bool monotonic = true;
@@ -51,7 +51,7 @@
             int safe = 0;
             foreach (var report in reports)
             {
-                if (isSafe(report)) safe++;
+                if (IsSafe(report)) safe++;
             }
             return safe.ToString();
         }
@@ -61,7 +61,7 @@
             int safe = 0;
             foreach (var report in reports)
             {
-                if (isSafe(report))
+                if (IsSafe(report))
                 {
                     safe++;
                     continue;
@@ -69,7 +69,7 @@
                 for (int i = 0; i < report.Length; i++)
                 {
                     var dampened = report.Where((item, index) => index != i).ToList();
-                    if (isSafe(dampened))
+                    if (IsSafe(dampened))
                     {
                         safe++;
                         break;
