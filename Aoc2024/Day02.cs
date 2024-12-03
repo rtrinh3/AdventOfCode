@@ -2,7 +2,7 @@
 {
     // https://adventofcode.com/2024/day/2
     // --- Day 2: Red-Nosed Reports ---
-    public class Day02: AocCommon.IAocDay
+    public class Day02 : AocCommon.IAocDay
     {
         private readonly int[][] reports;
         public Day02(string input)
@@ -25,7 +25,7 @@
                 }
                 else
                 {
-                    if (direction != change)
+                    if (Math.Sign(direction) != Math.Sign(change))
                     {
                         monotonic = false;
                         break;

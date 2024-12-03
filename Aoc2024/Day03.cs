@@ -8,7 +8,7 @@ namespace Aoc2024
     {
         public string Part1()
         {
-            var instructions = Regex.Matches(input, @"mul\((\d+),(\d+)\)");
+            var instructions = Regex.Matches(input, @"mul\((\d\d?\d?),(\d\d?\d?)\)");
 
             long acc = 0;
             foreach (Match m in instructions)
@@ -20,7 +20,8 @@ namespace Aoc2024
 
         public string Part2()
         {
-            var instructions = Regex.Matches(input, @"don't|do|mul\((\d+),(\d+)\)");
+            // The order of the alternatives of the | operator matters. Since "do" is a prefix of "don't", we have to put "don't" before "do"
+            var instructions = Regex.Matches(input, @"don't|do|mul\((\d\d?\d?),(\d\d?\d?)\)");
 
             long acc = 0;
             bool enabled = true;

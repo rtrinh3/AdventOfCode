@@ -8,7 +8,7 @@
         [TestMethod()]
         public void Part1ExampleTest()
         {
-            var instance = new Day03(File.ReadAllText("day03-example.txt"));
+            var instance = new Day03(File.ReadAllText("day03-example1.txt"));
             var answer = instance.Part1();
             Assert.AreEqual("161", answer);
         }
@@ -23,7 +23,7 @@
         [TestMethod()]
         public void Part2ExampleTest()
         {
-            var instance = new Day03(File.ReadAllText("day03-example.txt"));
+            var instance = new Day03(File.ReadAllText("day03-example2.txt"));
             var answer = instance.Part2();
             Assert.AreEqual("48", answer);
         }
