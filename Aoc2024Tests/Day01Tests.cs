@@ -1,6 +1,6 @@
 ﻿using Aoc2024;
 
-namespace Aoc2014.Tests
+namespace Aoc2024.Tests
 {
     // https://adventofcode.com/2024/day/1
     // Day 1: Historian Hysteria
