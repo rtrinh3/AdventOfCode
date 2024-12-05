@@ -81,52 +81,14 @@ namespace Aoc2024
                         relevantRules[kvp.Key] = kvp.Value.Where(v => print.Contains(v)).ToList();
                     }
                 }
-                var topologicalSort = TopologicalSort(relevantRules.Keys, n => relevantRules.GetValueOrDefault(n, []));
-                var correct = print.OrderBy(page => topologicalSort.IndexOf(page)).ToList();
+                var correct = GraphAlgos.TopologicalSort(relevantRules.Keys, n => relevantRules.GetValueOrDefault(n, []));
+                Debug.Assert(correct.Count == print.Length);
                 Debug.Assert(correct.Count % 2 == 1);
                 var middle = correct[correct.Count / 2];
                 sum += middle;
             }
 
             return sum.ToString();
-        }
-
-        // https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
-        private static List<T> TopologicalSort<T>(IEnumerable<T> nodes, Func<T, IEnumerable<T>> children)
-        {
-            HashSet<T> unmarked = nodes.ToHashSet();
-            HashSet<T> permanentMark = new();
-            HashSet<T> temporaryMark = new();
-            List<T> result = new();
-
-            void Visit(T n)
-            {
-                if (permanentMark.Contains(n))
-                {
-                    return;
-                }
-                if (temporaryMark.Contains(n))
-                {
-                    throw new Exception("Graph has cycle");
-                }
-                temporaryMark.Add(n);
-                foreach (var m in children(n))
-                {
-                    Visit(m);
-                }
-                temporaryMark.Remove(n);
-                unmarked.Remove(n);
-                permanentMark.Add(n);
-                result.Add(n);
-            }
-
-            while (unmarked.Any())
-            {
-                var pick = unmarked.First();
-                Visit(pick);
-            }
-            result.Reverse();
-            return result;
         }
     }
 }

@@ -137,5 +137,42 @@ namespace AocCommon
             }
             return (-1, Enumerable.Empty<T>());
         }
+
+        // https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
+        public static List<T> TopologicalSort<T>(IEnumerable<T> nodes, Func<T, IEnumerable<T>> getChildren)
+        {
+            HashSet<T> unmarked = nodes.ToHashSet();
+            HashSet<T> permanentMark = new();
+            HashSet<T> temporaryMark = new();
+            List<T> result = new();
+
+            void Visit(T n)
+            {
+                if (permanentMark.Contains(n))
+                {
+                    return;
+                }
+                if (temporaryMark.Contains(n))
+                {
+                    throw new Exception("Graph has cycle");
+                }
+                temporaryMark.Add(n);
+                foreach (var m in getChildren(n))
+                {
+                    Visit(m);
+                }
+                unmarked.Remove(n);
+                permanentMark.Add(n);
+                result.Add(n);
+            }
+
+            while (unmarked.Any())
+            {
+                var pick = unmarked.First();
+                Visit(pick);
+            }
+            result.Reverse();
+            return result;
+        }
     }
 }
