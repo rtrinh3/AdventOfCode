@@ -7,9 +7,11 @@ namespace Aoc2024
     // --- Day 6: Guard Gallivant ---
     public class Day06(string input) : IAocDay
     {
-        private const char OUTSIDE = '\0';        
+        private const char OUTSIDE = '\0';
 
-        private static (HashSet<(VectorRC Pos, VectorRC Dir)> Path, bool IsLoop) Simulate(string maze)
+        private readonly string[] inputLines = input.TrimEnd().ReplaceLineEndings("\n").Split('\n');
+
+        private static (HashSet<(VectorRC Pos, VectorRC Dir)> Path, bool IsLoop) Simulate(string[] maze)
         {
             Grid grid = new(maze, OUTSIDE);
             var startPos = grid.Iterate().Where(x => x.Value == '^').Select(x => x.Position).Single();
@@ -32,7 +34,7 @@ namespace Aoc2024
                     break;
                 }
                 VectorRC nextDir = dir;
-                while (true)
+                for (int i = 0; i < 4; i++)
                 {
                     VectorRC nextPos = pos + nextDir;
                     char nextTile = grid.Get(nextPos);
@@ -42,6 +44,10 @@ namespace Aoc2024
                     }
                     nextDir = nextDir.RotatedRight();
                 }
+                if (grid.Get(pos + nextDir) == '#')
+                {
+                    throw new Exception("Trapped!");
+                }
                 pos = pos + nextDir;
                 dir = nextDir;
             }
@@ -50,7 +56,7 @@ namespace Aoc2024
 
         public string Part1()
         {
-            var result = Simulate(input);
+            var result = Simulate(inputLines);
             Debug.Assert(!result.IsLoop);
             var visited = result.Path.Select(x => x.Pos).Distinct().Count();
             return visited.ToString();
@@ -58,16 +64,16 @@ namespace Aoc2024
 
         public string Part2()
         {
+            Grid initialGrid = new(inputLines, OUTSIDE);
+            var startPos = initialGrid.Iterate().Where(x => x.Value == '^').Select(x => x.Position).Single();
+            var unobstructedPath = Simulate(inputLines).Path.Select(x => x.Pos).Where(x => x != startPos).Distinct().ToList();
             long obstructions = 0;
-            Parallel.For(0, input.Length, i =>
+            Parallel.ForEach(unobstructedPath, step =>
             {
-                if (input[i] != '.')
-                {
-                    return;
-                }
-                char[] newMazeBuffer = input.ToCharArray();
-                newMazeBuffer[i] = '#';
-                string newMaze = new string(newMazeBuffer);
+                string[] newMaze = initialGrid.Data.ToArray();
+                char[] newRowBuffer = newMaze[step.Row].ToCharArray();
+                newRowBuffer[step.Col] = '#';
+                newMaze[step.Row] = new string(newRowBuffer);
                 var result = Simulate(newMaze);
                 if (result.IsLoop)
                 {
