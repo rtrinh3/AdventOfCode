@@ -25,16 +25,14 @@
         {
             var instance = new Day06(File.ReadAllText("day06-example.txt"));
             var answer = instance.Part2();
-            //Assert.AreEqual("5329", answer);
-            Assert.Inconclusive(answer);
+            Assert.AreEqual("6", answer);
         }
-        [TestMethod()]
+        [TestMethod(), Timeout(60_000)]
         public void Part2InputTest()
         {
             var instance = new Day06(File.ReadAllText("day06-input.txt"));
             var answer = instance.Part2();
-            //Assert.AreEqual("5329", answer);
-            Assert.Inconclusive(answer);
+            Assert.AreEqual("1663", answer);
         }
     }
 }
