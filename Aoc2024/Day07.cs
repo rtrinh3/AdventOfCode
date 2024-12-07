@@ -19,11 +19,12 @@ namespace Aoc2024
             }
         }
 
-        public string Part1()
+        private long DoPuzzle(Func<long, long, long>[] operations)
         {
             long total = 0;
-            foreach (var (target, operands) in equations)
+            Parallel.ForEach(equations, line =>
             {
+                var (target, operands) = line;
                 bool matchTarget(long[] stack)
                 {
                     if (stack.Length == 0)
@@ -35,44 +36,67 @@ namespace Aoc2024
                         return target == stack[0];
                     }
                     var tail = stack.AsSpan()[0..^2];
-                    return matchTarget([.. tail, stack[^1] + stack[^2]]) || matchTarget([.. tail, stack[^1] * stack[^2]]);
+                    foreach (var op in operations)
+                    {
+                        if (matchTarget([.. tail, op(stack[^1], stack[^2])]))
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
                 }
                 var initialStack = operands.Reverse().ToArray();
                 bool isMatch = matchTarget(initialStack);
                 if (isMatch)
                 {
-                    total += target;
+                    Interlocked.Add(ref total, target);
                 }
-            }
+            });
+            return total;
+        }
+
+        public string Part1()
+        {
+            long add(long a, long b) => a + b;
+            long mul(long a, long b) => a * b;
+            var total = DoPuzzle([add, mul]);
             return total.ToString();
         }
 
         public string Part2()
         {
-            long total = 0;
-            foreach (var (target, operands) in equations)
+            long add(long a, long b) => a + b;
+            long mul(long a, long b) => a * b;
+            long concat(long a, long b)
             {
-                bool matchTarget(long[] stack)
-                {
-                    if (stack.Length == 0)
-                    {
-                        throw new Exception("Empty stack!");
-                    }
-                    if (stack.Length == 1)
-                    {
-                        return target == stack[0];
-                    }
-                    var tail = stack.AsSpan()[0..^2];
-                    return matchTarget([.. tail, stack[^1] + stack[^2]]) || matchTarget([.. tail, stack[^1] * stack[^2]]) || matchTarget([.. tail, long.Parse(stack[^1].ToString() + stack[^2].ToString())]);
-                }
-                var initialStack = operands.Reverse().ToArray();
-                bool isMatch = matchTarget(initialStack);
-                if (isMatch)
-                {
-                    total += target;
-                }
+                var lengthB = Log10(b);
+                var aa = a * Pow10(Math.Max(1, lengthB));
+                var answer = aa + b;
+                return answer;
             }
+            var total = DoPuzzle([add, mul, concat]);
             return total.ToString();
+        }
+
+        private static int Log10(long n)
+        {
+            int answer = 0;
+            while (n > 0)
+            {
+                n /= 10;
+                answer++;
+            }
+            return answer;
+        }
+
+        private static long Pow10(int n)
+        {
+            long answer = 1;
+            for (int i = 0; i < n; i++)
+            {
+                answer *= 10;
+            }
+            return answer;
         }
     }
 }
