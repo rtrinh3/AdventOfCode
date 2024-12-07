@@ -35,6 +35,10 @@ namespace Aoc2024
                     {
                         return target == stack[0];
                     }
+                    if (stack[^1] > target)
+                    {
+                        return false;
+                    }
                     var tail = stack.AsSpan()[0..^2];
                     foreach (var op in operations)
                     {
