@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Numerics;
 using AocCommon;
 
 namespace Aoc2024
@@ -58,7 +57,7 @@ namespace Aoc2024
             }
 
             // Checksum
-            BigInteger checksum = BigInteger.Zero;
+            long checksum = 0;
             for (int i = 0; i < map.Count && map[i] != EMPTY; i++)
             {
                 checksum += i * map[i];
@@ -67,53 +66,52 @@ namespace Aoc2024
             return checksum.ToString();
         }
 
-        private record class Part2Space(int Start, int End)
+        private record class Part2Span(int Start, int Length)
         {
-            public int Length => End - Start + 1;
+            public int End => Start + Length; // End excluded            
         }
 
         public string Part2()
         {
             string trimmedInput = input.Trim();
             // Build map
-            SortedDictionary<int, Part2Space> spaceStarts = new();
-            SortedDictionary<int, Part2Space> spaceEnds = new();
-            Part2Space MergeSpaces(Part2Space left, Part2Space right)
+            SortedDictionary<int, Part2Span> spaceStarts = new();
+            SortedDictionary<int, Part2Span> spaceEnds = new();
+            Part2Span MergeSpaces(Part2Span left, Part2Span right)
             {
-                Debug.Assert(left.End + 1 == right.Start);
+                Debug.Assert(left.End == right.Start);
                 Debug.Assert(spaceStarts[left.Start] == left);
                 Debug.Assert(spaceEnds[left.End] == left);
                 Debug.Assert(spaceStarts[right.Start] == right);
                 Debug.Assert(spaceEnds[right.End] == right);
-                
-                var newSpace = new Part2Space(left.Start, right.End);
+
+                var newSpace = new Part2Span(left.Start, left.Length + right.Length);
                 spaceStarts[left.Start] = newSpace;
                 spaceStarts.Remove(right.Start);
                 spaceEnds.Remove(left.End);
                 spaceEnds[right.End] = newSpace;
-                
+
                 return newSpace;
             }
-            void AddSpace(int start, int end)
+            void AddSpace(int start, int length)
             {
-                if (end < start)
+                if (length <= 0)
                 {
                     return;
                 }
-                Part2Space newSpace = new(start, end);
+                Part2Span newSpace = new(start, length);
                 spaceStarts[start] = newSpace;
-                spaceEnds[end] = newSpace;
-                if (spaceEnds.TryGetValue(start - 1, out var left))
+                spaceEnds[start + length] = newSpace;
+                if (spaceEnds.TryGetValue(start, out var left))
                 {
                     newSpace = MergeSpaces(left, newSpace);
                 }
-                if (spaceStarts.TryGetValue(end + 1, out var right))
+                if (spaceStarts.TryGetValue(start + length, out var right))
                 {
                     newSpace = MergeSpaces(newSpace, right);
                 }
             }
-            List<int> fileStarts = new();
-            List<int> fileLengths = new();
+            List<Part2Span> files = new();
             int mapIndex = 0;
             for (int i = 0; i < trimmedInput.Length; i++)
             {
@@ -122,47 +120,41 @@ namespace Aoc2024
                 if (i % 2 == 0)
                 {
                     // File
-                    fileStarts.Add(mapIndex);
-                    fileLengths.Add(length);
+                    files.Add(new(mapIndex, length));
                 }
                 else
                 {
                     // Space
-                    AddSpace(mapIndex, mapIndex + length - 1);
+                    AddSpace(mapIndex, length);
                 }
                 mapIndex += length;
             }
 
             // Defragment
-            //throw new NotImplementedException("TODO");
-            for (int file = fileStarts.Count - 1; file >= 0; file--)
+            for (int file = files.Count - 1; file >= 0; file--)
             {
                 // spaceStarts is sorted by key, ie start index
-                var space = spaceStarts.FirstOrDefault(kvp => kvp.Value.Length >= fileLengths[file]).Value;
-                if (space == null)
+                var space = spaceStarts.FirstOrDefault(kvp => kvp.Value.Length >= files[file].Length).Value;
+                if (space == null || space.Start > files[file].Start)
                 {
                     continue;
                 }
-                if (space.Start > fileStarts[file])
-                {
-                    continue;
-                }
-                AddSpace(fileStarts[file], fileStarts[file] + fileLengths[file] - 1);
-                fileStarts[file] = space.Start;
+                AddSpace(files[file].Start, files[file].Length);
+                files[file] = files[file] with { Start = space.Start };
                 spaceStarts.Remove(space.Start);
                 spaceEnds.Remove(space.End);
-                var remainingSpace = space.Length - fileLengths[file];
+                var remainingSpace = space.Length - files[file].Length;
                 if (remainingSpace > 0)
                 {
-                    AddSpace(space.Start + fileLengths[file], space.End);
+                    AddSpace(space.Start + files[file].Length, remainingSpace);
                 }
             }
 
             // Checksum
-            BigInteger checksum = BigInteger.Zero;
-            for (int file = 0; file < fileStarts.Count; file++)
+            long checksum = 0;
+            for (int file = 0; file < files.Count; file++)
             {
-                for (int i = fileStarts[file]; i < fileStarts[file] + fileLengths[file]; i++)
+                for (int i = files[file].Start; i < files[file].End; i++)
                 {
                     checksum += i * file;
                 }
