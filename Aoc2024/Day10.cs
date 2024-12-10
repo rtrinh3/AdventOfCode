@@ -1,4 +1,5 @@
 ﻿using AocCommon;
+using System.Linq;
 
 namespace Aoc2024
 {
@@ -7,16 +8,16 @@ namespace Aoc2024
         private const char OUTSIDE = '\0';
         private readonly Grid map = new(input, OUTSIDE);
 
-        public string Part1()
+        private Dictionary<VectorRC, List<VectorRC>> FindTrails()
         {
-            Dictionary<VectorRC, int> trailheadScores = new();
+            Dictionary<VectorRC, List<VectorRC>> trails = new();
             foreach (var (Position, Value) in map.Iterate())
             {
                 if (Value != '0')
                 {
                     continue;
                 }
-                HashSet<VectorRC> summits = new();
+                List<VectorRC> summits = new();
                 void Visit(VectorRC step)
                 {
                     var current = map.Get(step);
@@ -34,42 +35,22 @@ namespace Aoc2024
                     }
                 }
                 Visit(Position);
-                trailheadScores[Position] = summits.Count;
+                trails[Position] = summits;
             }
-            var answer = trailheadScores.Values.Sum();
+            return trails;
+        }
+
+        public string Part1()
+        {
+            var trails = FindTrails();
+            var answer = trails.Values.Select(l => l.Distinct().Count()).Sum();
             return answer.ToString();
         }
 
         public string Part2()
         {
-            Dictionary<VectorRC, int> trailheadRatings = new();
-            foreach (var (Position, Value) in map.Iterate())
-            {
-                if (Value != '0')
-                {
-                    continue;
-                }
-                int trails = 0;
-                void Visit(VectorRC step)
-                {
-                    var current = map.Get(step);
-                    if (current == '9')
-                    {
-                        trails++;
-                        return;
-                    }
-                    foreach (var next in step.NextFour())
-                    {
-                        if (map.Get(next) == current + 1)
-                        {
-                            Visit(next);
-                        }
-                    }
-                }
-                Visit(Position);
-                trailheadRatings[Position] = trails;
-            }
-            var answer = trailheadRatings.Values.Sum();
+            var trails = FindTrails();
+            var answer = trails.Values.Select(l => l.Count()).Sum();
             return answer.ToString();
         }
     }
