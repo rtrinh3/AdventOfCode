@@ -20,21 +20,12 @@
             Assert.AreEqual("198089", answer);
         }
 
-        //[TestMethod()]
-        //public void Part2ExampleTest()
-        //{
-        //    var instance = new Day11(File.ReadAllText("day11-example.txt"));
-        //    var answer = instance.Part2();
-        //    //Assert.AreEqual("430", answer);
-        //    Assert.Inconclusive(answer);
-        //}
         [TestMethod()]
         public void Part2InputTest()
         {
             var instance = new Day11(File.ReadAllText("day11-input.txt"));
             var answer = instance.Part2();
-            //Assert.AreEqual("430", answer);
-            Assert.Inconclusive(answer);
+            Assert.AreEqual("236302670835517", answer);
         }
     }
 }

@@ -6,53 +6,59 @@ namespace Aoc2024
     // --- Day 11: Plutonian Pebbles ---
     public class Day11(string input) : IAocDay
     {
-        private static string NormalizeStone(string stone)
+        private readonly long[] initialStones = input.TrimEnd().Split(' ').Select(long.Parse).ToArray();
+        private readonly Dictionary<(long, int), long> memoSimulateStone = new();
+
+        private long SimulateStone(long number, int iterations)
         {
-            stone = stone.TrimStart('0');
-            if (stone == "")
+            if (memoSimulateStone.TryGetValue((number, iterations), out var answer))
             {
-                return "0";
+                return answer;
+            }
+            if (iterations == 0)
+            {
+                return memoSimulateStone[(number, iterations)] = 1;
+            }
+            if (number == 0)
+            {
+                return memoSimulateStone[(number, iterations)] = SimulateStone(1, iterations - 1);
+            }
+            string digits = number.ToString();
+            if (digits.Length % 2 == 0)
+            {
+                var left = long.Parse(digits.Substring(0, digits.Length / 2));
+                var leftStones = SimulateStone(left, iterations - 1);
+                var right = long.Parse(digits.Substring(digits.Length / 2, digits.Length / 2));
+                var rightStones = SimulateStone(right, iterations - 1);
+                return memoSimulateStone[(number, iterations)] = leftStones + rightStones;
             }
             else
             {
-                return stone;
+                return memoSimulateStone[(number, iterations)] = SimulateStone(number * 2024, iterations - 1);
             }
+        }
+
+        private long DoPuzzle(int iterations)
+        {
+            long answer = 0;
+            foreach (var stone in initialStones)
+            {
+                var partial = SimulateStone(stone, iterations);
+                answer += partial;
+            }
+            return answer;
         }
 
         public string Part1()
         {
-            List<string> stones = input.TrimEnd().Split(' ').ToList();
-            for (int i = 0; i < 25; i++)
-            {
-                List<string> nextStones = new();
-                foreach (var stone in stones)
-                {
-                    if (stone == "0")
-                    {
-                        nextStones.Add("1");
-                    }
-                    else if (stone.Length % 2 == 0)
-                    {
-                        string left = NormalizeStone(stone.Substring(0, stone.Length / 2));
-                        nextStones.Add(left);
-                        string right = NormalizeStone(stone.Substring(stone.Length / 2, stone.Length / 2));
-                        nextStones.Add(right);
-                    }
-                    else
-                    {
-                        var value = long.Parse(stone);
-                        var nextValue = value * 2024;
-                        nextStones.Add(nextValue.ToString());
-                    }
-                }
-                stones = nextStones;
-            }
-            return stones.Count.ToString();
+            long answer = DoPuzzle(25);
+            return answer.ToString();
         }
 
         public string Part2()
         {
-            throw new NotImplementedException();
+            long answer = DoPuzzle(75);
+            return answer.ToString();
         }
     }
 }
