@@ -34,19 +34,34 @@
             Assert.AreEqual("1533644", answer);
         }
 
-        //[TestMethod()]
-        //public void Part2ExampleTest()
-        //{
-        //    var instance = new Day12(File.ReadAllText("day12-example.txt"));
-        //    var answer = instance.Part2();
-        //    Assert.AreEqual("81", answer);
-        //}
-        //[TestMethod()]
-        //public void Part2InputTest()
-        //{
-        //    var instance = new Day12(File.ReadAllText("day12-input.txt"));
-        //    var answer = instance.Part2();
-        //    Assert.AreEqual("928", answer);
-        //}
+        [TestMethod()]
+        public void Part2Example4Test()
+        {
+            var instance = new Day12(File.ReadAllText("day12-example4.txt"));
+            var answer = instance.Part2();
+            Assert.AreEqual("236", answer);
+        }
+        [TestMethod()]
+        public void Part2Example5Test()
+        {
+            var instance = new Day12(File.ReadAllText("day12-example5.txt"));
+            var answer = instance.Part2();
+            Assert.AreEqual("368", answer);
+        }
+        [TestMethod()]
+        public void Part2Example3Test()
+        {
+            var instance = new Day12(File.ReadAllText("day12-example3.txt"));
+            var answer = instance.Part2();
+            Assert.AreEqual("1206", answer);
+        }
+        [TestMethod()]
+        public void Part2InputTest()
+        {
+            var instance = new Day12(File.ReadAllText("day12-input.txt"));
+            var answer = instance.Part2();
+            //Assert.AreEqual("928", answer);
+            Assert.Inconclusive(answer);
+        }
     }
 }

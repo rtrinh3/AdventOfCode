@@ -19,26 +19,29 @@
             return nodes[x].parent;
         }
         public bool AreMerged(T x, T y) => object.Equals(Find(x), Find(y));
-        public void Union(T x, T y)
+        public (bool NewlyUnited, T NewRoot) Union(T x, T y)
         {
             x = Find(x);
             y = Find(y);
             if (object.Equals(x, y))
             {
-                return;
+                return (false, x);
             }
             if (nodes[x].rank > nodes[y].rank)
             {
                 nodes[y] = nodes[y] with { parent = x };
+                return (true, x);
             }
             else if (nodes[x].rank < nodes[y].rank)
             {
                 nodes[x] = nodes[x] with { parent = y };
+                return (true, y);
             }
             else
             {
                 nodes[y] = nodes[y] with { parent = x };
                 nodes[x] = nodes[x] with { rank = nodes[x].rank + 1 };
+                return (true, x);
             }
         }
     }
