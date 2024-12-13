@@ -1,59 +1,80 @@
 ﻿using AocCommon;
-using MathNet.Numerics.LinearAlgebra;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace Aoc2024
 {
     // https://adventofcode.com/2024/day/13
     // --- Day 13: Claw Contraption ---
-    public class Day13(string input) : IAocDay
+    public class Day13 : IAocDay
     {
-        public string Part1()
+        private readonly List<long[]> machines;
+        public Day13(string input)
         {
+            machines = new();
             var paragraphs = input.TrimEnd().ReplaceLineEndings("\n").Split("\n\n");
-            double counter = 0;
             foreach (var p in paragraphs)
             {
-                var m = Regex.Match(p, @"^Button A: X\+(\d+), Y\+(\d+)\nButton B: X\+(\d+), Y\+(\d+)\nPrize: X=(\d+), Y=(\d+)$");
-                double[] ba = [double.Parse(m.Groups[1].ValueSpan), double.Parse(m.Groups[2].ValueSpan)];
-                double[] bb = [double.Parse(m.Groups[3].ValueSpan), double.Parse(m.Groups[4].ValueSpan)];
-                double tx = double.Parse(m.Groups[5].ValueSpan);
-                double ty = double.Parse(m.Groups[6].ValueSpan);
-                Matrix<double> eqs = Matrix<double>.Build.DenseOfColumnArrays(ba, bb);
-                Vector<double> ts = Vector<double>.Build.Dense([tx, ty]);
-                var solve = eqs.Solve(ts);
-                var round = solve.Select(x => Math.Round(x, 3)).ToList();
-                if (round.All(x => x != 0 && x % 1 == 0))
-                {
-                    counter += round[0] * 3 + round[1] * 1;
-                }
+                var matches = Regex.Matches(p, @"(\d+)");
+                Debug.Assert(matches.Count == 6);
+                var numbers = matches.Select(g => long.Parse(g.ValueSpan)).ToArray();
+                machines.Add(numbers);
             }
+        }
 
-            return counter.ToString();
+        private static long DoPuzzle(IEnumerable<long[]> machines)
+        {
+            long total = 0;
+            foreach (var machine in machines)
+            {
+                Debug.Assert(machine.Length == 6);
+                var xa = machine[0];
+                var ya = machine[1];
+                var xb = machine[2];
+                var yb = machine[3];
+                var xc = machine[4];
+                var yc = machine[5];
+                // https://en.wikipedia.org/wiki/Cramer%27s_rule#Explicit_formulas_for_small_systems
+                var determinant = xa * yb - xb * ya;
+                if (determinant == 0)
+                {
+                    throw new Exception("TODO handle collinear case");
+                }
+                var aNumerator = xc * yb - xb * yc;
+                var a = Math.DivRem(aNumerator, determinant);
+                if (a.Remainder != 0)
+                {
+                    continue;
+                }
+                var bNumerator = xa * yc - xc * ya;
+                var b = Math.DivRem(bNumerator, determinant);
+                if (b.Remainder != 0)
+                {
+                    continue;
+                }
+                long tokens = 3 * a.Quotient + b.Quotient;
+                total += tokens;
+            }
+            return total;
+        }
+
+        public string Part1()
+        {
+            var answer = DoPuzzle(machines);
+            return answer.ToString();
         }
 
         public string Part2()
         {
-            var paragraphs = input.TrimEnd().ReplaceLineEndings("\n").Split("\n\n");
-            double counter = 0;
-            foreach (var p in paragraphs)
+            var actualMachines = machines.Select(m =>
             {
-                var m = Regex.Match(p, @"^Button A: X\+(\d+), Y\+(\d+)\nButton B: X\+(\d+), Y\+(\d+)\nPrize: X=(\d+), Y=(\d+)$");
-                double[] ba = [double.Parse(m.Groups[1].ValueSpan), double.Parse(m.Groups[2].ValueSpan)];
-                double[] bb = [double.Parse(m.Groups[3].ValueSpan), double.Parse(m.Groups[4].ValueSpan)];
-                double tx = double.Parse(m.Groups[5].ValueSpan) + 10000000000000;
-                double ty = double.Parse(m.Groups[6].ValueSpan) + 10000000000000;
-                Matrix<double> eqs = Matrix<double>.Build.DenseOfColumnArrays(ba, bb);
-                Vector<double> ts = Vector<double>.Build.Dense([tx, ty]);
-                var solve = eqs.Solve(ts);
-                var round = solve.Select(x => Math.Round(x, 3)).ToList();
-                if (round.All(x => x != 0 && x % 1 == 0))
-                {
-                    counter += round[0] * 3 + round[1] * 1;
-                }
-            }
-
-            return counter.ToString();
+                var copy = m.ToArray();
+                copy[4] += 10000000000000;
+                copy[5] += 10000000000000;
+                return copy;
+            });
+            var answer = DoPuzzle(actualMachines);
+            return answer.ToString();
         }
     }
 }

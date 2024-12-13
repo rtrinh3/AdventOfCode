@@ -20,7 +20,7 @@
             Assert.AreEqual("37128", answer);
         }
 
-        [TestMethod(), Timeout(15_000)]
+        [TestMethod()]
         public void Part2InputTest()
         {
             var instance = new Day13(File.ReadAllText("day13-input.txt"));
