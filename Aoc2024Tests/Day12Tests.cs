@@ -74,8 +74,7 @@
         {
             var instance = new Day12(File.ReadAllText("day12-input.txt"));
             var answer = instance.Part2();
-            //Assert.AreEqual("928", answer);
-            Assert.Inconclusive(answer);
+            Assert.AreEqual("936718", answer);
         }
     }
 }
