@@ -1,5 +1,7 @@
 ﻿namespace Aoc2024.Tests
 {
+    // https://adventofcode.com/2024/day/10
+    // --- Day 10: Hoof It ---
     [TestClass()]
     public class Day10Tests
     {

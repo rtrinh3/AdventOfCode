@@ -1,6 +1,5 @@
 ﻿using AocCommon;
 using System.Diagnostics;
-using System.Numerics;
 
 namespace Aoc2024
 {
@@ -129,11 +128,7 @@ namespace Aoc2024
                 {
                     Fence fenceI = orientedFence[i];
                     for (int j = i + 1; j < orientedFence.Count; j++)
-                    {
-                        // TODO something with thisFence[i] and thisFence[j]
-                        // sides.Find(thisFence[i]);
-                        // sides.Find(thisFence[j]);
-                                            
+                    {        
                         Fence fenceJ = orientedFence[j];
                         if (fenceI.AreAdjacentAligned(fenceJ))
                         {
@@ -149,8 +144,7 @@ namespace Aoc2024
             return total.ToString();
         }
 
-        // Fence is defined by the two plots separated by the fence.
-        // Order matters. Let's say A is inside and B is outside.
+        // Fence is defined by the two plots separated by the fence. Order matters.
         public class Fence : IEquatable<Fence>
         {
             public VectorRC A { get; init; }
@@ -176,16 +170,6 @@ namespace Aoc2024
                     Debug.Assert(Math.Abs(X.Col - Y.Col) == 1);
                     A = X;
                     B = Y;
-                    // if (X.Col < Y.Col)
-                    // {
-                    //     A = X;
-                    //     B = Y;
-                    // }
-                    // else
-                    // {
-                    //     A = Y;
-                    //     B = X;
-                    // }
                 }
                 else
                 {
@@ -193,16 +177,6 @@ namespace Aoc2024
                     Debug.Assert(Math.Abs(X.Row - Y.Row) == 1);
                     A = X;
                     B = Y;
-                    // if (X.Row < Y.Row)
-                    // {
-                    //     A = X;
-                    //     B = Y;
-                    // }
-                    // else
-                    // {
-                    //     A = Y;
-                    //     B = X;
-                    // }
                 }
             }
 

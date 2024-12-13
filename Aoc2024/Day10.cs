@@ -3,6 +3,8 @@ using System.Linq;
 
 namespace Aoc2024
 {
+    // https://adventofcode.com/2024/day/10
+    // --- Day 10: Hoof It ---
     public class Day10(string input) : IAocDay
     {
         private const char OUTSIDE = '\0';
