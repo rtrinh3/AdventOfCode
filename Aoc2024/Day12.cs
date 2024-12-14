@@ -37,7 +37,7 @@ namespace Aoc2024
                 //var type = map.Get(region); // for debugging
                 // Find number of sides
                 var thisFence = regionData.Fences;
-                UnionFind<Fence> sides = new();
+                UnionFind<Fence> sides = new();                
                 for (int i = 0; i < thisFence.Length; i++)
                 {
                     Fence fenceI = thisFence[i];
@@ -120,35 +120,9 @@ namespace Aoc2024
         // Fence is defined by the two plots separated by the fence.
         private record class Fence(VectorRC Inside, VectorRC Outside)
         {
-            private bool IsHorizontal => Inside.Col == Outside.Col;
-            private bool IsVertical => Inside.Row == Outside.Row;
-
             private bool IsValid()
             {
-                if (Inside == Outside)
-                {
-                    return false;
-                }
-                if (Math.Abs(Inside.Row - Outside.Row) >= 2 || Math.Abs(Inside.Col - Outside.Col) >= 2)
-                {
-                    return false;
-                }
-                if (Math.Abs(Inside.Row - Outside.Row) == 1 && Math.Abs(Inside.Col - Outside.Col) == 1)
-                {
-                    return false;
-                }
-                Debug.Assert(Math.Abs(Inside.Row - Outside.Row) == 0 || Math.Abs(Inside.Col - Outside.Col) == 0);
-                if (Math.Abs(Inside.Row - Outside.Row) == 0)
-                {
-                    Debug.Assert(Math.Abs(Inside.Col - Outside.Col) == 1);
-                    return true;
-                }
-                else
-                {
-                    Debug.Assert(Math.Abs(Inside.Col - Outside.Col) == 0);
-                    Debug.Assert(Math.Abs(Inside.Row - Outside.Row) == 1);
-                    return true;
-                }
+                return (Outside - Inside).ManhattanMetric() == 1;
             }
 
             internal bool IsAdjacentAlignedWith(Fence other)
@@ -159,26 +133,9 @@ namespace Aoc2024
                 }
                 //Debug.Assert(IsValid());
                 //Debug.Assert(other.IsValid());
-                if (IsHorizontal)
-                {
-                    if (!other.IsHorizontal)
-                    {
-                        return false;
-                    }
-                    return Inside.Row == other.Inside.Row && Math.Abs(Inside.Col - other.Inside.Col) == 1 && Outside.Row == other.Outside.Row;
-                }
-                else if (IsVertical)
-                {
-                    if (!other.IsVertical)
-                    {
-                        return false;
-                    }
-                    return Inside.Col == other.Inside.Col && Math.Abs(Inside.Row - other.Inside.Row) == 1 && Outside.Col == other.Outside.Col;
-                }
-                else
-                {
-                    throw new Exception("What orientation?");
-                }
+                var thisOrientation = Outside - Inside;
+                var otherOrientation = other.Outside - other.Inside;
+                return thisOrientation == otherOrientation && (Inside + thisOrientation.RotatedLeft() == other.Inside || Inside + thisOrientation.RotatedRight() == other.Inside);
             }
         }
     }
