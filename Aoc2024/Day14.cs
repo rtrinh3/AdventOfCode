@@ -65,7 +65,8 @@ namespace Aoc2024
             int candidateTime = int.MaxValue;
             Parallel.For(0, HEIGHT * WIDTH, (time, loopState) =>
             {
-                HashSet<int> simulation = Simulate(WIDTH, HEIGHT, time).Select(Linearize).ToHashSet();
+                var originalSimulation = Simulate(WIDTH, HEIGHT, time);
+                HashSet<int> simulation = originalSimulation.Select(Linearize).ToHashSet();
                 UnionFindInt regions = new();
                 IEnumerable<int> allPositions = Enumerable.Range(0, HEIGHT).SelectMany(y => Enumerable.Range(0, WIDTH).Select(x => (x << 8) | y));
                 foreach (var pos in allPositions)
@@ -88,7 +89,7 @@ namespace Aoc2024
                         candidateTime = Math.Min(time, candidateTime);
                     }
                     Console.WriteLine("Found");
-                    //Visualize(time, simulation);
+                    //Visualize(time, originalSimulation.ToHashSet());
                     loopState.Break();
                 }
             });
@@ -97,13 +98,17 @@ namespace Aoc2024
 
         private static void Visualize(int time, ISet<VectorXY> robots)
         {
-            StringBuilder[] rows = new StringBuilder[HEIGHT];
-            for (int y = 0; y < HEIGHT; y++)
+            StringBuilder[] rows = new StringBuilder[HEIGHT/2+1];
+            for (int y = 0; y < HEIGHT; y+=2)
             {
-                StringBuilder row = rows[y] = new StringBuilder();
+                StringBuilder row = rows[y/2] = new StringBuilder();
                 for (int x = 0; x < WIDTH; x++)
                 {
-                    char newChar = robots.Contains(new VectorXY(x, y)) ? '█' : ' ';
+                    bool up = robots.Contains(new VectorXY(x, y));
+                    bool down = robots.Contains(new VectorXY(x, y+1));
+                    int index = (up ? 2 : 0) + (down ? 1 : 0);
+                    char[] chars = [' ', '▄', '▀', '█'];
+                    char newChar = chars[index];
                     row.Append(newChar);
                 }
             }
