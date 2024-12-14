@@ -14,7 +14,7 @@ internal class Aoc2024Main
         if (debug)
         {
             day ??= "01";
-            input ??= @"PLACEHOLDER";
+            input ??= @"input.txt";
         }
         if (day == null)
         {
