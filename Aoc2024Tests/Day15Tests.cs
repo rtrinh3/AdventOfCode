@@ -24,22 +24,21 @@ public class Day15Tests
     {
         var instance = new Day15(File.ReadAllText("day15-input.txt"));
         var answer = instance.Part1();
-        //Assert.AreEqual("430", answer);
-        Assert.Inconclusive(answer);
+        Assert.AreEqual("1526673", answer);
     }
 
-    //[TestMethod()]
-    //public void Part2ExampleTest()
-    //{
-    //    var instance = new Day15(File.ReadAllText("day15-example.txt"));
-    //    var answer = instance.Part2();
-    //    Assert.AreEqual("81", answer);
-    //}
-    //[TestMethod()]
-    //public void Part2InputTest()
-    //{
-    //    var instance = new Day15(File.ReadAllText("day15-input.txt"));
-    //    var answer = instance.Part2();
-    //    Assert.AreEqual("928", answer);
-    //}
+    [TestMethod()]
+    public void Part2Example1Test()
+    {
+        var instance = new Day15(File.ReadAllText("day15-example1.txt"));
+        var answer = instance.Part2();
+        Assert.AreEqual("9021", answer);
+    }
+    [TestMethod()]
+    public void Part2InputTest()
+    {
+        var instance = new Day15(File.ReadAllText("day15-input.txt"));
+        var answer = instance.Part2();
+        Assert.AreEqual("1535509", answer);
+    }
 }
