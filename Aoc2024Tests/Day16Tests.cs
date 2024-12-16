@@ -27,18 +27,25 @@ public class Day16Tests
         Assert.AreEqual("133584", answer);
     }
 
-    //[TestMethod()]
-    //public void Part2Example1Test()
-    //{
-    //    var instance = new Day16(File.ReadAllText("day16-example1.txt"));
-    //    var answer = instance.Part2();
-    //    Assert.AreEqual("9021", answer);
-    //}
-    //[TestMethod()]
-    //public void Part2InputTest()
-    //{
-    //    var instance = new Day16(File.ReadAllText("day16-input.txt"));
-    //    var answer = instance.Part2();
-    //    Assert.AreEqual("1535509", answer);
-    //}
+    [TestMethod()]
+    public void Part2Example1Test()
+    {
+        var instance = new Day16(File.ReadAllText("day16-example1.txt"));
+        var answer = instance.Part2();
+        Assert.AreEqual("45", answer);
+    }
+    [TestMethod()]
+    public void Part2Example2Test()
+    {
+        var instance = new Day16(File.ReadAllText("day16-example2.txt"));
+        var answer = instance.Part2();
+        Assert.AreEqual("64", answer);
+    }
+    [TestMethod()]
+    public void Part2InputTest()
+    {
+        var instance = new Day16(File.ReadAllText("day16-input.txt"));
+        var answer = instance.Part2();
+        Assert.AreEqual("622", answer);
+    }
 }
