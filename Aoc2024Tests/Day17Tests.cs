@@ -1,5 +1,7 @@
 ﻿namespace Aoc2024.Tests;
 
+// https://adventofcode.com/2024/day/17
+// --- Day 17: Chronospatial Computer ---
 [TestClass()]
 public class Day17Tests
 {
@@ -30,7 +32,6 @@ public class Day17Tests
     {
         var instance = new Day17(File.ReadAllText("day17-input.txt"));
         var answer = instance.Part2();
-        //Assert.AreEqual("622", answer);
-        Assert.Inconclusive(answer);
+        Assert.AreEqual("236555997372013", answer);
     }
 }

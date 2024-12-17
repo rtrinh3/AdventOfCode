@@ -1,8 +1,11 @@
 ﻿using AocCommon;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace Aoc2024;
 
+// https://adventofcode.com/2024/day/17
+// --- Day 17: Chronospatial Computer ---
 public class Day17 : IAocDay
 {
     private int initialRegisterA;
@@ -98,25 +101,62 @@ public class Day17 : IAocDay
 
     public string Part2()
     {
-        long answer = long.MaxValue;
-        long done = 0;
-        Parallel.For(0, long.MaxValue, (i, loopState) =>
+        //long answer = long.MaxValue;
+        //long done = 0;
+        //Parallel.For(0, long.MaxValue, (i, loopState) =>
+        //{
+        //    var outputs = Run(i, initialRegisterB, initialRegisterC);
+        //    if (program.SequenceEqual(outputs))
+        //    {
+        //        lock (this)
+        //        {
+        //            answer = Math.Min(i, answer);
+        //        }
+        //        loopState.Break();
+        //    }
+        //    var myDone = Interlocked.Increment(ref done);
+        //    if ((myDone & 0xffffff) == 0)
+        //    {
+        //        Console.WriteLine(myDone);
+        //    }
+        //});
+        //return answer.ToString();
+        //long FindNumber(long a, int programIndex)
+        long[] seed = [0];
+        Func<long, int, IEnumerable<long>> FindNumber = (_, _) => throw new Exception();
+        FindNumber = Memoization.Make((long a, int programIndex) =>
         {
-            var outputs = Run(i, initialRegisterB, initialRegisterC);
-            if (program.SequenceEqual(outputs))
+            if (programIndex >= program.Length)
             {
-                lock (this)
+                return seed.AsEnumerable();
+            }
+            const int bitsToCheck = 3 + 8; // 3 bits because of instruction (0,3) (A >>= 3), 8 because of instruction (7,5) (C = A >> B)
+            HashSet<long> results = new();
+            for (long i = a; i < (1 << bitsToCheck); i++)
+            {
+                int output = Run(i, initialRegisterB, initialRegisterC).First();
+                if (output == program[programIndex])
                 {
-                    answer = Math.Min(i, answer);
+                    var nextA = i >> 3;
+                    var tails = FindNumber(nextA, programIndex + 1);
+                    foreach (var tail in tails)
+                    {
+                        var combined = (tail << 3) | (i & 7);
+                        var secondOutput = Run(combined, initialRegisterB, initialRegisterC);
+                        if (secondOutput.SequenceEqual(program.Skip(programIndex)))
+                        {
+                            results.Add(combined);
+                        }
+                    }
                 }
-                loopState.Break();
             }
-            var myDone = Interlocked.Increment(ref done);
-            if ((myDone & 0xffffff) == 0)
-            {
-                Console.WriteLine(myDone);
-            }
+            return results.AsEnumerable();
         });
+        var answers = FindNumber(0, 0).ToList();
+        Debug.Assert(answers.Count >= 1, "Answer not found");
+        var answer = answers.Min();
+        var test = Run(answer, initialRegisterB, initialRegisterC).ToList();
+        Debug.Assert(test.SequenceEqual(program), "Answer does not fit");
         return answer.ToString();
     }
 }
