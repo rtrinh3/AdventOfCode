@@ -1,5 +1,6 @@
 ﻿using AocCommon;
 using System.Diagnostics;
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace Aoc2024;
@@ -8,10 +9,10 @@ namespace Aoc2024;
 // --- Day 17: Chronospatial Computer ---
 public class Day17 : IAocDay
 {
-    private int initialRegisterA;
-    private int initialRegisterB;
-    private int initialRegisterC;
-    private int[] program;
+    private readonly int initialRegisterA;
+    private readonly int initialRegisterB;
+    private readonly int initialRegisterC;
+    private readonly int[] program;
 
     public Day17(string input)
     {
@@ -101,47 +102,46 @@ public class Day17 : IAocDay
 
     public string Part2()
     {
-        //long answer = long.MaxValue;
-        //long done = 0;
-        //Parallel.For(0, long.MaxValue, (i, loopState) =>
-        //{
-        //    var outputs = Run(i, initialRegisterB, initialRegisterC);
-        //    if (program.SequenceEqual(outputs))
-        //    {
-        //        lock (this)
-        //        {
-        //            answer = Math.Min(i, answer);
-        //        }
-        //        loopState.Break();
-        //    }
-        //    var myDone = Interlocked.Increment(ref done);
-        //    if ((myDone & 0xffffff) == 0)
-        //    {
-        //        Console.WriteLine(myDone);
-        //    }
-        //});
-        //return answer.ToString();
-        //long FindNumber(long a, int programIndex)
-        long[] seed = [0];
-        Func<long, int, IEnumerable<long>> FindNumber = (_, _) => throw new Exception();
+        // The input program has a structure like this:
+        // Run some calculations on the lower bits of A and output that (...,5,X);
+        // A >>= X (0,X);
+        // Repeat until A is 0 (3,0).
+        // So each number in the output is affected by at most bitsToCheck (= X + 8) in A [X bits because of instruction (0,X) (A >>= X), 8 because of instruction (7,5) (C = A >> B)]
+        // So for each number K in the output:
+        // Consider a seed number from a previous step;
+        // Iterate i over numbers 0..2^bitsToCheck where the low bits are equal to the seed number;
+        // If running the input program with i yields a number K then:
+        // Look recursively at the next number of the output with the high bits of i as a seed.
+        HashSet<long> emptySeed = [0];
+        int shiftPerCycle = 0;
+        for (int i = 0; i < program.Length; i += 2)
+        {
+            if (program[i] == 0)
+            {
+                shiftPerCycle = program[i + 1];
+            }
+        }
+        Debug.Assert(shiftPerCycle != 0);
+        int bitsToCheck = shiftPerCycle + 8; // C bits because of instruction (0,C) (A >>= C), 8 because of instruction (7,5) (C = A >> B)
+        Func<long, int, HashSet<long>> FindNumber = (_, _) => throw new Exception("Stub for memoized recursive function");
         FindNumber = Memoization.Make((long a, int programIndex) =>
         {
             if (programIndex >= program.Length)
             {
-                return seed.AsEnumerable();
+                return emptySeed;
             }
-            const int bitsToCheck = 3 + 8; // 3 bits because of instruction (0,3) (A >>= 3), 8 because of instruction (7,5) (C = A >> B)
             HashSet<long> results = new();
-            for (long i = a; i < (1 << bitsToCheck); i++)
+            var increment = (long)BitOperations.RoundUpToPowerOf2(1ul + (ulong)a); // Given a number with bits 00aa, we only want to change the bits 00.
+            for (long i = a; i < (1 << bitsToCheck); i += increment)
             {
                 int output = Run(i, initialRegisterB, initialRegisterC).First();
                 if (output == program[programIndex])
                 {
-                    var nextA = i >> 3;
+                    var nextA = i >> shiftPerCycle;
                     var tails = FindNumber(nextA, programIndex + 1);
                     foreach (var tail in tails)
                     {
-                        var combined = (tail << 3) | (i & 7);
+                        var combined = (tail << shiftPerCycle) | i;
                         var secondOutput = Run(combined, initialRegisterB, initialRegisterC);
                         if (secondOutput.SequenceEqual(program.Skip(programIndex)))
                         {
@@ -150,7 +150,7 @@ public class Day17 : IAocDay
                     }
                 }
             }
-            return results.AsEnumerable();
+            return results;
         });
         var answers = FindNumber(0, 0).ToList();
         Debug.Assert(answers.Count >= 1, "Answer not found");
