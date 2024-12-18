@@ -1,5 +1,4 @@
 ﻿using AocCommon;
-using System.Diagnostics;
 
 namespace Aoc2024;
 
@@ -41,21 +40,52 @@ public class Day18(string input) : IAocDay
 
     public string Part2()
     {
-        var answer = DoPart2(70, 70, 1024);
+        var answer = DoPart2(70, 70);
         return $"{answer.Item1},{answer.Item2}";
     }
 
-    public (int, int) DoPart2(int width, int height, int initialFalls)
+    public (int, int) DoPart2(int width, int height)
     {
-        for (int i = initialFalls; i <= incoming.Length; i++)
+        HashSet<VectorRC> obstacles = new(incoming);
+        UnionFind<VectorRC> connected = new();
+        // Connect all free space
+        for (int row = 0; row <= height; row++)
         {
-            var path = DoPart1(width, height, i);
-            if (path <= 0)
+            for (int col = 0; col <= width; col++)
             {
-                var answer = incoming[i - 1];
-                return (answer.Row, answer.Col);
+                VectorRC pos = new(row, col);
+                if (!obstacles.Contains(pos))
+                {
+                    foreach (var next in pos.NextFour())
+                    {
+                        if (0 <= next.Row && next.Row <= height && 0 <= next.Col && next.Col <= width && !obstacles.Contains(next))
+                        {
+                            connected.Union(pos, next);
+                        }
+                    }
+                }
             }
         }
-        throw new Exception("Not found");
+        // Remove obstacles
+        VectorRC start = VectorRC.Zero;
+        VectorRC end = new(width, height);
+        int i;
+        for (i = incoming.Length - 1; i >= 0; i--)
+        {
+            var obstacleToRemove = incoming[i];
+            obstacles.Remove(obstacleToRemove);
+            foreach (var next in obstacleToRemove.NextFour())
+            {
+                if (0 <= next.Row && next.Row <= height && 0 <= next.Col && next.Col <= width && !obstacles.Contains(next))
+                {
+                    connected.Union(obstacleToRemove, next);
+                }
+            }
+            if (connected.AreMerged(start, end))
+            {
+                return (obstacleToRemove.Row, obstacleToRemove.Col);
+            }
+        }
+        throw new Exception("Answer not found");
     }
 }
