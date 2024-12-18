@@ -21,22 +21,6 @@ public class Day18(string input) : IAocDay
     public int DoPart1(int width, int height, int falls)
     {
         HashSet<VectorRC> obstacles = new(incoming.Take(falls));
-        //Visualization
-        for (int row = 0; row <= height; row++)
-        {
-            for (int col = 0; col <= width; col++)
-            {
-                if (obstacles.Contains(new VectorRC(row, col)))
-                {
-                    Console.Write('#');
-                }
-                else
-                {
-                    Console.Write('.');
-                }
-            }
-            Console.WriteLine();
-        }
         VectorRC start = VectorRC.Zero;
         VectorRC end = new(width, height);
         IEnumerable<VectorRC> GetNext(VectorRC pos)
@@ -52,12 +36,26 @@ public class Day18(string input) : IAocDay
             return answer;
         }
         var result = GraphAlgos.BfsToEnd(start, GetNext, x => x == end);
-        Debug.Assert(result.distance > 0);
         return result.distance;
     }
 
     public string Part2()
     {
-        throw new NotImplementedException();
+        var answer = DoPart2(70, 70, 1024);
+        return $"{answer.Item1},{answer.Item2}";
+    }
+
+    public (int, int) DoPart2(int width, int height, int initialFalls)
+    {
+        for (int i = initialFalls; i <= incoming.Length; i++)
+        {
+            var path = DoPart1(width, height, i);
+            if (path <= 0)
+            {
+                var answer = incoming[i - 1];
+                return (answer.Row, answer.Col);
+            }
+        }
+        throw new Exception("Not found");
     }
 }
