@@ -69,8 +69,7 @@ public class Day18(string input) : IAocDay
         // Remove obstacles
         VectorRC start = VectorRC.Zero;
         VectorRC end = new(width, height);
-        int i;
-        for (i = incoming.Length - 1; i >= 0; i--)
+        for (int i = incoming.Length - 1; i >= 0; i--)
         {
             var obstacleToRemove = incoming[i];
             obstacles.Remove(obstacleToRemove);
