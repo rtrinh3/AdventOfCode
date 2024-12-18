@@ -152,7 +152,7 @@ public class Day17 : IAocDay
             }
             return results;
         });
-        var answers = FindNumber(0, 0).ToList();
+        var answers = FindNumber(0, 0);
         Debug.Assert(answers.Count >= 1, "Answer not found");
         var answer = answers.Min();
         var test = Run(answer, initialRegisterB, initialRegisterC).ToList();
