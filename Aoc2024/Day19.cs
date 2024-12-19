@@ -4,70 +4,29 @@ namespace Aoc2024;
 
 public class Day19(string input) : IAocDay
 {
-    //private record class ArrangementNode(string Head, ArrangementNode? Tail);
-
     public string Part1()
     {
-        // Parse
-        string[] paragraphs = input.TrimEnd().ReplaceLineEndings("\n").Split("\n\n");
-        string[] towels = paragraphs[0].Split(',', StringSplitOptions.TrimEntries).OrderByDescending(t => t.Length).ToArray();
-        string[] patterns = paragraphs[1].Split('\n');
-
-        // Find arrangements
-        //ArrangementNode?[] emptyArrangement = [null];
-        int answer = 0;
-        for (int i = 0; i < patterns.Length; i++)
-        {
-            var pattern = patterns[i];
-            Func<int, bool> CheckArrangements = _ => throw new Exception("Stub for memoized recursive function");
-            CheckArrangements = Memoization.Make((int index) =>
-            {
-                if (index >= pattern.Length)
-                {
-                    //return emptyArrangement;
-                    return true;
-                }
-                //List<ArrangementNode> possibleArrangements = new();
-                foreach (var towel in towels)
-                {
-                    if (pattern.AsSpan()[index..].StartsWith(towel))
-                    {
-                        //var tails = FindArrangements(index + towel.Length);
-                        //foreach (var tail in tails)
-                        //{
-                        //    ArrangementNode arrangement = new(towel, tail);
-                        //    possibleArrangements.Add(arrangement);
-                        //}
-                        bool tailPossible = CheckArrangements(index + towel.Length);
-                        if (tailPossible)
-                        {
-                            return true;
-                        }
-                    }
-                }
-                //return possibleArrangements.ToArray();
-                return false;
-            });
-            var possible = CheckArrangements(0);
-            if (possible)
-            {
-                answer++;
-            }
-            //Console.WriteLine($"Done {i + 1}/{patterns.Length} -- answer={answer}");
-        }
+        var arrangements = FindAllArrangements();
+        var answer = arrangements.Count(x => x > 0);
         return answer.ToString();
     }
 
     public string Part2()
     {
+        var arrangements = FindAllArrangements();
+        var answer = arrangements.Sum();
+        return answer.ToString();
+    }
+
+    private long[] FindAllArrangements()
+    {
         // Parse
         string[] paragraphs = input.TrimEnd().ReplaceLineEndings("\n").Split("\n\n");
-        string[] towels = paragraphs[0].Split(',', StringSplitOptions.TrimEntries).OrderByDescending(t => t.Length).ToArray();
+        string[] towels = paragraphs[0].Split(',', StringSplitOptions.TrimEntries);
         string[] patterns = paragraphs[1].Split('\n');
 
         // Find arrangements
-        //ArrangementNode?[] emptyArrangement = [null];
-        long answer = 0;
+        long[] answers = new long[patterns.Length];
         for (int i = 0; i < patterns.Length; i++)
         {
             var pattern = patterns[i];
@@ -76,7 +35,7 @@ public class Day19(string input) : IAocDay
             {
                 if (index >= pattern.Length)
                 {
-                    return 1;
+                    return 1L;
                 }
                 long possibleArrangements = 0;
                 foreach (var towel in towels)
@@ -90,9 +49,9 @@ public class Day19(string input) : IAocDay
                 return possibleArrangements;
             });
             var possible = FindArrangements(0);
-            answer += possible;
-            Console.WriteLine($"Done {i + 1}/{patterns.Length} -- answer={answer}");
+            answers[i] = possible;
+            //Console.WriteLine($"Done {i + 1}/{patterns.Length}: {possible}");
         }
-        return answer.ToString();
+        return answers;
     }
 }
