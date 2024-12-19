@@ -106,53 +106,41 @@ public class Day17 : IAocDay
         // Run some calculations on the lower bits of A and output that (...,5,X);
         // A >>= X (0,X);
         // Repeat until A is 0 (3,0).
-        // So each number in the output is affected by at most bitsToCheck (= X + 8) in A [X bits because of instruction (0,X) (A >>= X), 8 because of instruction (7,5) (C = A >> B)]
-        // So for each number K in the output:
-        // Consider a seed number from a previous step;
-        // Iterate i over numbers 0..2^bitsToCheck where the low bits are equal to the seed number;
-        // If running the input program with i yields a number K then:
-        // Look recursively at the next number of the output with the high bits of i as a seed.
-        HashSet<long> emptySeed = [0];
-        int shiftPerCycle = 0;
+        // So we can work through A 3 bits at a time, and the later outputs are affected by the higher bits of A.
+        // So we work backwards through the outputs to figure out the high bits first.
+        // At the Nth number of the output, given a prefix from a previous iteration (later output):
+        // for each possible suffix 0 to 2^shiftPerCycle:
+        // run the program with input (prefix | suffix)
+        // if it generates the outputs (N..end):
+        // recurse with prefix|suffix as the new suffix and N-1 as the new index
+        int shiftPerCycle = int.MaxValue;
         for (int i = 0; i < program.Length; i += 2)
         {
             if (program[i] == 0)
             {
-                shiftPerCycle = program[i + 1];
+                shiftPerCycle = Math.Min(shiftPerCycle, program[i + 1]);
             }
         }
-        Debug.Assert(shiftPerCycle != 0);
-        int bitsToCheck = shiftPerCycle + 8; // C bits because of instruction (0,C) (A >>= C), 8 because of instruction (7,5) (C = A >> B)
-        Func<long, int, HashSet<long>> FindNumber = (_, _) => throw new Exception("Stub for memoized recursive function");
-        FindNumber = Memoization.Make((long a, int programIndex) =>
+        Debug.Assert(shiftPerCycle != int.MaxValue);
+        List<long> answers = new();
+        void FindAnswers(long prefix, int index)
         {
-            if (programIndex >= program.Length)
+            if (index < 0)
             {
-                return emptySeed;
+                answers.Add(prefix);
+                return;
             }
-            HashSet<long> results = new();
-            var increment = (long)BitOperations.RoundUpToPowerOf2(1ul + (ulong)a); // Given a number with bits 00aa, we only want to change the bits 00.
-            for (long i = a; i < (1 << bitsToCheck); i += increment)
+            for (long i = 0; i < (1 << shiftPerCycle); i++)
             {
-                int output = Run(i, initialRegisterB, initialRegisterC).First();
-                if (output == program[programIndex])
+                long combined = (prefix << shiftPerCycle) | i;
+                var test = Run(combined, initialRegisterB, initialRegisterC);
+                if (test.SequenceEqual(program.Skip(index)))
                 {
-                    var nextA = i >> shiftPerCycle;
-                    var tails = FindNumber(nextA, programIndex + 1);
-                    foreach (var tail in tails)
-                    {
-                        var combined = (tail << shiftPerCycle) | i;
-                        var secondOutput = Run(combined, initialRegisterB, initialRegisterC);
-                        if (secondOutput.SequenceEqual(program.Skip(programIndex)))
-                        {
-                            results.Add(combined);
-                        }
-                    }
+                    FindAnswers(combined, index - 1);
                 }
             }
-            return results;
-        });
-        var answers = FindNumber(0, 0);
+        }
+        FindAnswers(0, program.Length - 1);
         Debug.Assert(answers.Count >= 1, "Answer not found");
         var answer = answers.Min();
         var test = Run(answer, initialRegisterB, initialRegisterC).ToList();
