@@ -73,4 +73,27 @@ public class Day20Tests
         var answer = instance.Part2();
         Assert.AreEqual("944910", answer);
     }
+    [TestMethod()]
+    public void Part2RedditTest()
+    {
+        // https://www.reddit.com/r/adventofcode/comments/1hih8yx/2024_day_20_part_3_your_code_is_too_general_lets/
+        var instance = new Day20(File.ReadAllText("day20-reddit.txt"));
+        Dictionary<int, int> expected = new()
+        {
+            [28] = 436, // https://www.reddit.com/r/adventofcode/comments/1hih8yx/comment/m2z6igc/
+            [30] = 66, // https://www.reddit.com/r/adventofcode/comments/1hih8yx/comment/m2yroqw/
+            [32] = 167,
+            [34] = 19,
+            [36] = 39,
+            [38] = 2,
+            [40] = 6,
+        };
+        var cheats = instance.FindCheats(20);
+        Assert.AreEqual(299, cheats.Count(x => x.Saved >= 30));
+        var cheatGroups = cheats.GroupBy(c => c.Saved).ToDictionary(g => g.Key, g => g.Count());
+        foreach (var x in expected)
+        {
+            Assert.AreEqual(expected[x.Key], cheatGroups[x.Key]);
+        }
+    }
 }
