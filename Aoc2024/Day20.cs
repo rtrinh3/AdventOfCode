@@ -10,59 +10,78 @@ public class Day20(string input) : IAocDay
 
     public string Part1()
     {
-        var cheats = FindCheats();
+        var cheats = FindCheats(2);
         var answer = cheats.Count(c => c.Saved >= 100);
         return answer.ToString();
     }
 
-    public List<(VectorRC Start, VectorRC End, int Saved)> FindCheats()
+    public List<(VectorRC Start, VectorRC End, int Saved)> FindCheats(int cheatTime)
     {
         VectorRC raceStart = map.Iterate().Single(x => x.Value == 'S').Position;
+        VectorRC raceEnd = map.Iterate().Single(x => x.Value == 'E').Position;
         IEnumerable<VectorRC> originalNeighbors(VectorRC pos)
         {
             return pos.NextFour().Where(next => map.Get(next) != '#');
         }
-        var originalRace = GraphAlgos.BfsToEnd(raceStart, originalNeighbors, pos => map.Get(pos) == 'E');
-        var originalTime = originalRace.distance;
+        var originalRace = GraphAlgos.BfsToAll(raceStart, originalNeighbors);
+        var originalTime = originalRace[raceEnd].distance;
+
         List<VectorRC> cheatOffsets = new();
-        for (int i = 0; i <= 2; i++)
+        for (int row = -cheatTime; row <= cheatTime; row++)
         {
-            VectorRC offset = new(i, 2 - i);
-            cheatOffsets.Add(offset);
-            cheatOffsets.Add(-offset);
-            cheatOffsets.Add(offset.RotatedLeft());
-            cheatOffsets.Add(offset.RotatedRight());
+            for (int col = -cheatTime; col <= cheatTime; col++)
+            {
+                VectorRC offset = new(row, col);
+                if (offset.ManhattanMetric() <= cheatTime)
+                {
+                    cheatOffsets.Add(offset);
+                }
+            }
         }
+
         var cheats = map.Iterate()
             .Where(x => x.Value != '#')
             .SelectMany(x => cheatOffsets.Select(offset => (Start: x.Position, End: x.Position + offset)))
-            .Distinct() // Why Distinct? Where are the duplicates coming from?
             .Where(cheat => map.Get(cheat.End) != '#')
+            .ToList();
+
+        int done = 0;
+        Task.Run(() =>
+        {
+            int prev = 0;
+            while (done < cheats.Count)
+            {
+                int doneNow = done;
+                int doneLastSec = doneNow - prev;
+                int eta = 0;
+                if (doneLastSec > 0)
+                {
+                    eta = (cheats.Count - doneNow) / doneLastSec;
+                }
+                Console.WriteLine($"Done {doneNow}/{cheats.Count}, ETA {eta}s");
+                prev = doneNow;
+                Thread.Sleep(1000);
+            }
+        });
+        var cheatTimes = cheats.AsParallel()
             .Select(cheat =>
             {
-                List<(VectorRC, int)> getNeighbors(VectorRC pos)
-                {
-                    List<(VectorRC, int)> results = pos.NextFour()
-                    .Where(next => map.Get(next) != '#')
-                    .Select(next => (next, 1))
-                    .ToList();
-                    if (pos == cheat.Start)
-                    {
-                        results.Add((cheat.End, 2));
-                    }
-                    return results;
-                }
-                var race = GraphAlgos.DijkstraToEnd(raceStart, getNeighbors, pos => map.Get(pos) == 'E');
-                var answer = (cheat.Start, cheat.End, originalTime - race.distance);
-                //Console.WriteLine(answer);
+                var shortcutTime = (cheat.End - cheat.Start).ManhattanMetric();
+                var remaining = GraphAlgos.BfsToEnd(cheat.End, originalNeighbors, pos => pos == raceEnd);
+                var totalTime = originalRace[cheat.Start].distance + shortcutTime + remaining.distance;
+                var saved = originalTime - totalTime;
+                var answer = (cheat.Start, cheat.End, saved);
+                Interlocked.Increment(ref done);
                 return answer;
             })
             .ToList();
-        return cheats;
+        return cheatTimes;
     }
 
     public string Part2()
     {
-        return nameof(Part2);
+        var cheats = FindCheats(20);
+        var answer = cheats.Count(c => c.Saved >= 100);
+        return answer.ToString();
     }
 }
