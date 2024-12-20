@@ -23,8 +23,9 @@ public class Day20(string input) : IAocDay
         {
             return pos.NextFour().Where(next => map.Get(next) != '#');
         }
-        var originalRace = GraphAlgos.BfsToAll(raceStart, originalNeighbors);
-        var originalTime = originalRace[raceEnd].distance;
+        var distanceFromStart = GraphAlgos.BfsToAll(raceStart, originalNeighbors);
+        var originalTime = distanceFromStart[raceEnd].distance;
+        var distanceFromEnd = GraphAlgos.BfsToAll(raceEnd, originalNeighbors);
 
         List<VectorRC> cheatOffsets = new();
         for (int row = -cheatTime; row <= cheatTime; row++)
@@ -45,33 +46,13 @@ public class Day20(string input) : IAocDay
             .Where(cheat => map.Get(cheat.End) != '#')
             .ToList();
 
-        int done = 0;
-        Task.Run(() =>
-        {
-            int prev = 0;
-            while (done < cheats.Count)
-            {
-                int doneNow = done;
-                int doneLastSec = doneNow - prev;
-                int eta = 0;
-                if (doneLastSec > 0)
-                {
-                    eta = (cheats.Count - doneNow) / doneLastSec;
-                }
-                Console.WriteLine($"Done {doneNow}/{cheats.Count}, ETA {eta}s");
-                prev = doneNow;
-                Thread.Sleep(1000);
-            }
-        });
-        var cheatTimes = cheats.AsParallel()
+        var cheatTimes = cheats
             .Select(cheat =>
             {
                 var shortcutTime = (cheat.End - cheat.Start).ManhattanMetric();
-                var remaining = GraphAlgos.BfsToEnd(cheat.End, originalNeighbors, pos => pos == raceEnd);
-                var totalTime = originalRace[cheat.Start].distance + shortcutTime + remaining.distance;
+                var totalTime = distanceFromStart[cheat.Start].distance + shortcutTime + distanceFromEnd[cheat.End].distance;
                 var saved = originalTime - totalTime;
                 var answer = (cheat.Start, cheat.End, saved);
-                Interlocked.Increment(ref done);
                 return answer;
             })
             .ToList();

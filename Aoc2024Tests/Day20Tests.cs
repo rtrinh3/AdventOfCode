@@ -30,7 +30,7 @@ public class Day20Tests
             Assert.AreEqual(expected[x.Key], cheatGroups[x.Key]);
         }
     }
-    [TestMethod(), Timeout(180_000)]
+    [TestMethod()]
     public void Part1InputTest()
     {
         var instance = new Day20(File.ReadAllText("day20-input.txt"));
@@ -66,7 +66,7 @@ public class Day20Tests
             Assert.AreEqual(expected[x.Key], cheatGroups[x.Key]);
         }
     }
-    [TestMethod(), Timeout(2_000_000)]
+    [TestMethod()]
     public void Part2InputTest()
     {
         var instance = new Day20(File.ReadAllText("day20-input.txt"));
