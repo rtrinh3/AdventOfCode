@@ -2,6 +2,8 @@
 
 namespace Aoc2024;
 
+// https://adventofcode.com/2024/day/18
+// --- Day 18: RAM Run ---
 public class Day18(string input) : IAocDay
 {
     private readonly VectorRC[] incoming = input

@@ -1,5 +1,7 @@
 ﻿namespace Aoc2024.Tests;
 
+// https://adventofcode.com/2024/day/18
+// --- Day 18: RAM Run ---
 [TestClass()]
 public class Day18Tests
 {

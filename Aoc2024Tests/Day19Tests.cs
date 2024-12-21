@@ -1,5 +1,7 @@
 ﻿namespace Aoc2024.Tests;
 
+// https://adventofcode.com/2024/day/19
+// --- Day 19: Linen Layout ---
 [TestClass()]
 public class Day19Tests
 {

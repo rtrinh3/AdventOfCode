@@ -2,6 +2,8 @@
 
 namespace Aoc2024;
 
+// https://adventofcode.com/2024/day/19
+// --- Day 19: Linen Layout ---
 public class Day19(string input) : IAocDay
 {
     public string Part1()

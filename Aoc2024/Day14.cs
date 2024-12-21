@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 
 namespace Aoc2024
 {
+    // https://adventofcode.com/2024/day/14
+    // --- Day 14: Restroom Redoubt ---
     public class Day14(string input) : IAocDay
     {
         private const int WIDTH = 101;
