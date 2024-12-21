@@ -36,26 +36,25 @@ namespace Aoc2024
             {
                 //var type = map.Get(region); // for debugging
                 // Find number of sides
-                var thisFence = regionData.Fences;
-                UnionFind<Fence> sides = new();                
-                for (int i = 0; i < thisFence.Length; i++)
+                int sideCount = 0;
+                // Group fences by direction and distance when projected on that direction
+                var fenceGroups = regionData.Fences.GroupBy(f => (f.Direction, f.Direction.Dot(f.Inside)));
+                foreach (var group in fenceGroups)
                 {
-                    Fence fenceI = thisFence[i];
-                    for (int j = i + 1; j < thisFence.Length; j++)
+                    // Within each group, project each fence onto the other direction,
+                    // then sort them: adjacent fences become adjacent numbers
+                    VectorRC perpendicular = group.Key.Direction.RotatedLeft();
+                    List<int> projectedFences = group.Select(f => perpendicular.Dot(f.Inside)).Order().ToList();
+                    int runCount = 1;
+                    for (int i = 1; i < projectedFences.Count; i++)
                     {
-                        Fence fenceJ = thisFence[j];
-                        if (fenceI.IsAdjacentAlignedWith(fenceJ))
+                        if (Math.Abs(projectedFences[i] - projectedFences[i - 1]) > 1)
                         {
-                            sides.Union(fenceI, fenceJ);
+                            runCount++;
                         }
                     }
+                    sideCount += runCount;
                 }
-                HashSet<Fence> sidesSet = new();
-                foreach (var f in thisFence)
-                {
-                    sidesSet.Add(sides.Find(f));
-                }
-                var sideCount = sidesSet.Count;
                 var thisPrice = Math.BigMul(regionData.Area, sideCount);
                 total += thisPrice;
             }
@@ -63,52 +62,51 @@ namespace Aoc2024
             return total.ToString();
         }
 
-        private Dictionary<VectorRC, (int Area, Fence[] Fences)> FindRegions()
+        private Dictionary<int, (int Area, Fence[] Fences)> FindRegions()
         {
+            // Our vectors are small enough for this
+            Debug.Assert(map.Width <= 0xFF && map.Height <= 0xFF);
+            static int Linearize(VectorRC x) => (x.Row << 8) | x.Col;
+
             // Partition the map and assign fences to plots
-            UnionFind<VectorRC> regions = new();
+            ReadOnlySpan<VectorRC> scanDirections = [VectorRC.Right, VectorRC.Down];
+            UnionFindInt regions = new();
             DefaultDict<VectorRC, List<Fence>> plotFence = new();
-            void ProcessPlots(VectorRC a, VectorRC b)
+            foreach (var (pos, _) in map.Iterate())
             {
-                if (map.Get(a) == map.Get(b))
+                if (pos.Row == 0)
                 {
-                    regions.Union(a, b);
+                    plotFence[pos].Add(new Fence(pos, VectorRC.Up));
                 }
-                else
+                if (pos.Col == 0)
                 {
-                    // Order of arguments to Fence is (Inside, Outside)
-                    plotFence[a].Add(new Fence(a, b));
-                    plotFence[b].Add(new Fence(b, a));
+                    plotFence[pos].Add(new Fence(pos, VectorRC.Left));
                 }
-            }
-            // Scan one more plot to the left and top
-            for (int row = -1; row < map.Height; row++)
-            {
-                for (int col = -1; col < map.Height; col++)
+                foreach (var dir in scanDirections)
                 {
-                    // Check the right and bottom
-                    VectorRC pos = new(row, col);
-                    VectorRC right = new(row, col + 1);
-                    ProcessPlots(pos, right);
-                    VectorRC down = new(row + 1, col);
-                    ProcessPlots(pos, down);
+                    var neighbor = pos + dir;
+                    if (map.Get(pos) == map.Get(neighbor))
+                    {
+                        regions.Union(Linearize(pos), Linearize(neighbor));
+                    }
+                    else
+                    {
+                        plotFence[pos].Add(new Fence(pos, dir));
+                        plotFence[neighbor].Add(new Fence(neighbor, -dir));
+                    }
                 }
             }
 
             // Calculate area and fence of regions
-            DefaultDict<VectorRC, int> regionArea = new();
-            DefaultDict<VectorRC, List<Fence>> regionFence = new();
-            for (int row = 0; row < map.Height; row++)
+            DefaultDict<int, int> regionArea = new();
+            DefaultDict<int, List<Fence>> regionFence = new();
+            foreach (var (pos, _) in map.Iterate())
             {
-                for (int col = 0; col < map.Height; col++)
-                {
-                    VectorRC pos = new(row, col);
-                    regionArea[regions.Find(pos)]++;
-                    regionFence[regions.Find(pos)].AddRange(plotFence[pos]);
-                }
+                regionArea[regions.Find(Linearize(pos))]++;
+                regionFence[regions.Find(Linearize(pos))].AddRange(plotFence[pos]);
             }
 
-            Dictionary<VectorRC, (int, Fence[])> result = new();
+            Dictionary<int, (int, Fence[])> result = new();
             foreach (var (Region, Area) in regionArea)
             {
                 //Debug.Assert(regionFence.ContainsKey(Region));
@@ -117,25 +115,11 @@ namespace Aoc2024
             return result;
         }
 
-        // Fence is defined by the two plots separated by the fence.
-        private record class Fence(VectorRC Inside, VectorRC Outside)
+        private record class Fence(VectorRC Inside, VectorRC Direction)
         {
             private bool IsValid()
             {
-                return (Outside - Inside).ManhattanMetric() == 1;
-            }
-
-            internal bool IsAdjacentAlignedWith(Fence other)
-            {
-                if (this == other)
-                {
-                    return false;
-                }
-                //Debug.Assert(IsValid());
-                //Debug.Assert(other.IsValid());
-                var thisOrientation = Outside - Inside;
-                var otherOrientation = other.Outside - other.Inside;
-                return thisOrientation == otherOrientation && (Inside + thisOrientation.RotatedLeft() == other.Inside || Inside + thisOrientation.RotatedRight() == other.Inside);
+                return Direction.ManhattanMetric() == 1;
             }
         }
     }
