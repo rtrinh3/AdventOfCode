@@ -9,7 +9,7 @@ public class Day22Tests
     [TestMethod()]
     public void Part1ExampleTest()
     {
-        var file = File.ReadAllText("day22-example.txt");
+        var file = File.ReadAllText("day22-example1.txt");
         var totalInstance = new Day22(file);
         var totalAnswer = totalInstance.Part1();
         Assert.AreEqual("37327623", totalAnswer);
@@ -30,5 +30,20 @@ public class Day22Tests
         var instance = new Day22(File.ReadAllText("day22-input.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("13185239446", answer);
+    }
+
+    [TestMethod()]
+    public void Part2ExampleTest()
+    {
+        var instance = new Day22(File.ReadAllText("day22-example2.txt"));
+        var answer = instance.Part2();
+        Assert.AreEqual("23", answer);
+    }
+    [TestMethod(), Timeout(30_000)]
+    public void Part2InputTest()
+    {
+        var instance = new Day22(File.ReadAllText("day22-input.txt"));
+        var answer = instance.Part2();
+        Assert.AreEqual("1501", answer);
     }
 }
