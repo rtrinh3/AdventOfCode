@@ -34,11 +34,11 @@ public class Day22(string input) : IAocDay
     public string Part2()
     {
         // Get sequences of changes
-        Dictionary<(sbyte, sbyte, sbyte, sbyte), sbyte>[] sequencesPrices = new Dictionary<(sbyte, sbyte, sbyte, sbyte), sbyte>[initialSecretNumbers.Length];
-        for (int monkey = 0; monkey < initialSecretNumbers.Length; monkey++)
+        Dictionary<(sbyte, sbyte, sbyte, sbyte), sbyte>[] monkeySales = new Dictionary<(sbyte, sbyte, sbyte, sbyte), sbyte>[initialSecretNumbers.Length];
+        Parallel.For(0, initialSecretNumbers.Length, monkey =>
         {
             var numbers = GenerateSecretNumbers(initialSecretNumbers[monkey]).Take(2000 + 1).Select(n => (sbyte)(n % 10)).ToList();
-            sequencesPrices[monkey] = new();
+            Dictionary<(sbyte, sbyte, sbyte, sbyte), sbyte> sales = new();
             for (int i = 0; i < 2000 + 1 - 4; i++)
             {
                 var changes = (
@@ -47,26 +47,27 @@ public class Day22(string input) : IAocDay
                     (sbyte)(numbers[i + 3] - numbers[i + 2]),
                     (sbyte)(numbers[i + 4] - numbers[i + 3])
                     );
-                sequencesPrices[monkey].TryAdd(changes, numbers[i + 4]);
+                sales.TryAdd(changes, numbers[i + 4]);
                 // If the key already exists, TryAdd does nothing and returns false.
             }
-        }
+            monkeySales[monkey] = sales;
+        });
+
         // Find max haul
+        var allSequences = monkeySales.SelectMany(s => s.Keys).Distinct().ToList();
         long maxHaul = 0;
-        var allSequences = sequencesPrices.SelectMany(s => s.Keys).ToHashSet();
-        foreach (var sequence in allSequences)
+        Parallel.ForEach(allSequences, sequence =>
         {
             long haul = 0;
-            foreach (var monkey in sequencesPrices)
+            foreach (var monkey in monkeySales)
             {
                 haul += monkey.GetValueOrDefault(sequence);
             }
-            if (haul > maxHaul)
+            lock (this)
             {
-                maxHaul = haul;
+                maxHaul = Math.Max(maxHaul, haul);
             }
-            maxHaul = Math.Max(haul, maxHaul);
-        }
+        });
         return maxHaul.ToString();
     }
 }
