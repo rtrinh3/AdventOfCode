@@ -19,4 +19,19 @@ public class Day23Tests
         var answer = instance.Part1();
         Assert.AreEqual("1108", answer);
     }
+
+    [TestMethod()]
+    public void Part2ExampleTest()
+    {
+        var instance = new Day23(File.ReadAllText("day23-example.txt"));
+        var answer = instance.Part2();
+        Assert.AreEqual("co,de,ka,ta", answer);
+    }
+    [TestMethod(), Timeout(30_000)]
+    public void Part2InputTest()
+    {
+        var instance = new Day23(File.ReadAllText("day23-input.txt"));
+        var answer = instance.Part2();
+        Assert.AreEqual("ab,cp,ep,fj,fl,ij,in,ng,pl,qr,rx,va,vf", answer);
+    }
 }
