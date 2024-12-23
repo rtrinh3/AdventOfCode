@@ -8,7 +8,7 @@ namespace Aoc2024;
 // --- Day 23: LAN Party ---
 public class Day23 : IAocDay
 {
-    private readonly DefaultDict<string, List<string>> connections;
+    private readonly DefaultDict<string, HashSet<string>> connections;
 
     public Day23(string input)
     {
@@ -29,7 +29,7 @@ public class Day23 : IAocDay
         HashSet<EquatableArray<string>> trios = new();
         foreach (var computer in chiefComputers)
         {
-            var neighbors = connections[computer];
+            var neighbors = connections[computer].ToList();
             for (int i = 0; i < neighbors.Count; i++)
             {
                 for (int j = i + 1; j < neighbors.Count; j++)
@@ -50,9 +50,9 @@ public class Day23 : IAocDay
 
     public string Part2()
     {
-        var computers = connections.Keys.Order().ToList();
-        string[] maxNetwork = [];
-        void Visit(string[] network)
+        var computers = connections.Keys.Order().ToArray();
+        int[] maxNetwork = [];
+        void Visit(int[] network)
         {
             // Check if max complete network
             if (network.Length > maxNetwork.Length)
@@ -60,18 +60,19 @@ public class Day23 : IAocDay
                 maxNetwork = network;
             }
             // Recurse
-            var tails = (network.Length == 0) ? computers : computers.SkipWhile(c => c.CompareTo(network.Last()) <= 0).ToList();
-            foreach (var computer in tails)
+            int skip = network.LastOrDefault(-1) + 1;
+            for (int i = skip; i < computers.Length; i++)
             {
-                if (network.All(c => connections[c].Contains(computer)))
+
+                if (network.All(c => connections[computers[c]].Contains(computers[i])))
                 {
-                    string[] newNetwork = [.. network, computer];
+                    int[] newNetwork = [.. network, i];
                     Visit(newNetwork);
                 }
             }
         }
         Visit([]);
-        var answer = string.Join(',', maxNetwork);
+        var answer = string.Join(',', maxNetwork.Select(i => computers[i]));
         return answer;
     }
 }
