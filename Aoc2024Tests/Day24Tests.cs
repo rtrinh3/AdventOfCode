@@ -26,4 +26,37 @@ public class Day24Tests
         var answer = instance.Part1();
         Assert.AreEqual("59364044286798", answer);
     }
+
+    [TestMethod()]
+    public void Part2Example3Test()
+    {
+        var instance = new Day24(File.ReadAllText("day24-example3.txt"));
+        static int EvaluateErrorBitwiseAnd(Func<ulong, ulong, ulong> system)
+        {
+            int errors = 0;
+            for (ulong i = 0; i < (1 << 6); i++)
+            {
+                for (ulong j = 0; j < (1 << 6); j++)
+                {
+                    ulong expected = i & j;
+                    ulong actual = system(i, j);
+                    if (expected!= actual)
+                    {
+                        errors++;
+                    }
+                }
+            }
+            return errors;
+        }
+        var answer = instance.DoPart2(2, EvaluateErrorBitwiseAnd);        
+        Assert.AreEqual("z00,z01,z02,z05", answer);
+    }
+    [TestMethod()]
+    public void Part2InputTest()
+    {
+        var instance = new Day24(File.ReadAllText("day24-input.txt"));
+        var answer = instance.Part2();
+        //Assert.AreEqual("59364044286798", answer);
+        Assert.Inconclusive(answer);
+    }
 }
