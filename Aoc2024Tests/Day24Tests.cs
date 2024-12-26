@@ -56,6 +56,7 @@ public class Day24Tests
     {
         var instance = new Day24(File.ReadAllText("day24-input.txt"));
         var answer = instance.Part2();
+        // (gmt,z07), (qjj,cbj), (dmn, z18), (cfk,z35)
         Assert.AreEqual("cbj,cfk,dmn,gmt,qjj,z07,z18,z35", answer);
     }
 }
