@@ -48,7 +48,7 @@ namespace Aoc2024
                     int runCount = 1;
                     for (int i = 1; i < projectedFences.Count; i++)
                     {
-                        if (Math.Abs(projectedFences[i] - projectedFences[i - 1]) > 1)
+                        if (projectedFences[i] - projectedFences[i - 1] > 1)
                         {
                             runCount++;
                         }

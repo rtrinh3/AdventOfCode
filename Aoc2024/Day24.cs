@@ -192,9 +192,8 @@ public class Day24 : IAocDay
         for (int i = 1; i <= inputSize; i++)
         {
             ulong expected = 1UL << i;
-            ulong x = expected - 1;
-            ulong y = 1;
-            ulong actual = system(x, y);
+            ulong x = expected >> 1;
+            ulong actual = system(x, x);
             ulong difference = actual ^ expected;
             int error = BitOperations.PopCount(difference);
             errors += error;
