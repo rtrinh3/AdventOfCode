@@ -28,7 +28,15 @@ public class Day21Tests
     {
         var instance = new Day21(File.ReadAllText("day21-input.txt"));
         var answer = instance.Part1();
-        //Assert.AreEqual("365", answer);
+        Assert.AreEqual("132532", answer);
+    }
+
+    [TestMethod()]
+    public void Part2InputTest()
+    {
+        var instance = new Day21(File.ReadAllText("day21-input.txt"));
+        var answer = instance.Part2();
+        //Assert.AreEqual("132532", answer);
         Assert.Inconclusive(answer);
     }
 }
