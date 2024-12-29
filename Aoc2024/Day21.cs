@@ -14,19 +14,28 @@ public class Day21(string input) : IAocDay
 
     public string Part1()
     {
+        long answer = DoPuzzle(2);
+        return answer.ToString();
+    }
+
+    private long DoPuzzle(int directionRobots)
+    {
         long answer = 0;
-        IRobot initialState = new PadRobot(new VectorRC(0, 2), directionPad,
-            new PadRobot(new VectorRC(0, 2), directionPad,
-            new PadRobot(new VectorRC(3, 2), numberPad,
-            new OutputCode(""))));
+        IRobot initialState = new PadRobot(new VectorRC(3, 2), numberPad,
+            new OutputCode(""));
+        for (int i = 0; i < directionRobots; i++)
+        {
+            initialState = new PadRobot(new VectorRC(0, 2), directionPad, initialState);
+        }
         foreach (var code in lines)
         {
+            Console.WriteLine($"Solving code {code}");
             var path = GraphAlgos.BfsToEnd(initialState, state => GetNextStates(state, code), state => (string)state.GetState().Last() == code);
             long buttons = path.distance;
             long complexity = buttons * int.Parse(code[..^1]);
             answer += complexity;
         }
-        return answer.ToString();
+        return answer;
     }
 
     private static List<IRobot> GetNextStates(IRobot state, string targetCode)
@@ -101,6 +110,7 @@ public class Day21(string input) : IAocDay
 
     public string Part2()
     {
-        return nameof(Part2);
+        long answer = DoPuzzle(25);
+        return answer.ToString();
     }
 }

@@ -31,7 +31,27 @@ public class Day21Tests
         Assert.AreEqual("132532", answer);
     }
 
-    [TestMethod()]
+    [TestMethod(), Timeout(60_000)]
+    public void Part2ExampleTest()
+    {
+        // https://www.reddit.com/r/adventofcode/comments/1hjb7hh/2024_day_21_part_2_can_someone_share_what_the/
+        // https://www.reddit.com/r/adventofcode/comments/1hje6m0/day_21_part_2_need_answer_to_test_case_more/
+        var file = File.ReadAllText("day21-example.txt");
+        var totalInstance = new Day21(file);
+        var totalAnswer = totalInstance.Part2();
+        Assert.AreEqual("154115708116294", totalAnswer);
+
+        var lines = file.TrimEnd().ReplaceLineEndings("\n").Split('\n');
+        long[] expected = [82050061710, 72242026390, 81251039228, 80786362258, 77985628636];
+        Assert.AreEqual(expected.Length, lines.Length);
+        for (int i = 0; i < expected.Length; i++)
+        {
+            var lineInstance = new Day21(lines[i]);
+            var lineAnswer = lineInstance.Part1();
+            Assert.AreEqual(expected[i].ToString(), lineAnswer);
+        }
+    }
+    [TestMethod(), Timeout(60_000)]
     public void Part2InputTest()
     {
         var instance = new Day21(File.ReadAllText("day21-input.txt"));
