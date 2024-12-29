@@ -47,7 +47,7 @@ public class Day21Tests
         for (int i = 0; i < expected.Length; i++)
         {
             var lineInstance = new Day21(lines[i]);
-            var lineAnswer = lineInstance.Part1();
+            var lineAnswer = lineInstance.Part2();
             Assert.AreEqual(expected[i].ToString(), lineAnswer);
         }
     }
