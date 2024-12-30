@@ -1,4 +1,6 @@
 ﻿using AocCommon;
+using System.Diagnostics;
+using System.Text;
 
 namespace Aoc2024;
 
@@ -7,8 +9,16 @@ namespace Aoc2024;
 public class Day21(string input) : IAocDay
 {
     private const char OUTSIDE = ' ';
-    private static readonly Grid directionPad = new([" ^A", "<v>"], OUTSIDE);
-    private static readonly Grid numberPad = new(["789", "456", "123", " 0A"], OUTSIDE);
+    private static readonly Grid directionPad = new([
+        " ^A",
+        "<v>"
+        ], OUTSIDE);
+    private static readonly Grid numberPad = new([
+        "789",
+        "456",
+        "123",
+        " 0A"
+        ], OUTSIDE);
 
     private readonly string[] lines = input.TrimEnd().ReplaceLineEndings("\n").Split('\n');
 
@@ -20,92 +30,166 @@ public class Day21(string input) : IAocDay
 
     private long DoPuzzle(int directionRobots)
     {
-        long answer = 0;
-        IRobot initialState = new PadRobot(new VectorRC(3, 2), numberPad,
-            new OutputCode(""));
-        for (int i = 0; i < directionRobots; i++)
+        // TODO Factorize common code out of GetArrowMoves, GetArrowSequenceLength, GetNumberMoves, GetNumberSequenceLength?
+        Func<char, char, string> GetArrowMoves = Memoization.Make((char origin, char destination) =>
         {
-            initialState = new PadRobot(new VectorRC(0, 2), directionPad, initialState);
-        }
-        foreach (var code in lines)
-        {
-            Console.WriteLine($"Solving code {code}");
-            var path = GraphAlgos.BfsToEnd(initialState, state => GetNextStates(state, code), state => (string)state.GetState().Last() == code);
-            long buttons = path.distance;
-            long complexity = buttons * int.Parse(code[..^1]);
-            answer += complexity;
-        }
-        return answer;
-    }
-
-    private static List<IRobot> GetNextStates(IRobot state, string targetCode)
-    {
-        List<IRobot> results = new();
-        foreach (char button in "^v<>A")
-        {
-            var next = state.PushButton(button);
-            if (next is not null && targetCode.StartsWith((string)next.GetState().Last()))
+            VectorRC originCoord = directionPad.Iterate().Single(x => x.Value == origin).Position;
+            VectorRC destinationCoord = directionPad.Iterate().Single(x => x.Value == destination).Position;
+            VectorRC movement = destinationCoord - originCoord;
+            StringBuilder answer = new();
+            // Avoid the gap in the corner
+            if (originCoord.Col == 0 && destinationCoord.Row == 0)
             {
-                results.Add(next);
-            }
-        }
-        return results;
-    }
-
-    private interface IRobot
-    {
-        IEnumerable<object> GetState();
-        IRobot? PushButton(char button);
-    }
-
-    private record class PadRobot(VectorRC Position, Grid Pad, IRobot Next) : IRobot
-    {
-        public IEnumerable<object> GetState() => [Position, .. Next.GetState()];
-        public IRobot? PushButton(char button)
-        {
-            if (button == 'A')
-            {
-                var newNext = Next.PushButton(Pad.Get(Position));
-                if (newNext is not null)
+                Debug.Assert(movement.Row < 0);
+                Debug.Assert(movement.Col > 0);
+                for (int i = 0; i < movement.Col; i++)
                 {
-                    return new PadRobot(Position, Pad, newNext);
+                    answer.Append('>');
                 }
-                else
+                for (int i = 0; i < -movement.Row; i++)
                 {
-                    return null;
+                    answer.Append('^');
+                }
+            }
+            else if (originCoord.Row == 0 && destinationCoord.Col == 0)
+            {
+                Debug.Assert(movement.Row > 0);
+                Debug.Assert(movement.Col < 0);
+                for (int i = 0; i < movement.Row; i++)
+                {
+                    answer.Append('v');
+                }
+                for (int i = 0; i < -movement.Col; i++)
+                {
+                    answer.Append('<');
                 }
             }
             else
             {
-                VectorRC move = button switch
+                // Move in the order <v^> -- furthest to closest to A
+                for (int i = 0; i < -movement.Col; i++)
                 {
-                    '^' => VectorRC.Up,
-                    'v' => VectorRC.Down,
-                    '<' => VectorRC.Left,
-                    '>' => VectorRC.Right,
-                    _ => throw new Exception("what button")
-                };
-                var newPos = Position + move;
-                if (Pad.Get(newPos) != OUTSIDE)
-                {
-                    return new PadRobot(newPos, Pad, Next);
+                    answer.Append('<');
                 }
-                else
+                for (int i = 0; i < movement.Row; i++)
                 {
-                    return null;
+                    answer.Append('v');
+                }
+                for (int i = 0; i < -movement.Row; i++)
+                {
+                    answer.Append('^');
+                }
+                for (int i = 0; i < movement.Col; i++)
+                {
+                    answer.Append('>');
                 }
             }
-            throw new NotImplementedException(nameof(PadRobot));
-        }
-    }
-
-    private record class OutputCode(string Code) : IRobot
-    {
-        public IEnumerable<object> GetState() => [Code];
-        public IRobot PushButton(char button)
+            answer.Append('A');
+            return answer.ToString();
+        });
+        Func<char, char, int, long> GetArrowSequenceLength = (_, _, _) => throw new Exception("Stub for memoized recursive function");
+        GetArrowSequenceLength = Memoization.Make((char origin, char destination, int depth) =>
         {
-            return new OutputCode(Code + button);
+            if (depth <= 0)
+            {
+                return 1L;
+            }
+            var moves = GetArrowMoves(origin, destination);
+            long length = 0;
+            for (int i = 0; i < moves.Length; i++)
+            {
+                char moveOrigin = i == 0 ? 'A' : moves[i - 1];
+                char moveDestination = moves[i];
+                long x = GetArrowSequenceLength(moveOrigin, moveDestination, depth - 1);
+                length += x;
+            }
+            return length;
+        });
+        Func<char, char, string> GetNumberMoves = Memoization.Make((char origin, char destination) =>
+        {
+            VectorRC originCoord = numberPad.Iterate().Single(x => x.Value == origin).Position;
+            VectorRC destinationCoord = numberPad.Iterate().Single(x => x.Value == destination).Position;
+            VectorRC movement = destinationCoord - originCoord;
+            StringBuilder answer = new();
+            // Avoid the gap in the corner
+            if (originCoord.Col == 0 && destinationCoord.Row == 3)
+            {
+                Debug.Assert(movement.Row > 0);
+                Debug.Assert(movement.Col > 0);
+                for (int i = 0; i < movement.Col; i++)
+                {
+                    answer.Append('>');
+                }
+                for (int i = 0; i < movement.Row; i++)
+                {
+                    answer.Append('v');
+                }
+            }
+            else if (originCoord.Row == 3 && destinationCoord.Col == 0)
+            {
+                Debug.Assert(movement.Row < 0);
+                Debug.Assert(movement.Col < 0);
+                for (int i = 0; i < -movement.Row; i++)
+                {
+                    answer.Append('^');
+                }
+                for (int i = 0; i < -movement.Col; i++)
+                {
+                    answer.Append('<');
+                }
+            }
+            else
+            {
+                // Move in the order <v^> -- furthest to closest to A
+                for (int i = 0; i < -movement.Col; i++)
+                {
+                    answer.Append('<');
+                }
+                for (int i = 0; i < movement.Row; i++)
+                {
+                    answer.Append('v');
+                }
+                for (int i = 0; i < -movement.Row; i++)
+                {
+                    answer.Append('^');
+                }
+                for (int i = 0; i < movement.Col; i++)
+                {
+                    answer.Append('>');
+                }
+            }
+            answer.Append('A');
+            return answer.ToString();
+        });
+        Func<char, char, long> GetNumberSequenceLength = Memoization.Make((char origin, char destination) =>
+        {
+            var moves = GetNumberMoves(origin, destination);
+            long length = 0;
+            for (int i = 0; i < moves.Length; i++)
+            {
+                char moveOrigin = i == 0 ? 'A' : moves[i - 1];
+                char moveDestination = moves[i];
+                long x = GetArrowSequenceLength(moveOrigin, moveDestination, directionRobots);
+                length += x;
+            }
+            return length;
+        });
+
+        long puzzleAnswer = 0;
+        foreach (var code in lines)
+        {
+            long buttons = 0;
+            for (int i = 0; i < code.Length; i++)
+            {
+                char origin = i == 0 ? 'A' : code[i - 1];
+                char destination = code[i];
+                long x = GetNumberSequenceLength(origin, destination);
+                buttons += x;
+            }
+            long complexity = buttons * int.Parse(code[..^1]);
+            puzzleAnswer += complexity;
         }
+        return puzzleAnswer;
     }
 
     public string Part2()

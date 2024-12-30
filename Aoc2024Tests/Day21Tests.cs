@@ -14,7 +14,13 @@ public class Day21Tests
         Assert.AreEqual("126384", totalAnswer);
 
         var lines = file.TrimEnd().ReplaceLineEndings("\n").Split('\n');
-        int[] expected = [68 * 29, 60 * 980, 68 * 179, 64 * 456, 64 * 379];
+        int[] expected = [
+            68 * 29,
+            60 * 980,
+            68 * 179,
+            64 * 456,
+            64 * 379
+        ];
         Assert.AreEqual(expected.Length, lines.Length);
         for (int i = 0; i < expected.Length; i++)
         {
@@ -42,7 +48,13 @@ public class Day21Tests
         Assert.AreEqual("154115708116294", totalAnswer);
 
         var lines = file.TrimEnd().ReplaceLineEndings("\n").Split('\n');
-        long[] expected = [82050061710, 72242026390, 81251039228, 80786362258, 77985628636];
+        long[] expected = [
+            82050061710 * 29,
+            72242026390 * 980,
+            81251039228 * 179,
+            80786362258 * 456,
+            77985628636 * 379
+        ];
         Assert.AreEqual(expected.Length, lines.Length);
         for (int i = 0; i < expected.Length; i++)
         {
@@ -56,7 +68,6 @@ public class Day21Tests
     {
         var instance = new Day21(File.ReadAllText("day21-input.txt"));
         var answer = instance.Part2();
-        //Assert.AreEqual("132532", answer);
-        Assert.Inconclusive(answer);
+        Assert.AreEqual("165644591859332", answer);
     }
 }

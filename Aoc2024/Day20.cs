@@ -15,7 +15,7 @@ public class Day20(string input) : IAocDay
         return answer.ToString();
     }
 
-    public List<(VectorRC Start, VectorRC End, int Saved)> FindCheats(int cheatTime)
+    public IEnumerable<(VectorRC Start, VectorRC End, int Saved)> FindCheats(int cheatTime)
     {
         VectorRC raceStart = map.Iterate().Single(x => x.Value == 'S').Position;
         VectorRC raceEnd = map.Iterate().Single(x => x.Value == 'E').Position;
@@ -41,10 +41,10 @@ public class Day20(string input) : IAocDay
         }
 
         var cheats = map.Iterate()
+            .AsParallel()
             .Where(x => x.Value != '#')
             .SelectMany(x => cheatOffsets.Select(offset => (Start: x.Position, End: x.Position + offset)))
-            .Where(cheat => map.Get(cheat.End) != '#')
-            .ToList();
+            .Where(cheat => map.Get(cheat.End) != '#');
 
         var cheatTimes = cheats
             .Select(cheat =>
@@ -54,8 +54,7 @@ public class Day20(string input) : IAocDay
                 var saved = originalTime - totalTime;
                 var answer = (cheat.Start, cheat.End, saved);
                 return answer;
-            })
-            .ToList();
+            });
         return cheatTimes;
     }
 
