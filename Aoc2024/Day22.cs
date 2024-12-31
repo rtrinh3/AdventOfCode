@@ -1,4 +1,5 @@
 ﻿using AocCommon;
+using System.Collections.Concurrent;
 
 namespace Aoc2024;
 
@@ -34,34 +35,39 @@ public class Day22(string input) : IAocDay
     public string Part2()
     {
         // Get sequences of changes
-        Dictionary<(sbyte, sbyte, sbyte, sbyte), sbyte>[] monkeySales = new Dictionary<(sbyte, sbyte, sbyte, sbyte), sbyte>[initialSecretNumbers.Length];
+        static int FlattenChanges(int a, int b, int c, int d) => ((a & 31) << 15) | ((b & 31) << 10) | ((c & 31) << 5) | (d & 31);
+        sbyte[,] monkeySales = new sbyte[initialSecretNumbers.Length, 1 << 20];
+        bool[,] monkeySalesSet = new bool[initialSecretNumbers.Length, 1 << 20];
+        ConcurrentDictionary<int, bool> allSequencesBag = new();
         Parallel.For(0, initialSecretNumbers.Length, monkey =>
         {
             var numbers = GenerateSecretNumbers(initialSecretNumbers[monkey]).Take(2000 + 1).Select(n => (sbyte)(n % 10)).ToList();
-            Dictionary<(sbyte, sbyte, sbyte, sbyte), sbyte> sales = new();
             for (int i = 0; i < 2000 + 1 - 4; i++)
             {
-                var changes = (
-                    (sbyte)(numbers[i + 1] - numbers[i + 0]),
-                    (sbyte)(numbers[i + 2] - numbers[i + 1]),
-                    (sbyte)(numbers[i + 3] - numbers[i + 2]),
-                    (sbyte)(numbers[i + 4] - numbers[i + 3])
+                var changes = FlattenChanges(
+                    numbers[i + 1] - numbers[i + 0],
+                    numbers[i + 2] - numbers[i + 1],
+                    numbers[i + 3] - numbers[i + 2],
+                    numbers[i + 4] - numbers[i + 3]
                     );
-                sales.TryAdd(changes, numbers[i + 4]);
-                // If the key already exists, TryAdd does nothing and returns false.
+                if (!monkeySalesSet[monkey, changes])
+                {
+                    monkeySales[monkey, changes] = numbers[i + 4];
+                    monkeySalesSet[monkey, changes] = true;
+                    allSequencesBag.TryAdd(changes, true);
+                }
             }
-            monkeySales[monkey] = sales;
         });
 
         // Find max haul
-        var allSequences = monkeySales.SelectMany(s => s.Keys).Distinct().ToList();
+        var allSequences = allSequencesBag.Keys;
         long maxHaul = 0;
         Parallel.ForEach(allSequences, sequence =>
         {
             long haul = 0;
-            foreach (var monkey in monkeySales)
+            for (int monkey = 0; monkey < initialSecretNumbers.Length; monkey++)
             {
-                haul += monkey.GetValueOrDefault(sequence);
+                haul += monkeySales[monkey, sequence];
             }
             lock (this)
             {
