@@ -35,9 +35,11 @@ public class Day22(string input) : IAocDay
     public string Part2()
     {
         // Get sequences of changes
-        static int FlattenChanges(int a, int b, int c, int d) => ((a & 31) << 15) | ((b & 31) << 10) | ((c & 31) << 5) | (d & 31);
-        sbyte[,] monkeySales = new sbyte[initialSecretNumbers.Length, 1 << 20];
-        bool[,] monkeySalesSet = new bool[initialSecretNumbers.Length, 1 << 20];
+        const int OFFSET = 9;
+        const int BASE = 19;
+        static int FlattenChanges(int a, int b, int c, int d) => ((a + OFFSET) * BASE * BASE * BASE) + ((b + OFFSET) * BASE * BASE) + ((c + OFFSET) * BASE) + (d + OFFSET);
+        sbyte[,] monkeySales = new sbyte[initialSecretNumbers.Length, BASE * BASE * BASE * BASE]; // initialized to 0
+        bool[,] monkeySalesSet = new bool[initialSecretNumbers.Length, BASE * BASE * BASE * BASE]; // initialized to false
         ConcurrentDictionary<int, bool> allSequencesBag = new();
         Parallel.For(0, initialSecretNumbers.Length, monkey =>
         {
