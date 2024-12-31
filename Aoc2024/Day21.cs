@@ -30,59 +30,36 @@ public class Day21(string input) : IAocDay
 
     private long DoPuzzle(int directionRobots)
     {
-        // TODO Factorize common code out of GetArrowMoves, GetArrowSequenceLength, GetNumberMoves, GetNumberSequenceLength?
-        Func<char, char, string> GetArrowMoves = Memoization.Make((char origin, char destination) =>
+        Func<Grid, char, char, string> GetMoves = Memoization.Make((Grid pad, char origin, char destination) =>
         {
-            VectorRC originCoord = directionPad.Iterate().Single(x => x.Value == origin).Position;
-            VectorRC destinationCoord = directionPad.Iterate().Single(x => x.Value == destination).Position;
+            VectorRC originCoord = pad.Iterate().Single(x => x.Value == origin).Position;
+            VectorRC destinationCoord = pad.Iterate().Single(x => x.Value == destination).Position;
+            VectorRC gapCoord = pad.Iterate().Single(x => x.Value == OUTSIDE).Position;
             VectorRC movement = destinationCoord - originCoord;
             StringBuilder answer = new();
-            // Avoid the gap in the corner
-            if (originCoord.Col == 0 && destinationCoord.Row == 0)
+            // Move in the order <v^> -- furthest to closest to A
+            if (movement.Col < 0)
             {
-                Debug.Assert(movement.Row < 0);
-                Debug.Assert(movement.Col > 0);
-                for (int i = 0; i < movement.Col; i++)
-                {
-                    answer.Append('>');
-                }
-                for (int i = 0; i < -movement.Row; i++)
-                {
-                    answer.Append('^');
-                }
+                answer.Append('<', -movement.Col);
             }
-            else if (originCoord.Row == 0 && destinationCoord.Col == 0)
+            if (movement.Row > 0)
             {
-                Debug.Assert(movement.Row > 0);
-                Debug.Assert(movement.Col < 0);
-                for (int i = 0; i < movement.Row; i++)
-                {
-                    answer.Append('v');
-                }
-                for (int i = 0; i < -movement.Col; i++)
-                {
-                    answer.Append('<');
-                }
+                answer.Append('v', movement.Row);
             }
-            else
+            if (movement.Row < 0)
             {
-                // Move in the order <v^> -- furthest to closest to A
-                for (int i = 0; i < -movement.Col; i++)
-                {
-                    answer.Append('<');
-                }
-                for (int i = 0; i < movement.Row; i++)
-                {
-                    answer.Append('v');
-                }
-                for (int i = 0; i < -movement.Row; i++)
-                {
-                    answer.Append('^');
-                }
-                for (int i = 0; i < movement.Col; i++)
-                {
-                    answer.Append('>');
-                }
+                answer.Append('^', -movement.Row);
+            }
+            if (movement.Col > 0)
+            {
+                answer.Append('>', movement.Col);
+            }
+            // Reverse path to avoid gap
+            if ((originCoord.Col == gapCoord.Col && destinationCoord.Row == gapCoord.Row) || (originCoord.Row == gapCoord.Row && destinationCoord.Col == gapCoord.Col))
+            {
+                var reversed = answer.ToString().Reverse().ToArray();
+                answer.Clear();
+                answer.Append(reversed);
             }
             answer.Append('A');
             return answer.ToString();
@@ -94,7 +71,7 @@ public class Day21(string input) : IAocDay
             {
                 return 1L;
             }
-            var moves = GetArrowMoves(origin, destination);
+            var moves = GetMoves(directionPad, origin, destination);
             long length = 0;
             for (int i = 0; i < moves.Length; i++)
             {
@@ -105,65 +82,9 @@ public class Day21(string input) : IAocDay
             }
             return length;
         });
-        Func<char, char, string> GetNumberMoves = Memoization.Make((char origin, char destination) =>
+        long GetNumberSequenceLength(char origin, char destination)
         {
-            VectorRC originCoord = numberPad.Iterate().Single(x => x.Value == origin).Position;
-            VectorRC destinationCoord = numberPad.Iterate().Single(x => x.Value == destination).Position;
-            VectorRC movement = destinationCoord - originCoord;
-            StringBuilder answer = new();
-            // Avoid the gap in the corner
-            if (originCoord.Col == 0 && destinationCoord.Row == 3)
-            {
-                Debug.Assert(movement.Row > 0);
-                Debug.Assert(movement.Col > 0);
-                for (int i = 0; i < movement.Col; i++)
-                {
-                    answer.Append('>');
-                }
-                for (int i = 0; i < movement.Row; i++)
-                {
-                    answer.Append('v');
-                }
-            }
-            else if (originCoord.Row == 3 && destinationCoord.Col == 0)
-            {
-                Debug.Assert(movement.Row < 0);
-                Debug.Assert(movement.Col < 0);
-                for (int i = 0; i < -movement.Row; i++)
-                {
-                    answer.Append('^');
-                }
-                for (int i = 0; i < -movement.Col; i++)
-                {
-                    answer.Append('<');
-                }
-            }
-            else
-            {
-                // Move in the order <v^> -- furthest to closest to A
-                for (int i = 0; i < -movement.Col; i++)
-                {
-                    answer.Append('<');
-                }
-                for (int i = 0; i < movement.Row; i++)
-                {
-                    answer.Append('v');
-                }
-                for (int i = 0; i < -movement.Row; i++)
-                {
-                    answer.Append('^');
-                }
-                for (int i = 0; i < movement.Col; i++)
-                {
-                    answer.Append('>');
-                }
-            }
-            answer.Append('A');
-            return answer.ToString();
-        });
-        Func<char, char, long> GetNumberSequenceLength = Memoization.Make((char origin, char destination) =>
-        {
-            var moves = GetNumberMoves(origin, destination);
+            var moves = GetMoves(numberPad, origin, destination);
             long length = 0;
             for (int i = 0; i < moves.Length; i++)
             {
@@ -173,7 +94,7 @@ public class Day21(string input) : IAocDay
                 length += x;
             }
             return length;
-        });
+        }
 
         long puzzleAnswer = 0;
         foreach (var code in lines)
