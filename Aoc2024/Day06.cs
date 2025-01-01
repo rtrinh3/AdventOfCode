@@ -33,23 +33,14 @@ namespace Aoc2024
                     isLoop = true;
                     break;
                 }
-                VectorRC nextDir = dir;
-                for (int i = 0; i < 4; i++)
+                if (grid.Get(pos+dir) == '#')
                 {
-                    VectorRC nextPos = pos + nextDir;
-                    char nextTile = grid.Get(nextPos);
-                    if (nextTile != '#')
-                    {
-                        break;
-                    }
-                    nextDir = nextDir.RotatedRight();
+                    dir = dir.RotatedRight();
                 }
-                if (grid.Get(pos + nextDir) == '#')
+                else
                 {
-                    throw new Exception("Trapped!");
+                    pos += dir;
                 }
-                pos = pos + nextDir;
-                dir = nextDir;
             }
             return (visited, isLoop);
         }
