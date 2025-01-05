@@ -5,12 +5,15 @@ using System.Text;
 namespace Aoc2019
 {
     // https://adventofcode.com/2019/day/13
+    // --- Day 13: Care Package ---
     public class Day13(string input) : IAocDay
     {
         private readonly IntcodeInterpreter interpreter = new(input);
         private readonly Dictionary<VectorXY, BigInteger> screen = new();
         private readonly VectorXY scoreCoord = new(-1, 0);
         private const bool ANIMATE = false;
+        private int ball;
+        private int paddle;
 
         public string Part1()
         {
@@ -64,10 +67,8 @@ namespace Aoc2019
                 if (ANIMATE)
                 {
                     ShowScreen();
-                    System.Threading.Thread.Sleep(20);
+                    System.Threading.Thread.Sleep(15);
                 }
-                var ball = screen.First(kvp => kvp.Value == 4).Key.X;
-                var paddle = screen.First(kvp => kvp.Value == 3).Key.X;
                 if (ball < paddle)
                 {
                     yield return -1;
@@ -87,13 +88,11 @@ namespace Aoc2019
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Score {screen.GetValueOrDefault(scoreCoord)}");
-            int xMin = screen.Keys.Select(v => v.X).Min();
             int xMax = screen.Keys.Select(v => v.X).Max();
-            int yMin = screen.Keys.Select(v => v.Y).Min();
             int yMax = screen.Keys.Select(v => v.Y).Max();
-            for (int row = yMin; row <= yMax; row++)
+            for (int row = 0; row <= yMax; row++)
             {
-                for (int col = xMin; col <= xMax; col++)
+                for (int col = 0; col <= xMax; col++)
                 {
                     VectorXY coords = new(col, row);
                     var tile = screen.GetValueOrDefault(coords);
@@ -110,6 +109,14 @@ namespace Aoc2019
             foreach (var chunk in machineOutput.Chunk(3))
             {
                 screen[new VectorXY((int)chunk[0], (int)chunk[1])] = chunk[2];
+                if (chunk[2] == 4)
+                {
+                    ball = (int)chunk[0];
+                }
+                else if (chunk[2] == 3)
+                {
+                    paddle = (int)chunk[0];
+                }
             }
         }
     }
