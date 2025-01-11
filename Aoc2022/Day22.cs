@@ -266,39 +266,16 @@ namespace Aoc2022
             return password.ToString();
         }
 
-        private static VectorXYZ MatrixMultiply(int[,] matrix, VectorXYZ vector)
-        {
-            if (matrix.GetLength(0) != 3)
-            {
-                throw new ArgumentException("Matrix must have height of 3");
-            }
-            if (matrix.GetLength(1) != 3)
-            {
-                throw new ArgumentException("Matrix must have width of 3");
-            }
-            return new VectorXYZ(
-                matrix[0, 0] * vector.X + matrix[0, 1] * vector.Y + matrix[0, 2] * vector.Z,
-                matrix[1, 0] * vector.X + matrix[1, 1] * vector.Y + matrix[1, 2] * vector.Z,
-                matrix[2, 0] * vector.X + matrix[2, 1] * vector.Y + matrix[2, 2] * vector.Z
-            );
-        }
-
         private static VectorXYZ RotateCounterClockwise(VectorXYZ vector, VectorXYZ axis)
         {
             if (axis.ManhattanMetric() != 1)
             {
                 throw new ArgumentException("Axis must be unit vector", nameof(axis));
             }
-            // https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
+            // https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
             const int CosAngle = 0;
             const int SinAngle = 1;
-            int[,] matrix = new int[3, 3]
-            {
-                { CosAngle + axis.X * axis.X * (1 - CosAngle), axis.X * axis.Y * (1 - CosAngle) - axis.Z * SinAngle, axis.X * axis.Z * (1 - CosAngle) + axis.Y * SinAngle },
-                { axis.Y * axis.X * (1 - CosAngle) + axis.Z * SinAngle, CosAngle + axis.Y * axis.Y * (1 - CosAngle), axis.Y * axis.Z * (1 - CosAngle) - axis.X * SinAngle },
-                { axis.Z * axis.X * (1 - CosAngle) - axis.Y * SinAngle, axis.Z * axis.Y * (1 - CosAngle) + axis.X * SinAngle, CosAngle + axis.Z * axis.Z * (1 - CosAngle) }
-            };
-            var answer = MatrixMultiply(matrix, vector);
+            var answer = vector.Scale(CosAngle) + axis.Cross(vector).Scale(SinAngle) + axis.Scale(axis.Dot(vector) * (1 - CosAngle));
             return answer;
         }
     }
