@@ -1,7 +1,6 @@
 ﻿using AocCommon;
 using System.Diagnostics;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Aoc2020
 {
@@ -9,11 +8,15 @@ namespace Aoc2020
     // --- Day 20: Jurassic Jigsaw ---
     public class Day20 : IAocDay
     {
-        private readonly List<Tile> tiles;
+        private const int TILE_WIDTH = 10;
+        private readonly Tile[] tiles;
+        private readonly int[][] connections;
+        private readonly int[] corners;
+        private readonly int arrangementSide;
 
         public Day20(string input)
         {
-            tiles = new();
+            List<Tile> tiles = new();
             string[] tileData = input.TrimEnd().ReplaceLineEndings("\n").Split("\n\n");
             foreach (var tile in tileData)
             {
@@ -22,152 +25,239 @@ namespace Aoc2020
                 string[] data = split[1].Split('\n');
                 tiles.Add(new Tile(id, data));
             }
+            this.tiles = tiles.ToArray();
 
+            short[][] allEdges = new short[tiles.Count][];
             for (int i = 0; i < tiles.Count; i++)
             {
-                for (int j = i + 1; j < tiles.Count; j++)
+                short[] edges = [.. tiles[i].Edges.Enumerate(), .. tiles[i].Transform(Transformation.Flip).Edges.Enumerate()];
+                allEdges[i] = edges;
+            }
+            List<int>[] connections = new List<int>[tiles.Count];
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                List<int> connection = new();
+                for (int j = 0; j < tiles.Count; j++)
                 {
-                    if (tiles[i].Edges.Enumerate().Any(e => tiles[j].Edges.EnumerateAll().Contains(e)))
+                    if (i != j && allEdges[i].Intersect(allEdges[j]).Any())
                     {
-                        tiles[i].Matches.Add(tiles[j].ID);
-                        tiles[j].Matches.Add(tiles[i].ID);
+                        connection.Add(j);
                     }
                 }
+                connections[i] = connection;
             }
+            this.connections = connections.Select(c => c.ToArray()).ToArray();
+
+            List<int> corners = new();
+            for (int i = 0; i < connections.Length; i++)
+            {
+                if (connections[i].Count == 2)
+                {
+                    corners.Add(i);
+                }
+            }
+            this.corners = corners.ToArray();
+
+            arrangementSide = (int)Math.Sqrt(tiles.Count);
+            Debug.Assert(arrangementSide * arrangementSide == tiles.Count);
         }
 
         public string Part1()
         {
-            var corners = tiles.Where(t => t.Matches.Count == 2).ToList();
-            Debug.Assert(corners.Count == 4);
-            long product = corners.Select(c => c.ID).Aggregate(1L, (acc, id) => acc * id);
+            Debug.Assert(corners.Length == 4);
+            long product = corners.Select(i => tiles[i].ID).Aggregate(1L, (acc, id) => acc * id);
             return product.ToString();
         }
 
         public string Part2()
         {
-            // Step 1: Assemble the puzzle
-            DefaultDict<short, List<Tile>> edgeToTileMap = new();
-            foreach (var t in tiles)
+            // Step 1: Put tiles in position
+            var tileArrangement = FindArrangement();
+            //// Visualization
+            //Console.WriteLine("Tile indices");
+            //for (int i = 0; i < arrangementSide; i++)
+            //{
+            //    for (int j = 0; j < arrangementSide; j++)
+            //    {
+            //        Console.Write(tileArrangement[i * arrangementSide + j]);
+            //        Console.Write(' ');
+            //    }
+            //    Console.WriteLine();
+            //}
+            //Console.WriteLine("Tile IDs");
+            //for (int i = 0; i < arrangementSide; i++)
+            //{
+            //    for (int j = 0; j < arrangementSide; j++)
+            //    {
+            //        Console.Write(tiles[tileArrangement[i * arrangementSide + j]].ID);
+            //        Console.Write(' ');
+            //    }
+            //    Console.WriteLine();
+            //}
+
+            // Step 2: Spin tiles to match neighbors
+            var tileSpins = SpinTiles(tileArrangement);
+
+            // Step 3: Assemble data
+            List<List<char>> completeGrid = Enumerable.Range(0, arrangementSide * TILE_WIDTH).Select(x => new List<char>()).ToList();
+            for (int i = 0; i < tileSpins.Length; i++)
             {
-                foreach (var e in t.Edges.EnumerateAll())
+                int macroRow = i / arrangementSide;
+                int macroCol = i % arrangementSide;
+                for (int imageRow = 0; imageRow < TILE_WIDTH; imageRow++)
                 {
-                    edgeToTileMap[e].Add(t);
+                    completeGrid[macroRow * TILE_WIDTH + imageRow].AddRange(tileSpins[i].Image[imageRow]);
                 }
             }
+            //// Visualization
+            //Console.WriteLine("With borders");
+            //foreach (var row in completeGrid)
+            //{
+            //    foreach (var c in row)
+            //    {
+            //        Console.Write(c);
+            //    }
+            //    Console.WriteLine();
+            //}
 
-            var corners = tiles.Where(t => t.Matches.Count == 2).ToList();
-            Tile cornerStone = corners.First();
-            Transformation cornerOrientation = Transformation.Original;
-            foreach (var t in Enum.GetValues<Transformation>())
+            // Step 4: Remove borders
+            List<List<char>> withoutBorders = new();
+            for (int row = 0; row < completeGrid.Count; row++)
             {
-                var e = cornerStone.Edges.Transform(t);
-                if (edgeToTileMap[e.Top].Count == 1 && edgeToTileMap[e.Left].Count == 1)
+                int microRow = row % TILE_WIDTH;
+                if (microRow == 0 || microRow == TILE_WIDTH - 1)
                 {
-                    cornerOrientation = t;
-                    break;
+                    continue;
                 }
-            }
-
-            int sideLength = (int)Math.Sqrt(tiles.Count);
-            Debug.Assert(sideLength * sideLength == tiles.Count);
-            Tile[,] tileLayout = new Tile[sideLength, sideLength];
-            Transformation[,] tileOrientations = new Transformation[sideLength, sideLength];
-            tileLayout[0, 0] = cornerStone;
-            tileOrientations[0, 0] = cornerOrientation;
-
-            for (int row = 0; row < sideLength; row++)
-            {
-                for (int col = 0; col < sideLength; col++)
+                List<char> newRow = new();
+                for (int col = 0; col < completeGrid[row].Count; col++)
                 {
-                    if (row == 0 && col == 0)
+                    int microCol = col % TILE_WIDTH;
+                    if (microCol == 0 || microCol == TILE_WIDTH - 1)
                     {
                         continue;
                     }
-                    short topEdgeToMatch = (row > 0) ? Edges.FlipEdge(tileLayout[row - 1, col].Edges.Transform(tileOrientations[row - 1, col]).Bottom) : (short)-1;
-                    Tile? expectedTileFromTop = (topEdgeToMatch >= 0) ? edgeToTileMap[topEdgeToMatch].Where(t => t != tileLayout[row - 1, col]).Single() : null;
-                    short leftEdgeToMatch = (col > 0) ? Edges.FlipEdge(tileLayout[row, col - 1].Edges.Transform(tileOrientations[row, col - 1]).Right) : (short)-1;
-                    Tile? expectedTileFromLeft = (leftEdgeToMatch >= 0) ? edgeToTileMap[leftEdgeToMatch].Where(t => t != tileLayout[row, col - 1]).Single() : null;
-                    Debug.Assert(expectedTileFromTop == null || expectedTileFromLeft == null || expectedTileFromTop == expectedTileFromLeft);
-                    Debug.Assert(expectedTileFromTop == null || tileLayout[row - 1, col].Matches.Contains(expectedTileFromTop.ID));
-                    Debug.Assert(expectedTileFromLeft == null || tileLayout[row, col - 1].Matches.Contains(expectedTileFromLeft.ID));
-                    Tile expectedTile = expectedTileFromTop ?? expectedTileFromLeft!;
-                    tileLayout[row, col] = expectedTile;
-                    bool orientationFound = false;
-                    foreach (var t in Enum.GetValues<Transformation>())
-                    {
-                        var e = expectedTile.Edges.Transform(t);
-                        if ((leftEdgeToMatch < 0 || leftEdgeToMatch == e.Left) && (topEdgeToMatch < 0 || topEdgeToMatch == e.Top))
-                        {
-                            tileOrientations[row, col] = t;
-                            orientationFound = true;
-                            break;
-                        }
-                    }
-                    Debug.Assert(orientationFound);
+                    newRow.Add(completeGrid[row][col]);
                 }
+                withoutBorders.Add(newRow);
             }
+            //// Visualization
+            //Console.WriteLine("Without borders");
+            //foreach (var row in cleanedGrid)
+            //{
+            //    foreach (var c in row)
+            //    {
+            //        Console.Write(c);
+            //    }
+            //    Console.WriteLine();
+            //}
 
-            Debug.Assert(corners.Contains(tileLayout[0, sideLength - 1]));
-            Debug.Assert(corners.Contains(tileLayout[sideLength - 1, 0]));
-            Debug.Assert(corners.Contains(tileLayout[sideLength - 1, sideLength - 1]));
-
-            // Step 2: Stitch the tiles into the image
-            int rowsInTile = tileLayout[0, 0].Image.Length;
-            StringBuilder[] imageBuilder = Enumerable.Range(0, sideLength * (rowsInTile - 2)).Select(_ => new StringBuilder()).ToArray();
-            for (int macroRow = 0; macroRow < sideLength; macroRow++)
-            {
-                for (int macroCol = 0; macroCol < sideLength; macroCol++)
-                {
-                    var tileImageWithBorder = tileLayout[macroRow, macroCol].Image;
-                    var tileImage = tileImageWithBorder[1..^1].Select(row => row[1..^1]).ToArray();
-                    var tileImageTransformed = Transform(tileImage, tileOrientations[macroRow, macroCol]);
-                    for (int tileRow = 0; tileRow < tileImageTransformed.Length; tileRow++)
-                    {
-                        int imageRow = macroRow * (rowsInTile - 2) + tileRow;
-                        imageBuilder[imageRow].Append(tileImageTransformed[tileRow]);
-                    }
-                }
-            }
-            string[] image = imageBuilder.Select(x => x.ToString()).ToArray();
-            var imageLengths = image.Select(row => row.Length).ToArray();
-            Debug.Assert(imageLengths.All(l => l == image.Length));
-
-            // WIP The image doesn't seem right
-
-            // Step 3: Find the monsters
-            const string MonsterPattern = "                  # \n#    ##    ##    ###\n #  #  #  #  #  #   ";
-            Grid MonsterPatternGrid = new(MonsterPattern, ' ');
-            VectorRC[] MonsterPatternPoints = MonsterPatternGrid.Iterate().Where(x => x.Value == '#').Select(x => x.Position).ToArray();
-            Grid maxMonsterGrid = new(image, '.');
-            List<VectorRC> maxMonsterPositions = new();
+            // Step 5: Find sea monsters
+            string[] cleanedGrid = withoutBorders.Select(row => string.Join("", row)).ToArray();
+            Grid seaMonsterGrid = new(@"                  # 
+#    ##    ##    ###
+ #  #  #  #  #  #   ", ' ');
+            VectorRC[] seaMonsterPoints = seaMonsterGrid.Iterate().Where(x => x.Value == '#').Select(x => x.Position).ToArray();
+            int roughness = int.MaxValue;
             foreach (var t in Enum.GetValues<Transformation>())
             {
-                List<VectorRC> monsters = new();
-                Grid transformedGrid = new(Transform(image, t), '.');
-                for (int row = 0; row < transformedGrid.Height; row++)
+                var transformed = Transform(cleanedGrid, t);
+                var grid = new Grid(transformed, '.');
+                var waves = grid.Iterate().Where(x => x.Value == '#').Select(x => x.Position).ToHashSet();
+                foreach (var position in grid.Iterate().Select(x => x.Position))
                 {
-                    for (int col = 0; col < transformedGrid.Width; col++)
+                    var translatedMonster = seaMonsterPoints.Select(s => s + position).ToList();
+                    if (translatedMonster.All(x => grid.Get(x) == '#'))
                     {
-                        VectorRC pos = new(row, col);
-                        var monsterTest = MonsterPatternPoints.Select(x => x + pos);
-                        if (monsterTest.All(p => transformedGrid.Get(p) == '#'))
+                        foreach (var x in translatedMonster)
                         {
-                            monsters.Add(pos);
+                            waves.Remove(x);
                         }
                     }
                 }
-                if (monsters.Count > maxMonsterPositions.Count)
+                if (waves.Count < roughness)
                 {
-                    maxMonsterPositions = monsters;
-                    maxMonsterGrid = transformedGrid;
+                    roughness = waves.Count;
                 }
             }
 
-            // Step 4: Determine roughness
-            var monsterPixels = maxMonsterPositions.SelectMany(x => MonsterPatternPoints.Select(p => x + p)).ToHashSet();
-            int countWaves = maxMonsterGrid.Iterate().Where(x => x.Value == '#' && !monsterPixels.Contains(x.Position)).Count();
-            return countWaves.ToString();
+            return roughness.ToString();
+        }
+
+        private int[] FindArrangement()
+        {
+            Stack<int[]> stack = new();
+            stack.Push([]);
+            while (stack.TryPop(out var prefix))
+            {
+                if (prefix.Length == tiles.Length)
+                {
+                    return prefix;
+                }
+                HashSet<int> candidates = Enumerable.Range(0, tiles.Length).ToHashSet();
+                candidates.ExceptWith(prefix);
+                int currentIndex = prefix.Length;
+                int row = currentIndex / arrangementSide;
+                int col = currentIndex % arrangementSide;
+                if ((row == 0 || row == arrangementSide - 1) && (col == 0 || col == arrangementSide - 1))
+                {
+                    candidates.IntersectWith(corners);
+                }
+                if (row > 0)
+                {
+                    int up = prefix[currentIndex - arrangementSide];
+                    candidates.IntersectWith(connections[up]);
+                }
+                if (col > 0)
+                {
+                    int left = prefix[currentIndex - 1];
+                    candidates.IntersectWith(connections[left]);
+                }
+                foreach (var candidate in candidates.Reverse())
+                {
+                    int[] newPrefix = [.. prefix, candidate];
+                    stack.Push(newPrefix);
+                }
+            }
+            throw new Exception("Empty stack!");
+        }
+
+        private Tile[] SpinTiles(int[] arrangement)
+        {
+            Stack<Tile[]> stack = new();
+            stack.Push([]);
+            while (stack.TryPop(out var prefix))
+            {
+                if (prefix.Length == tiles.Length)
+                {
+                    return prefix;
+                }
+                int currentIndex = prefix.Length;
+                Tile currentTile = tiles[arrangement[currentIndex]];
+                int row = currentIndex / arrangementSide;
+                int col = currentIndex % arrangementSide;
+                foreach (var t in Enum.GetValues<Transformation>())
+                {
+                    var transformed = currentTile.Transform(t);
+                    bool ok = true;
+                    if (ok && row > 0)
+                    {
+                        var up = prefix[currentIndex - arrangementSide];
+                        ok &= transformed.Image[0] == up.Image[^1];
+                    }
+                    if (ok && col > 0)
+                    {
+                        var left = prefix[currentIndex - 1];
+                        ok &= transformed.Image.Select(r => r[0]).SequenceEqual(left.Image.Select(r => r[^1]));
+                    }
+                    if (ok)
+                    {
+                        Tile[] newPrefix = [.. prefix, transformed];
+                        stack.Push(newPrefix);
+                    }
+                }
+            }
+            throw new Exception("Empty stack!");
         }
 
         protected static string[] Transform(string[] image, Transformation t)
@@ -176,12 +266,12 @@ namespace Aoc2020
             {
                 Transformation.Original => image,
                 Transformation.Spin1 => Spin1(image),
-                Transformation.Spin2 => Spin2(image),
-                Transformation.Spin3 => Spin1(Spin2(image)),
+                Transformation.Spin2 => Spin1(Spin1(image)),
+                Transformation.Spin3 => Spin1(Spin1(Spin1(image))),
                 Transformation.Flip => Flip(image),
                 Transformation.FlipSpin1 => Spin1(Flip(image)),
-                Transformation.FlipSpin2 => Spin2(Flip(image)),
-                Transformation.FlipSpin3 => Spin1(Spin2(Flip(image))),
+                Transformation.FlipSpin2 => Spin1(Spin1(Flip(image))),
+                Transformation.FlipSpin3 => Spin1(Spin1(Spin1(Flip(image)))),
                 _ => throw new ArgumentOutOfRangeException(nameof(Transformation)),
             };
         }
@@ -201,11 +291,6 @@ namespace Aoc2020
                 }
             }
             return lines.Select(l => l.ToString()).ToArray();
-        }
-
-        protected static string[] Spin2(string[] image)
-        {
-            return image.Reverse().Select(r => string.Join("", r.Reverse())).ToArray();
         }
 
         protected static string[] Flip(string[] image)
@@ -229,14 +314,12 @@ namespace Aoc2020
         {
             public int ID { get; init; }
             public string[] Image { get; init; }
-            public List<int> Matches { get; init; }
             public Edges Edges { get; init; }
 
             public Tile(int id, string[] image)
             {
                 ID = id;
                 Image = image;
-                Matches = new();
                 short top = ConvertToEdge(image[0]);
                 short right = ConvertToEdge(image.Select(line => line.Last()));
                 short bottom = ConvertToEdge(image.Last().Reverse());
@@ -259,41 +342,18 @@ namespace Aoc2020
                 }
                 return answer;
             }
+
+            public Tile Transform(Transformation t)
+            {
+                var transformedData = Day20.Transform(Image, t);
+                var result = new Tile(ID, transformedData);
+                return result;
+            }
         }
 
         protected readonly record struct Edges(short Top, short Right, short Bottom, short Left)
         {
-            public static short FlipEdge(short edge)
-            {
-                short answer = 0;
-                for (int i = 0; i < 10; i++)
-                {
-                    if ((edge & (1 << i)) != 0)
-                    {
-                        answer |= (short)(1 << (10 - 1 - i));
-                    }
-                }
-                return answer;
-            }
-
-            public Edges Transform(Transformation t)
-            {
-                return t switch
-                {
-                    Transformation.Original => this,
-                    Transformation.Spin1 => new(Right, Bottom, Left, Top),
-                    Transformation.Spin2 => new(Bottom, Left, Top, Right),
-                    Transformation.Spin3 => new(Left, Top, Right, Bottom),
-                    Transformation.Flip => new(FlipEdge(Top), FlipEdge(Left), FlipEdge(Bottom), FlipEdge(Right)),
-                    Transformation.FlipSpin1 => new(FlipEdge(Left), FlipEdge(Bottom), FlipEdge(Right), FlipEdge(Top)),
-                    Transformation.FlipSpin2 => new(FlipEdge(Bottom), FlipEdge(Right), FlipEdge(Top), FlipEdge(Left)),
-                    Transformation.FlipSpin3 => new(FlipEdge(Right), FlipEdge(Top), FlipEdge(Left), FlipEdge(Bottom)),
-                    _ => throw new ArgumentOutOfRangeException(nameof(Transformation))
-                };
-            }
-
             public IEnumerable<short> Enumerate() => [Top, Right, Bottom, Left];
-            public IEnumerable<short> EnumerateAll() => [Top, Right, Bottom, Left, FlipEdge(Top), FlipEdge(Left), FlipEdge(Bottom), FlipEdge(Right)];
         }
     }
 }
