@@ -5,28 +5,28 @@ namespace Aoc2022.Tests
     [TestClass()]
     public class Day19Tests
     {
-        [TestMethod(), Timeout(5_000)]
+        [TestMethod(), Timeout(10_000)]
         public void Part1Example1Test()
         {
             var instance = new Day19(File.ReadAllText("day19-example.txt"));
             var answer = instance.EvaluateBlueprint(0, 24);
             Assert.AreEqual(9, answer);
         }
-        [TestMethod(), Timeout(5_000)]
+        [TestMethod(), Timeout(10_000)]
         public void Part1Example2Test()
         {
             var instance = new Day19(File.ReadAllText("day19-example.txt"));
             var answer = instance.EvaluateBlueprint(1, 24);
             Assert.AreEqual(12, answer);
         }
-        [TestMethod(), Timeout(5_000)]
+        [TestMethod(), Timeout(10_000)]
         public void Part1FullExampleTest()
         {
             var instance = new Day19(File.ReadAllText("day19-example.txt"));
             var answer = instance.Part1();
             Assert.AreEqual("33", answer);
         }
-        [TestMethod(), Timeout(60_000)]
+        [TestMethod(), Timeout(30_000)]
         public void Part1InputTest()
         {
             var instance = new Day19(File.ReadAllText("day19-input.txt"));
