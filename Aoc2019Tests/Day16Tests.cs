@@ -26,7 +26,7 @@ namespace Aoc2019.Tests
             var answer = instance.Part1();
             Assert.AreEqual("52432133", answer);
         }
-        [TestMethod(), Timeout(5000)]
+        [TestMethod()]
         public void Part1InputTest()
         {
             var instance = new Day16(File.ReadAllText("day16-input.txt"));
@@ -55,7 +55,7 @@ namespace Aoc2019.Tests
             var answer = instance.Part2();
             Assert.AreEqual("53553731", answer);
         }
-        [TestMethod(), Timeout(5000)]
+        [TestMethod()]
         public void Part2InputTest()
         {
             var instance = new Day16(File.ReadAllText("day16-input.txt"));

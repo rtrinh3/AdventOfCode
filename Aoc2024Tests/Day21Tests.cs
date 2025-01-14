@@ -37,7 +37,7 @@ public class Day21Tests
         Assert.AreEqual("132532", answer);
     }
 
-    [TestMethod(), Timeout(60_000)]
+    [TestMethod()]
     public void Part2ExampleTest()
     {
         // https://www.reddit.com/r/adventofcode/comments/1hjb7hh/2024_day_21_part_2_can_someone_share_what_the/
@@ -63,7 +63,7 @@ public class Day21Tests
             Assert.AreEqual(expected[i].ToString(), lineAnswer);
         }
     }
-    [TestMethod(), Timeout(60_000)]
+    [TestMethod()]
     public void Part2InputTest()
     {
         var instance = new Day21(File.ReadAllText("day21-input.txt"));

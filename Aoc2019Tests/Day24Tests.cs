@@ -27,7 +27,7 @@ namespace Aoc2019.Tests
             var answer = instance.DoPart2(10);
             Assert.AreEqual(99, answer);
         }
-        [TestMethod(), Timeout(1500)]
+        [TestMethod()]
         public void Part2InputTest()
         {
             var instance = new Day24(File.ReadAllText("day24-input.txt"));

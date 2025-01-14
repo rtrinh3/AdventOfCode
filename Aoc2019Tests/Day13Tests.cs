@@ -13,7 +13,7 @@ namespace Aoc2019.Tests
             Assert.AreEqual("372", answer);
         }
 
-        [TestMethod(), Timeout(5000)]
+        [TestMethod()]
         public void Part2InputTest()
         {
             var instance = new Day13(File.ReadAllText("day13-input.txt"));

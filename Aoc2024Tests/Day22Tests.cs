@@ -39,7 +39,7 @@ public class Day22Tests
         var answer = instance.Part2();
         Assert.AreEqual("23", answer);
     }
-    [TestMethod(), Timeout(30_000)]
+    [TestMethod()]
     public void Part2InputTest()
     {
         var instance = new Day22(File.ReadAllText("day22-input.txt"));

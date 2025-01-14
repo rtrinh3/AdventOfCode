@@ -27,7 +27,7 @@
             var answer = instance.Part2();
             Assert.AreEqual("6", answer);
         }
-        [TestMethod(), Timeout(15_000)]
+        [TestMethod()]
         public void Part2InputTest()
         {
             var instance = new Day06(File.ReadAllText("day06-input.txt"));

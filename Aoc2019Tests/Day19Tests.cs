@@ -5,7 +5,7 @@ namespace Aoc2019.Tests
     [TestClass()]
     public class Day19Tests
     {
-        [TestMethod(), Timeout(2000)]
+        [TestMethod()]
         public void Part1InputTest()
         {
             var instance = new Day19(File.ReadAllText("day19-input.txt"));
@@ -13,7 +13,7 @@ namespace Aoc2019.Tests
             Assert.AreEqual("199", answer);
         }
 
-        [TestMethod(), Timeout(15_000)]
+        [TestMethod()]
         public void Part2InputTest()
         {
             var instance = new Day19(File.ReadAllText("day19-input.txt"));

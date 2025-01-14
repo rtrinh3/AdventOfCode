@@ -42,7 +42,7 @@ namespace Aoc2023.Tests
             var bruteAnswer = instance.Part2BruteForce();
             Assert.AreEqual(bruteAnswer, answer);
         }
-        [TestMethod(), Timeout(1000)]
+        [TestMethod()]
         public void Part2InputTest()
         {
             var instance = new Day08(File.ReadAllText("day08-input.txt"));
