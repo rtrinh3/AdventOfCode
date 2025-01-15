@@ -4,6 +4,8 @@ using System.Text;
 
 namespace Aoc2022
 {
+    // https://adventofcode.com/2022/day/17
+    // --- Day 17: Pyroclastic Flow ---
     public class Day17(string inputRaw) : IAocDay
     {
         private const int wellWidth = 7;
@@ -19,48 +21,17 @@ namespace Aoc2022
 
         public string Part1()
         {
-            const int maxBlock = 2022;
-            HashSet<VectorXY> blocked = new();
-            bool Move(ref IList<VectorXY> block, VectorXY move)
-            {
-                List<VectorXY> blockMoved = block.Select(tile => tile + move).ToList();
-                bool hasMoved = blockMoved.All(tile => 0 <= tile.X && tile.X < wellWidth && 1 <= tile.Y && !blocked.Contains(tile));
-                if (hasMoved)
-                {
-                    block = blockMoved;
-                }
-                return hasMoved;
-            }
-            int windIndex = 0;
-            for (int blockNo = 0; blockNo < maxBlock; ++blockNo)
-            {
-                var highest = blocked.Count > 0 ? blocked.Select(b => b.Y).Max() : 0;
-                VectorXY spawn = new VectorXY(2, highest + 4);
-                IList<VectorXY> block = blocks[blockNo % blocks.Length];
-                block = block.Select(tile => tile + spawn).ToList();
-                while (true)
-                {
-                    // Wind phase
-                    VectorXY wind = input[windIndex % input.Length] == '<' ? new VectorXY(-1, 0) : new VectorXY(+1, 0);
-                    Move(ref block, wind);
-                    //input[windIndex % input.Length].Dump();
-                    ++windIndex;
-                    // Down phase
-                    if (!Move(ref block, new VectorXY(0, -1)))
-                    {
-                        break;
-                    }
-                }
-                foreach (var tile in block)
-                {
-                    blocked.Add(tile);
-                }
-                //Console.WriteLine(Visualize(blocked, blockNo.ToString()));
-            }
-            return blocked.Select(b => b.Y).Max().ToString();
+            var answer = DoPuzzle(2022);
+            return answer.ToString();
         }
 
         public string Part2()
+        {
+            var answer = DoPuzzle(1000000000000L);
+            return answer.ToString();
+        }
+
+        private long DoPuzzle(long blockIterations)
         {
             Dictionary<(string board, int blockIndex, int windIndex), (long blockNo, long height)> boardCache = new();
             HashSet<VectorXY> blocked = new();
@@ -74,10 +45,9 @@ namespace Aoc2022
                 }
                 return hasMoved;
             }
-            const long BLOCK_ITERATIONS = 1000000000000L;
             int windIndex = 0;
             long blockNo = 0;
-            while (blockNo < BLOCK_ITERATIONS)
+            while (blockNo < blockIterations)
             {
                 int highest = blocked.Count > 0 ? blocked.Select(b => b.Y).Max() : 0;
                 VectorXY spawn = new VectorXY(2, highest + 4);
@@ -118,10 +88,10 @@ namespace Aoc2022
                     Debug.Assert(loopPeriod % blocks.Length == 0);
                     //var fullRepetitions = (BLOCK_ITERATIONS - previousData.blockNo) / loopPeriod;
                     //var remainder = (BLOCK_ITERATIONS - previousData.blockNo) % loopPeriod;
-                    var (fullRepetitions, remainder) = Math.DivRem(BLOCK_ITERATIONS - previousData.blockNo, loopPeriod);
+                    var (fullRepetitions, remainder) = Math.DivRem(blockIterations - previousData.blockNo, loopPeriod);
                     var remainderData = boardCache.First(kvp => kvp.Value.blockNo == previousData.blockNo + remainder - 1);
                     var totalHeight = fullRepetitions * loopHeight + remainderData.Value.height; // +previousData.height-previousData.height
-                    return totalHeight.ToString();
+                    return totalHeight;
                 }
                 else
                 {
@@ -130,7 +100,7 @@ namespace Aoc2022
                 blockNo++;
             }
             // Found out the hard way
-            return blocked.Select(b => b.Y).Max().ToString();
+            return blocked.Select(b => b.Y).Max();
         }
 
         private static string Visualize(HashSet<VectorXY> blocked, string label = "")
