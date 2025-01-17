@@ -1,20 +1,29 @@
 ﻿using AocCommon;
+using System.Collections.Immutable;
 using System.Diagnostics;
 
 namespace Aoc2024
 {
     // https://adventofcode.com/2024/day/6
     // --- Day 6: Guard Gallivant ---
-    public class Day06(string input) : IAocDay
+    public class Day06 : IAocDay
     {
-        private const char OUTSIDE = '\0';
+        private readonly int width;
+        private readonly int height;
+        private readonly VectorRC startPos;
+        private readonly ImmutableHashSet<VectorRC> inputObstacles;
 
-        private readonly string[] inputLines = input.TrimEnd().ReplaceLineEndings("\n").Split('\n');
-
-        private static (HashSet<(VectorRC Pos, VectorRC Dir)> Path, bool IsLoop) Simulate(string[] maze)
+        public Day06(string input)
         {
-            Grid grid = new(maze, OUTSIDE);
-            var startPos = grid.Iterate().Where(x => x.Value == '^').Select(x => x.Position).Single();
+            Grid grid = new(input, '\0');
+            width = grid.Width;
+            height = grid.Height;
+            startPos = grid.Iterate().Single(x => x.Value == '^').Position;
+            inputObstacles = grid.Iterate().Where(x => x.Value == '#').Select(x => x.Position).ToImmutableHashSet();
+        }
+
+        private (HashSet<(VectorRC Pos, VectorRC Dir)> Path, bool IsLoop) Simulate(ImmutableHashSet<VectorRC> obstacles)
+        {
             var startDir = VectorRC.Up;
 
             HashSet<(VectorRC Pos, VectorRC Dir)> visited = new();
@@ -23,7 +32,7 @@ namespace Aoc2024
             bool isLoop = false;
             while (true)
             {
-                if (OUTSIDE == grid.Get(pos))
+                if (pos.Row < 0 || pos.Col < 0 || pos.Row >= height || pos.Col >= width)
                 {
                     isLoop = false;
                     break;
@@ -33,7 +42,7 @@ namespace Aoc2024
                     isLoop = true;
                     break;
                 }
-                if (grid.Get(pos+dir) == '#')
+                if (obstacles.Contains(pos+dir))
                 {
                     dir = dir.RotatedRight();
                 }
@@ -47,7 +56,7 @@ namespace Aoc2024
 
         public string Part1()
         {
-            var result = Simulate(inputLines);
+            var result = Simulate(inputObstacles);
             Debug.Assert(!result.IsLoop);
             var visited = result.Path.Select(x => x.Pos).Distinct().Count();
             return visited.ToString();
@@ -55,17 +64,12 @@ namespace Aoc2024
 
         public string Part2()
         {
-            Grid initialGrid = new(inputLines, OUTSIDE);
-            var startPos = initialGrid.Iterate().Where(x => x.Value == '^').Select(x => x.Position).Single();
-            var unobstructedPath = Simulate(inputLines).Path.Select(x => x.Pos).Where(x => x != startPos).Distinct().ToList();
+            var unobstructedPath = Simulate(inputObstacles).Path.Select(x => x.Pos).Where(x => x != startPos).Distinct().ToList();
             long obstructions = 0;
             Parallel.ForEach(unobstructedPath, step =>
             {
-                string[] newMaze = initialGrid.Data.ToArray();
-                char[] newRowBuffer = newMaze[step.Row].ToCharArray();
-                newRowBuffer[step.Col] = '#';
-                newMaze[step.Row] = new string(newRowBuffer);
-                var result = Simulate(newMaze);
+                var newObstacles = inputObstacles.Add(step);
+                var result = Simulate(newObstacles);
                 if (result.IsLoop)
                 {
                     Interlocked.Increment(ref obstructions);
