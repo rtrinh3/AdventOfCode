@@ -49,7 +49,7 @@ public class Day18(string input) : IAocDay
     public (int, int) DoPart2(int width, int height)
     {
         HashSet<VectorRC> obstacles = new(incoming);
-        UnionFind<VectorRC> connected = new();
+        UnionFind<VectorRC> connected = new(p => (p.Row * (width + 1)) + p.Col);
         // Connect all free space
         for (int row = 0; row <= height; row++)
         {
