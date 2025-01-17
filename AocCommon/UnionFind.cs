@@ -1,45 +1,38 @@
 ﻿namespace AocCommon
 {
+    // Wrapper around UnionFindInt
     public class UnionFind<T>
         where T : notnull
     {
-        private record struct Node(T parent, int rank);
-        private readonly Dictionary<T, Node> nodes = new();
+        private readonly UnionFindInt impl = new();
+        private readonly Func<T, int> getIndex;
 
-        public T Find(T x)
+        public UnionFind()
         {
-            if (!nodes.ContainsKey(x))
+            // default linearizer: insertion order
+            Dictionary<T, int> indices = new();
+            getIndex = item =>
             {
-                nodes[x] = new Node(x, 0);
-            }
-            if (!object.Equals(x, nodes[x].parent))
-            {
-                nodes[x] = nodes[x] with { parent = Find(nodes[x].parent) };
-            }
-            return nodes[x].parent;
+                if (indices.TryGetValue(item, out var index))
+                {
+                    return index;
+                }
+                else
+                {
+                    var newIndex = indices.Count;
+                    indices.Add(item, newIndex);
+                    return newIndex;
+                }
+            };
         }
-        public bool AreMerged(T x, T y) => object.Equals(Find(x), Find(y));
-        public void Union(T x, T y)
+
+        public UnionFind(Func<T, int> linearizer)
         {
-            x = Find(x);
-            y = Find(y);
-            if (object.Equals(x, y))
-            {
-                return;
-            }
-            if (nodes[x].rank > nodes[y].rank)
-            {
-                nodes[y] = nodes[y] with { parent = x };
-            }
-            else if (nodes[x].rank < nodes[y].rank)
-            {
-                nodes[x] = nodes[x] with { parent = y };
-            }
-            else
-            {
-                nodes[y] = nodes[y] with { parent = x };
-                nodes[x] = nodes[x] with { rank = nodes[x].rank + 1 };
-            }
+            getIndex = linearizer;
         }
+
+        public int Find(T x) => impl.Find(getIndex(x));
+        public bool AreMerged(T x, T y) => impl.AreMerged(getIndex(x), getIndex(y));
+        public void Union(T x, T y) => impl.Union(getIndex(x), getIndex(y));
     }
 }
