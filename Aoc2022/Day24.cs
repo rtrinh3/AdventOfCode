@@ -16,7 +16,7 @@ namespace Aoc2022
         private readonly List<(VectorRC position, VectorRC orientation)> blizzards;
         public Day24(string input)
         {
-            maze = Constants.SplitLines(input);
+            maze = Parsing.SplitLines(input);
             height = maze.Length;
             width = maze[0].Length;
             valleyHeight = height - 2;

@@ -6,7 +6,7 @@ namespace Aoc2019
     // https://adventofcode.com/2019/day/22
     public class Day22(string input) : IAocDay
     {
-        readonly string[] lines = input.Split('\n', AocCommon.Constants.TrimAndDiscard);
+        readonly string[] lines = input.Split('\n', AocCommon.Parsing.TrimAndDiscard);
 
         public string Part1()
         {

@@ -17,7 +17,7 @@ namespace Aoc2022
 
         public Day12(string input)
         {
-            map = Constants.SplitLines(input);
+            map = Parsing.SplitLines(input);
             for (int r = 0; r < map.Length; ++r)
             {
                 for (int c = 0; c < map[r].Length; ++c)

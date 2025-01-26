@@ -7,7 +7,7 @@ namespace Aoc2022
         public string Part1()
         {
             Dictionary<string, Func<decimal>> monkeys = new();
-            foreach (string line in AocCommon.Constants.SplitLines(input))
+            foreach (string line in AocCommon.Parsing.SplitLines(input))
             {
                 int colonIndex = line.IndexOf(':');
                 var prefix = line[0..colonIndex];
@@ -46,7 +46,7 @@ namespace Aoc2022
         public string Part2()
         {
             Dictionary<string, Lazy<Expr>> monkeys = new();
-            foreach (string line in AocCommon.Constants.SplitLines(input))
+            foreach (string line in AocCommon.Parsing.SplitLines(input))
             {
                 int colonIndex = line.IndexOf(':');
                 var prefix = line[0..colonIndex];

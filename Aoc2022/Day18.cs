@@ -18,7 +18,7 @@ namespace Aoc2022
         private HashSet<VectorXYZ> droplets = new();
         public Day18(string input)
         {
-            foreach (string line in Constants.SplitLines(input))
+            foreach (string line in Parsing.SplitLines(input))
             {
                 int[] parts = line.Split(',').Select(int.Parse).ToArray();
                 VectorXYZ coords = new(parts[0], parts[1], parts[2]);

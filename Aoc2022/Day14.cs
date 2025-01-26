@@ -12,7 +12,7 @@ namespace Aoc2022
 
         public Day14(string input)
         {
-            foreach (string line in Constants.SplitLines(input))
+            foreach (string line in Parsing.SplitLines(input))
             {
                 var matches = Regex.Matches(line, @"((\d+),(\d+))");
                 for (int i = 0; i < matches.Count - 1; ++i)

@@ -14,7 +14,7 @@ namespace Aoc2022
         private int maxY;
         public Day15(string input)
         {
-            foreach (string line in Constants.SplitLines(input))
+            foreach (string line in Parsing.SplitLines(input))
             {
                 var match = Regex.Match(line, @"Sensor at x=(.*), y=(.*): closest beacon is at x=(.*), y=(.*)");
                 var sensor = new VectorXY(int.Parse(match.Groups[1].Value), int.Parse(match.Groups[2].Value));

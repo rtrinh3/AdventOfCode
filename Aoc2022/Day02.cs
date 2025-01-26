@@ -3,7 +3,7 @@
     // https://adventofcode.com/2022/day/2
     public class Day02(string input) : IAocDay
     {
-        private string[] lines = input.ReplaceLineEndings("\n").Split('\n', AocCommon.Constants.TrimAndDiscard);
+        private string[] lines = input.ReplaceLineEndings("\n").Split('\n', AocCommon.Parsing.TrimAndDiscard);
         public string Part1()
         {
             int[,] scoreMatrix = {

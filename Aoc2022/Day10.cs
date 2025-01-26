@@ -23,7 +23,7 @@ namespace Aoc2022
             }
 
             float cycle = 0.5f;
-            foreach (string line in AocCommon.Constants.SplitLines(input))
+            foreach (string line in AocCommon.Parsing.SplitLines(input))
             {
                 if (line.StartsWith("noop"))
                 {

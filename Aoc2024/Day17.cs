@@ -1,7 +1,5 @@
 ﻿using AocCommon;
 using System.Diagnostics;
-using System.Numerics;
-using System.Text.RegularExpressions;
 
 namespace Aoc2024;
 
@@ -16,7 +14,7 @@ public class Day17 : IAocDay
 
     public Day17(string input)
     {
-        var ints = Regex.Matches(input, @"\d+").Select(m => int.Parse(m.ValueSpan)).ToList();
+        var ints = Parsing.IntsPositive(input);
         initialRegisterA = ints[0];
         initialRegisterB = ints[1];
         initialRegisterC = ints[2];

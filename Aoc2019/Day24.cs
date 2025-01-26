@@ -11,7 +11,7 @@ namespace Aoc2019
 
         public Day24(string input)
         {
-            string[] lines = input.Split('\n', AocCommon.Constants.TrimAndDiscard);
+            string[] lines = input.Split('\n', AocCommon.Parsing.TrimAndDiscard);
             initialState = new BitVector32();
             for (int row = 0; row < sideLength; row++)
             {

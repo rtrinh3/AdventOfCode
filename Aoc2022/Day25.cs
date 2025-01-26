@@ -5,7 +5,7 @@
         public string Part1()
         {
             Snafu sum = Snafu.Zero;
-            foreach (string line in AocCommon.Constants.SplitLines(input))
+            foreach (string line in AocCommon.Parsing.SplitLines(input))
             {
                 var value = Snafu.Parse(line);
                 sum += value;

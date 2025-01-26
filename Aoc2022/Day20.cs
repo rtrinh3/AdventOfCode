@@ -7,7 +7,7 @@
             LinkedList<long> list = new();
             List<LinkedListNode<long>> nodes = new();
             LinkedListNode<long> nodeZero = null;
-            foreach (string line in AocCommon.Constants.SplitLines(input))
+            foreach (string line in AocCommon.Parsing.SplitLines(input))
             {
                 nodes.Add(list.AddLast(long.Parse(line)));
                 if (list.Last.Value == 0)

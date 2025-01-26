@@ -2,7 +2,7 @@
 {
     public class Day08(string input) : IAocDay
     {
-        string[] forest = AocCommon.Constants.SplitLines(input);
+        string[] forest = AocCommon.Parsing.SplitLines(input);
         (int, int)[] dirs = { (0, -1), (0, +1), (-1, 0), (+1, 0) };
 
         IEnumerable<char> GetView(int row, int col, (int, int) dir)

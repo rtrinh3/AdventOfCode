@@ -28,7 +28,7 @@ namespace Aoc2019.Tests
         public void Part1Example3Test()
         {
             var program = File.ReadAllText("day09-example3.txt");
-            var numbers = program.Split(',', AocCommon.Constants.TrimAndDiscard);
+            var numbers = program.Split(',', AocCommon.Parsing.TrimAndDiscard);
             var interpreter = new IntcodeInterpreter(program);
             var output = interpreter.RunToEnd().Single();
             Assert.AreEqual(numbers[1], output.ToString());
