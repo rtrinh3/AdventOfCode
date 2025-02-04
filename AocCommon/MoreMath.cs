@@ -36,5 +36,27 @@ namespace AocCommon
         {
             return (a * b) / BigInteger.GreatestCommonDivisor(a, b);
         }
+
+        public static IEnumerable<T[]> IteratePermutations<T>(IEnumerable<T> alphabet)
+        {
+            return IteratePermutationsImpl(alphabet).Select(p => p.ToArray());
+        }
+
+        private static IEnumerable<IEnumerable<T>> IteratePermutationsImpl<T>(IEnumerable<T> alphabet)
+        {
+            if (!alphabet.Any())
+            {
+                yield return Array.Empty<T>();
+            }
+            foreach (var head in alphabet)
+            {
+                var restOfAlphabet = alphabet.Where(x => !object.Equals(head, x));
+                var tails = IteratePermutationsImpl(restOfAlphabet);
+                foreach (var tail in tails)
+                {
+                    yield return tail.Prepend(head);
+                }
+            }
+        }
     }
 }

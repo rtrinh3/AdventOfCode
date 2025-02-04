@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using AocCommon;
+using System.Collections.Concurrent;
 using System.Numerics;
 
 namespace Aoc2019
@@ -11,9 +12,8 @@ namespace Aoc2019
             IReadOnlyList<int> phaseSettingValues = new int[] { 0, 1, 2, 3, 4 };
             BigInteger maxOutput = 0;
             //int[] maxPhaseSettings = Array.Empty<int>();
-            foreach (var phaseSettings in IteratePermutations(phaseSettingValues))
+            foreach (var phaseSettingsList in MoreMath.IteratePermutations(phaseSettingValues))
             {
-                var phaseSettingsList = phaseSettings.ToArray();
                 IEnumerable<BigInteger> ampOutputs = new BigInteger[] { 0 };
                 for (int i = 0; i < 5; i++)
                 {
@@ -38,9 +38,8 @@ namespace Aoc2019
             IReadOnlyList<int> phaseSettingValues = new int[] { 5, 6, 7, 8, 9 };
             BigInteger maxOutput = 0;
             //int[] maxPhaseSettings = Array.Empty<int>();
-            foreach (var phaseSettings in IteratePermutations(phaseSettingValues))
+            foreach (var phaseSettingsList in MoreMath.IteratePermutations(phaseSettingValues))
             {
-                var phaseSettingsList = phaseSettings.ToArray();
                 BlockingCollection<BigInteger> feedbackLoop = new() { 0 };
                 IEnumerable<BigInteger> ampOutputs = feedbackLoop.GetConsumingEnumerable();
                 for (int i = 0; i < 5; i++)
@@ -65,26 +64,6 @@ namespace Aoc2019
             //Console.WriteLine(maxOutput);
             //Console.WriteLine(string.Join(',', maxPhaseSettings));
             return maxOutput.ToString();
-        }
-
-        private static IEnumerable<IEnumerable<T>> IteratePermutations<T>(IEnumerable<T> alphabet)
-        {
-            if (!alphabet.Any())
-            {
-                yield return Array.Empty<T>();
-            }
-            else
-            {
-                foreach (T letter in alphabet)
-                {
-                    T[] stub = { letter };
-                    var otherPermutations = IteratePermutations(alphabet.Where(x => !object.Equals(x, letter)));
-                    foreach (var other in otherPermutations)
-                    {
-                        yield return stub.Concat(other);
-                    }
-                }
-            }
         }
     }
 }
