@@ -166,8 +166,28 @@ public class Day22 : IAocDay
         return manaCost.ToString();
     }
 
+    private IEnumerable<(BattleState, int)> HardBattleChoices(BattleState state)
+    {
+        var hardMode = state with { PlayerHp = state.PlayerHp - 1 };
+        if (hardMode.PlayerHp <= 0)
+        {
+            return [];
+        }
+        else
+        {
+            return BattleChoices(hardMode);
+        }
+    }
+    private int CostToWinHardBattle(int initialPlayerHp, int initialMana)
+    {
+        BattleState initialState = new(initialPlayerHp, initialMana, 0, 0, 0, initialBossHp);
+        var result = GraphAlgos.DijkstraToEnd(initialState, HardBattleChoices, s => s.BossHp <= 0);
+        return result.distance;
+    }
+
     public string Part2()
     {
-        throw new NotImplementedException();
+        var manaCost = CostToWinHardBattle(50, 500);
+        return manaCost.ToString();
     }
 }

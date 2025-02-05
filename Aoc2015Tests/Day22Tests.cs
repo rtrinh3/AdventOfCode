@@ -19,12 +19,19 @@ public class Day22Tests
         var answer = instance.CostToWinBattle(10, 250);
         Assert.AreEqual(229 + 113 + 73 + 173 + 53, answer);
     }
-
     [TestMethod()]
     public void Part1InputTest()
     {
         var instance = new Day22(File.ReadAllText("day22-input.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("1269", answer);
+    }
+
+    [TestMethod()]
+    public void Part2InputTest()
+    {
+        var instance = new Day22(File.ReadAllText("day22-input.txt"));
+        var answer = instance.Part2();
+        Assert.AreEqual("1309", answer);
     }
 }
