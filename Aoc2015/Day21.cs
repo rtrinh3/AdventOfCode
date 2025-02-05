@@ -10,14 +10,28 @@ public class Day21(string input) : IAocDay
 
     private record Equipment(int Cost, int Damage, int Armor)
     {
-        public Equipment Combine(Equipment other) => new Equipment(Cost + other.Cost, Damage + other.Damage, Armor + other.Armor);
+        public Equipment Combine(Equipment other) => new(Cost + other.Cost, Damage + other.Damage, Armor + other.Armor);
     }
 
     public string Part1()
     {
         var stats = Parsing.IntsPositive(input);
         var boss = new Combatant(stats[0], stats[1], stats[2]);
+        var loadouts = GenerateLoadouts();
+        foreach (var l in loadouts)
+        {
+            var player = new Combatant(100, l.Damage, l.Armor);
+            var fight = SimulateCombat(player, boss);
+            if (fight == 0)
+            {
+                return l.Cost.ToString();
+            }
+        }
+        throw new Exception("No answer found");
+    }
 
+    private static Equipment[] GenerateLoadouts()
+    {
         Equipment[] weaponShop =
         {
             new(8, 4, 0), // Dagger
@@ -68,18 +82,11 @@ public class Day21(string input) : IAocDay
             .Concat(twoRings)
             .OrderBy(x => x.Cost)
             .ToArray();
-        foreach (var l in loadouts)
-        {
-            var player = new Combatant(100, l.Damage, l.Armor);
-            var fight = SimulateCombat(player, boss);
-            if (fight == 0)
-            {
-                return l.Cost.ToString();
-            }
-        }
-        throw new Exception("No answer found");
+
+        return loadouts;
     }
 
+    // 0 = player wins, 1 = boss wins
     public static int SimulateCombat(Combatant player, Combatant boss)
     {
         int playerHp = player.HitPoints;
@@ -103,6 +110,18 @@ public class Day21(string input) : IAocDay
 
     public string Part2()
     {
-        throw new NotImplementedException();
+        var stats = Parsing.IntsPositive(input);
+        var boss = new Combatant(stats[0], stats[1], stats[2]);
+        var loadouts = GenerateLoadouts();
+        foreach (var l in loadouts.Reverse())
+        {
+            var player = new Combatant(100, l.Damage, l.Armor);
+            var fight = SimulateCombat(player, boss);
+            if (fight == 1)
+            {
+                return l.Cost.ToString();
+            }
+        }
+        throw new Exception("No answer found");
     }
 }
