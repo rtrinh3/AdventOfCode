@@ -10,53 +10,43 @@ public class Day24(string input) : IAocDay
 {
     private readonly int[] weights = Parsing.IntsPositive(input);
 
-
     private long DoPuzzle(int divisor)
     {
         int totalWeight = weights.Sum();
         Debug.Assert(totalWeight % divisor == 0);
         int targetWeight = totalWeight / divisor;
-
-        var rightSizedGroups = GenerateSubsets(weights, targetWeight).ToArray();
-        //foreach (var g in rightSizedGroups)
-        //{
-        //    Console.WriteLine(string.Join(" ", g));
-        //}
-
+        var rightSizedGroups = GenerateSubsets(targetWeight);
         var minimumSize = rightSizedGroups.Min(g => g.Length);
-
         var minimumGroups = rightSizedGroups.Where(g => g.Length == minimumSize);
         var minimumQuantum = minimumGroups.Min(g => g.Aggregate(1L, (a, b) => a * b));
-
         return minimumQuantum;
     }
 
-    private static IEnumerable<int[]> GenerateSubsets(IEnumerable<int> items, int targetWeight)
+    private List<ImmutableArray<int>> GenerateSubsets(int targetWeight)
     {
-        Stack<(ImmutableHashSet<int> prefix, ImmutableHashSet<int> candidates)> stack = new();
-        stack.Push(([], items.ToImmutableHashSet()));
+        List<ImmutableArray<int>> results = new();
+        Stack<(ImmutableArray<int> prefix, int sum, ImmutableStack<int> candidates)> stack = new();
+        var initialCandidates = ImmutableStack.CreateRange(weights);
+        stack.Push(([], 0, initialCandidates));
         while (stack.TryPop(out var state))
         {
-            var weight = state.prefix.Sum();
-            if (weight == targetWeight)
+            var subset = state.candidates;
+            while (!subset.IsEmpty)
             {
-                yield return state.prefix.ToArray();
-            }
-            else if (weight < targetWeight)
-            {
-                var subset = state.candidates;
-                foreach (var c in state.candidates)
+                subset = subset.Pop(out var c);
+                var newPrefix = state.prefix.Add(c);
+                var newSum = state.sum + c;
+                if (newSum == targetWeight)
                 {
-                    subset = subset.Remove(c);
-                    var newPrefix = state.prefix.Add(c);
-                    stack.Push((newPrefix, subset));
+                    results.Add(newPrefix);
+                }
+                else if (newSum < targetWeight)
+                {
+                    stack.Push((newPrefix, newSum, subset));
                 }
             }
-            else
-            {
-                //"NOP".ToString();
-            }
         }
+        return results;
     }
 
     public string Part1()

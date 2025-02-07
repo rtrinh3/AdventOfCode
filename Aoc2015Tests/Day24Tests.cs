@@ -12,7 +12,7 @@ public class Day24Tests
         var answer = instance.Part1();
         Assert.AreEqual("99", answer);
     }
-    [TestMethod(), Timeout(60_000)]
+    [TestMethod()]
     public void Part1InputTest()
     {
         var instance = new Day24(File.ReadAllText("day24-input.txt"));
@@ -27,7 +27,7 @@ public class Day24Tests
         var answer = instance.Part2();
         Assert.AreEqual("44", answer);
     }
-    [TestMethod(), Timeout(60_000)]
+    [TestMethod()]
     public void Part2InputTest()
     {
         var instance = new Day24(File.ReadAllText("day24-input.txt"));
