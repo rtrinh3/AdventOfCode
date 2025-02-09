@@ -8,9 +8,9 @@ public class Day17Tests
     [TestMethod()]
     public void Part1ExampleTest()
     {
-        var instance = new Day17(File.ReadAllText("day17-example.txt"));
-        var answer = instance.DoPart1(25);
-        Assert.AreEqual(4, answer);
+        var instance = new Day17(File.ReadAllText("day17-example.txt"), 25);
+        var answer = instance.Part1();
+        Assert.AreEqual("4", answer);
     }
     [TestMethod()]
     public void Part1InputTest()
@@ -23,9 +23,9 @@ public class Day17Tests
     [TestMethod()]
     public void Part2ExampleTest()
     {
-        var instance = new Day17(File.ReadAllText("day17-example.txt"));
-        var answer = instance.DoPart2(25);
-        Assert.AreEqual(3, answer);
+        var instance = new Day17(File.ReadAllText("day17-example.txt"), 25);
+        var answer = instance.Part2();
+        Assert.AreEqual("3", answer);
     }
     [TestMethod()]
     public void Part2InputTest()

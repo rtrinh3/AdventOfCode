@@ -5,11 +5,15 @@ namespace Aoc2015;
 
 // https://adventofcode.com/2015/day/17
 // --- Day 17: No Such Thing as Too Much ---
-public class Day17(string input): IAocDay
+public class Day17(string input, int targetWeight) : IAocDay
 {
     private readonly int[] containersInput = Parsing.IntsPositive(input);
 
-    private IEnumerable<ImmutableArray<int>> GenerateSubsets(int targetWeight)
+    public Day17(string input): this(input, 150)
+    {
+    }
+
+    private IEnumerable<ImmutableArray<int>> GenerateSubsets()
     {
         Stack<(ImmutableArray<int> prefix, int sum, ImmutableStack<int> candidates)> stack = new();
         var initialCandidates = ImmutableStack.CreateRange(containersInput);
@@ -36,26 +40,14 @@ public class Day17(string input): IAocDay
 
     public string Part1()
     {
-        var answer = DoPart1(150);
-        return answer.ToString();
-    }
-
-    public int DoPart1(int targetWeight)
-    {
-        var subsets = GenerateSubsets(targetWeight);
+        var subsets = GenerateSubsets();
         var answer = subsets.Count();
-        return answer;
+        return answer.ToString();
     }
 
     public string Part2()
     {
-        var answer = DoPart2(150);
-        return answer.ToString();
-    }
-
-    public int DoPart2(int targetWeight)
-    {
-        var subsets = GenerateSubsets(targetWeight);
+        var subsets = GenerateSubsets();
         var counts = new Dictionary<int, int>();
         foreach (var containers in subsets)
         {
@@ -64,6 +56,6 @@ public class Day17(string input): IAocDay
         }
         var minimumContainers = counts.Keys.Min();
         var minimumCount = counts[minimumContainers];
-        return minimumCount;
+        return minimumCount.ToString();
     }
 }
