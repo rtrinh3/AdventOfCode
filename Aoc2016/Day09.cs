@@ -3,6 +3,8 @@ using System.Text.RegularExpressions;
 
 namespace Aoc2016;
 
+// https://adventofcode.com/2016/day/9
+// --- Day 9: Explosives in Cyberspace ---
 public class Day09(string input) : IAocDay
 {
     private readonly string cleanInput = Regex.Replace(input, @"\s", "");
