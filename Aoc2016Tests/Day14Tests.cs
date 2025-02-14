@@ -20,14 +20,14 @@ public class Day14Tests
         Assert.AreEqual("18626", answer);
     }
 
-    [TestMethod()]
+    [TestMethod(), Timeout(60_000)]
     public void Day14_Part2_Example_Test()
     {
         var instance = new Day14(File.ReadAllText("day14-example.txt"));
         var answer = instance.Part2();
         Assert.AreEqual("22551", answer);
     }
-    [TestMethod()]
+    [TestMethod(), Timeout(60_000)]
     public void Day14_Part2_Input_Test()
     {
         var instance = new Day14(File.ReadAllText("day14-input.txt"));

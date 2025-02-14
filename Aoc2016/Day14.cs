@@ -7,9 +7,11 @@ namespace Aoc2016;
 
 // https://adventofcode.com/2016/day/14
 // --- Day 14: One-Time Pad ---
-public class Day14(string input) : IAocDay
+public partial class Day14(string input) : IAocDay
 {
-    private Regex trioMatcher = new(@"(.)\1\1");
+    [GeneratedRegex(@"(.)\1\1")]
+    private static partial Regex TrioMatcherGenerator();
+    private readonly Regex trioMatcher = TrioMatcherGenerator();
 
     private static string HashString(string hashInputString)
     {
@@ -19,80 +21,50 @@ public class Day14(string input) : IAocDay
         return hashString;
     }
 
-    private readonly Func<int, string> CalculateHashPart1 = Memoization.MakeInt((int suffix) =>
+    private int DoPuzzle(int hashIterations)
     {
-        string hashInputString = input + suffix;
-        return HashString(hashInputString);
-    });
+        Func<int, string> CalculateHash = Memoization.MakeInt((int suffix) =>
+        {
+            string hashString = input + suffix;
+            for (int i = 0; i < hashIterations; i++)
+            {
+                hashString = HashString(hashString);
+            }
+            return hashString;
+        });
+        int i = 0;
+        int found = 0;
+        while (found < 64)
+        {
+            var hashI = CalculateHash(i);
+            var trioMatch = trioMatcher.Match(hashI);
+            if (trioMatch.Success)
+            {
+                string five = trioMatch.Value + trioMatch.ValueSpan[0] + trioMatch.ValueSpan[0];
+                for (int j = 1; j <= 1000; j++)
+                {
+                    var hashJ = CalculateHash(i + j);
+                    if (hashJ.Contains(five))
+                    {
+                        found++;
+                        break;
+                    }
+                }
+            }
+            i++;
+        }
+        return i - 1;
+    }
 
     public string Part1()
     {
-        int i = 0;
-        int found = 0;
-        while (true)
-        {
-            var hashI = CalculateHashPart1(i);
-            var trioMatch = trioMatcher.Match(hashI);
-            if (trioMatch.Success)
-            {
-                string five = trioMatch.Value + trioMatch.ValueSpan[0] + trioMatch.ValueSpan[0];
-                for (int j = 1; j <= 1000; j++)
-                {
-                    var hashJ = CalculateHashPart1(i + j);
-                    if (hashJ.Contains(five))
-                    {
-                        found++;
-                        if (found == 64)
-                        {
-                            var answer = i;
-                            return answer.ToString();
-                        }
-                        break;
-                    }
-                }
-            }
-            i++;
-        }
-        throw new Exception("Answer not found");
+        var answer = DoPuzzle(1);
+        return answer.ToString();
     }
-    private readonly Func<int, string> CalculateHashPart2 = Memoization.MakeInt((int suffix) =>
-    {
-        string hashString = input + suffix;
-        for (int i = 0; i < 2017; i++)
-        {
-            hashString = HashString(hashString);
-        }
-        return hashString;
-    });
 
     public string Part2()
     {
-        int i = 0;
-        int found = 0;
-        while (true)
-        {
-            var hashI = CalculateHashPart2(i);
-            var trioMatch = trioMatcher.Match(hashI);
-            if (trioMatch.Success)
-            {
-                string five = trioMatch.Value + trioMatch.ValueSpan[0] + trioMatch.ValueSpan[0];
-                for (int j = 1; j <= 1000; j++)
-                {
-                    var hashJ = CalculateHashPart2(i + j);
-                    if (hashJ.Contains(five))
-                    {
-                        found++;
-                        if (found == 64)
-                        {
-                            var answer = i;
-                            return answer.ToString();
-                        }
-                        break;
-                    }
-                }
-            }
-            i++;
-        }
-        throw new Exception("Answer not found");
+        var answer = DoPuzzle(2017);
+        return answer.ToString();
     }
 }
