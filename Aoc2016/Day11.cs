@@ -8,7 +8,7 @@ namespace Aoc2016;
 // --- Day 11: Radioisotope Thermoelectric Generators ---
 public class Day11 : IAocDay
 {
-    // Let's represent the contents of a floor as a bitmap
+    // Let's represent the contents of a floor as a bitmap, interleaving chips and generators:
     // Position 0: alpha-compatible microchip
     // Position 1: alpha generator
     // Position 2: bravo-compatible microchip
