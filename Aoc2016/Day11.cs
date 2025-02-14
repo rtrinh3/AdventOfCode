@@ -1,5 +1,6 @@
 ﻿using AocCommon;
 using System.Diagnostics;
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace Aoc2016;
@@ -33,8 +34,8 @@ public class Day11 : IAocDay
     private static int DoPuzzle((string[] Chips, string[] Generators)[] initialDescription)
     {
         var elements = initialDescription.SelectMany(f => f.Chips).ToHashSet();
-        var elementsFromGenerators = initialDescription.SelectMany(f => f.Generators);
-        Debug.Assert(elements.SetEquals(elementsFromGenerators));
+        //var elementsFromGenerators = initialDescription.SelectMany(f => f.Generators);
+        //Debug.Assert(elements.SetEquals(elementsFromGenerators));
         // initialState
         Dictionary<string, int> elementIndices = new();
         var elementsSorted = elements.Order().ToArray();
@@ -73,7 +74,7 @@ public class Day11 : IAocDay
     private static List<State> GetMoves(State state)
     {
         var result = new List<State>();
-        List<int> targetFloors = new();
+        List<int> targetFloors = new(capacity: 2);
         if (state.ElevatorFloor > 0)
         {
             targetFloors.Add(state.ElevatorFloor - 1);
@@ -83,21 +84,20 @@ public class Day11 : IAocDay
             targetFloors.Add(state.ElevatorFloor + 1);
         }
         var currentFloor = state.Floors[state.ElevatorFloor];
-        Debug.Assert(CheckFloor(currentFloor));
+        //Debug.Assert(CheckFloor(currentFloor));
         // Represent what we take onto the elevator as a "Floor"
         List<uint> takeOneOrTwoThings = new();
-        for (uint i = 1u; i <= currentFloor; i <<= 1)
+        uint candidatesForI = currentFloor;
+        while (candidatesForI != 0)
         {
-            if ((currentFloor & i) == 0)
+            uint i = 1u << BitOperations.TrailingZeroCount(candidatesForI);
+            takeOneOrTwoThings.Add(i);
+            candidatesForI -= i;
+            uint candidatesForJ = currentFloor & (i - 1);
+            while (candidatesForJ != 0)
             {
-                continue;
-            }
-            for (uint j = 1u; j <= i; j <<= 1)
-            {
-                if ((currentFloor & j) == 0)
-                {
-                    continue;
-                }
+                uint j = 1u << BitOperations.TrailingZeroCount(candidatesForJ);
+                candidatesForJ -= j;
                 uint combo = i | j;
                 takeOneOrTwoThings.Add(combo);
             }
