@@ -27,12 +27,11 @@ public class Day19Tests
         var answer = instance.Part2();
         Assert.AreEqual("2", answer);
     }
-    [TestMethod()]
+    [TestMethod(), Timeout(60_000)]
     public void Day19_Part2_Input_Test()
     {
         var instance = new Day19(File.ReadAllText("day19-input.txt"));
         var answer = instance.Part2();
-        //Assert.AreEqual("1834471", answer);
-        Assert.Inconclusive(answer);
+        Assert.AreEqual("1420064", answer);
     }
 }

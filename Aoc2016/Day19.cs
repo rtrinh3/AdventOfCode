@@ -42,15 +42,7 @@ public class Day19(string input) : AocCommon.IAocDay
         // Build circle of elves
         int initialNumberOfElves = int.Parse(input);
         int numberOfElves = initialNumberOfElves;
-        Elf firstElf = new Elf() { Number = 1 };
-        Elf elf = firstElf;
-        for (int i = 2; i <= numberOfElves; i++)
-        {
-            Elf newElf = new Elf() { Number = i };
-            elf.Next = newElf;
-            elf = newElf;
-        }
-        elf.Next = firstElf;
+        List<int> elves = Enumerable.Range(1, initialNumberOfElves).ToList();
         // Play game
         Task.Run(() =>
         {
@@ -64,20 +56,18 @@ public class Day19(string input) : AocCommon.IAocDay
                 Thread.Sleep(1000);
             }
         });
-        elf = firstElf;
-        while (numberOfElves > 1)
+        int index = 0;
+        while (numberOfElves>1)
         {
-            int skip = numberOfElves / 2;
-            Elf targetElfPredecessor = elf;
-            for (int i = 0; i < skip - 1; i++)
-            {
-                targetElfPredecessor = targetElfPredecessor.Next;
-            }
-            targetElfPredecessor.Next = targetElfPredecessor.Next.Next;
-            elf = elf.Next;
+            int oppositeIndex = (index + numberOfElves / 2) % numberOfElves;
+            elves.RemoveAt(oppositeIndex);
             numberOfElves--;
+            if (oppositeIndex < index)
+            {
+                index--;
+            }
+            index = (index + 1) % numberOfElves;
         }
-        var answer = elf.Number;
-        return answer.ToString();
+        return elves.Single().ToString();
     }
 }
