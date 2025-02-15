@@ -57,7 +57,7 @@ public class Day19(string input) : AocCommon.IAocDay
             }
         });
         int index = 0;
-        while (numberOfElves>1)
+        while (numberOfElves > 1)
         {
             int oppositeIndex = (index + numberOfElves / 2) % numberOfElves;
             elves.RemoveAt(oppositeIndex);
