@@ -8,7 +8,7 @@ public class Day20Tests
     [TestMethod()]
     public void Day20_Part1_Example_Test()
     {
-        var instance = new Day20(File.ReadAllText("day20-example.txt"), 9 + 1);
+        var instance = new Day20(File.ReadAllText("day20-example.txt"), 9);
         var answer = instance.Part1();
         Assert.AreEqual("3", answer);
     }

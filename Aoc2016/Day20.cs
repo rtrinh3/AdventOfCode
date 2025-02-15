@@ -1,41 +1,61 @@
-﻿using System.Collections;
+﻿using AocCommon;
 using System.Diagnostics;
 
 namespace Aoc2016;
 
 // https://adventofcode.com/2016/day/20
 // --- Day 20: Firewall Rules ---
-public class Day20(string input, long addressSpaceLength) : AocCommon.IAocDay
+public class Day20(string input, uint maxAddress) : IAocDay
 {
     public Day20(string input) :
-        this(input, 4294967295 + 1L)
+        this(input, 4294967295)
     {
     }
 
-    private SegmentedBoolArray ApplyFilters()
+    private record Range(uint Min, uint Max);
+
+    private SortedSet<Range> ApplyFilters()
     {
-        var addressSpace = new SegmentedBoolArray(addressSpaceLength);
-        var lines = AocCommon.Parsing.SplitLines(input);
-        int lineIndex = 0;
-        Task.Run(() =>
+        SortedSet<Range> addressSpace = new(Comparer<Range>.Create((a, b) => a.Min.CompareTo(b.Min)))
         {
-            Thread.Sleep(1000);
-            while (lineIndex < lines.Length)
-            {
-                Console.WriteLine($"Line {lineIndex}/{lines.Length}");
-                Thread.Sleep(1000);
-            }
-        });
-        for (; lineIndex < lines.Length; lineIndex++)
+            new(0, maxAddress)
+        };
+        var lines = Parsing.SplitLines(input);
+        foreach (var line in lines)
         {
-            var line = lines[lineIndex];
             var parts = line.Split('-');
-            long lo = long.Parse(parts[0]);
-            long hi = long.Parse(parts[1]);
-            for (long i = lo; i <= hi; i++)
+            var blockedLow = uint.Parse(parts[0]);
+            var blockedHigh = uint.Parse(parts[1]);
+            Range zero = new(0, 0);
+            Range blockedRange = new(blockedLow, blockedHigh);
+            Range blockedMax = new(blockedHigh, blockedHigh);
+            var toRemove = addressSpace.GetViewBetween(blockedRange, blockedMax);
+            List<Range> toAdd = new();
+            foreach (var range in toRemove)
             {
-                addressSpace[i] = true;
+                Debug.Assert(blockedLow <= range.Min && range.Min <= blockedHigh); // by definition of GetViewBetween
+                if (range.Max > blockedHigh)
+                {
+                    toAdd.Add(new(blockedHigh + 1, range.Max));
+                }
             }
+            toRemove.Clear();
+            var overlapStart = addressSpace.GetViewBetween(zero, blockedRange).Reverse().FirstOrDefault();
+            if (overlapStart is not null)
+            {
+                Debug.Assert(overlapStart.Min <= blockedLow); // by definition of GetViewBetween
+                if (blockedLow <= overlapStart.Max)
+                {
+                    addressSpace.Remove(overlapStart);
+                    toAdd.Add(new(overlapStart.Min, blockedLow - 1));
+                    if (blockedHigh <= overlapStart.Max)
+                    {
+                        toAdd.Add(new(blockedHigh + 1, overlapStart.Max));
+                    }
+                }
+            }
+            toAdd.RemoveAll(r => r.Max < r.Min);
+            addressSpace.UnionWith(toAdd);
         }
         return addressSpace;
     }
@@ -43,81 +63,25 @@ public class Day20(string input, long addressSpaceLength) : AocCommon.IAocDay
     public string Part1()
     {
         var addressSpace = ApplyFilters();
-        for (long i = 0; i < addressSpaceLength; i++)
+        if (addressSpace.Count > 0)
         {
-            if (!addressSpace[i])
-            {
-                return i.ToString();
-            }
+            var answer = addressSpace.First().Min;
+            return answer.ToString();
         }
-        throw new Exception("No answer found");
+        else
+        {
+            throw new Exception("No answer found");
+        }
     }
 
     public string Part2()
     {
         var addressSpace = ApplyFilters();
-        long i = 0;
-        long answer = 0;
-        Task.Run(() =>
+        uint answer = 0;
+        foreach (var range in addressSpace)
         {
-            Thread.Sleep(1000);
-            while (i < addressSpaceLength)
-            {
-                Console.WriteLine($"Check {i}/{addressSpaceLength}");
-                Thread.Sleep(1000);
-            }
-        });
-        for (; i < addressSpaceLength; i++)
-        {
-            if (!addressSpace[i])
-            {
-                answer++;
-            }
+            answer += (range.Max - range.Min + 1);
         }
         return answer.ToString();
-    }
-
-    private class SegmentedBoolArray
-    {
-        public long Length { get; init; }
-        private readonly BitArray[] data;
-
-        public SegmentedBoolArray(long length)
-        {
-            Length = length;
-            // arbitrary length limit
-            if (length > (1L << 40))
-            {
-                throw new Exception("Too big: " + length);
-            }
-            int segments = (int)(length >> 24);
-            int remainder = (int)(length & 0xffffff);
-            data = new BitArray[segments + ((remainder > 0) ? 1 : 0)];
-            for (int i = 0; i < segments; i++)
-            {
-                data[i] = new BitArray(1 << 24);
-            }
-            if (remainder > 0)
-            {
-                data[^1] = new BitArray(remainder);
-            }
-            Debug.Assert(data.Select(segment => (long)segment.Length).Sum() == length);
-        }
-
-        public bool this[long index]
-        {
-            get
-            {
-                int segment = (int)(index >> 24);
-                int remainder = (int)(index & 0xffffff);
-                return data[segment][remainder];
-            }
-            set
-            {
-                int segment = (int)(index >> 24);
-                int remainder = (int)(index & 0xffffff);
-                data[segment][remainder] = value;
-            }
-        }
     }
 }
