@@ -39,7 +39,7 @@ public class Day13(int input, int targetX, int targetY) : IAocDay
 
     private bool IsSpacePart2(VectorXY coord)
     {
-        return coord.X <= 51 && coord.Y <= 51 && IsSpacePart1(coord);
+        return coord.ManhattanMetric() <= 51 && IsSpacePart1(coord);
     }
 
     private IEnumerable<VectorXY> GetNextPart2(VectorXY coord)
