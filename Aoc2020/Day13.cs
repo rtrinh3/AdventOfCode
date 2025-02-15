@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using AocCommon;
+using System.Diagnostics;
 using System.Numerics;
 
 namespace Aoc2020
@@ -58,32 +59,13 @@ namespace Aoc2020
             for (int i = 1; i < validBusses.Count; i++)
             {
                 var (factorB, remainderB) = validBusses[i];
-                var bezoutCoefficients = ExtendedEuclideanAlgorithm(factorA, factorB);
+                var bezoutCoefficients = MoreMath.ExtendedEuclideanAlgorithm(factorA, factorB);
                 var newRemainderA = remainderA * factorB * bezoutCoefficients.BezoutB + remainderB * factorA * bezoutCoefficients.BezoutA;
                 factorA = factorA * factorB;
                 remainderA = ((newRemainderA % factorA) + factorA) % factorA;
             }
             Debug.Assert(remainderA < long.MaxValue);
             return remainderA.ToString();
-        }
-
-        // https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm#Pseudocode
-        private static (BigInteger BezoutA, BigInteger BezoutB) ExtendedEuclideanAlgorithm(BigInteger a, BigInteger b)
-        {
-            BigInteger old_r = a;
-            BigInteger r = b;
-            BigInteger old_s = 1;
-            BigInteger s = 0;
-            BigInteger old_t = 0;
-            BigInteger t = 1;
-            while (r != 0)
-            {
-                BigInteger quotient = old_r / r;
-                (old_r, r) = (r, old_r - quotient * r);
-                (old_s, s) = (s, old_s - quotient * s);
-                (old_t, t) = (t, old_t - quotient * t);
-            }
-            return (old_s, old_t);
         }
     }
 }

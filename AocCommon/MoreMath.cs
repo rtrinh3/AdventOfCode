@@ -58,5 +58,25 @@ namespace AocCommon
                 }
             }
         }
+
+        // https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm#Pseudocode
+        public static (TNumber BezoutA, TNumber BezoutB) ExtendedEuclideanAlgorithm<TNumber>(TNumber a, TNumber b)
+            where TNumber : INumber<TNumber>
+        {
+            TNumber old_r = a;
+            TNumber r = b;
+            TNumber old_s = TNumber.One;
+            TNumber s = TNumber.Zero;
+            TNumber old_t = TNumber.Zero;
+            TNumber t = TNumber.One;
+            while (!TNumber.IsZero(r))
+            {
+                var quotient = old_r / r;
+                (old_r, r) = (r, old_r - quotient * r);
+                (old_s, s) = (s, old_s - quotient * s);
+                (old_t, t) = (t, old_t - quotient * t);
+            }
+            return (old_s, old_t);
+        }
     }
 }
