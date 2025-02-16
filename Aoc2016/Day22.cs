@@ -1,7 +1,5 @@
 ﻿using AocCommon;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 
 namespace Aoc2016;
 
@@ -59,14 +57,14 @@ public class Day22(string input) : IAocDay
         List<GridState> GetNext(GridState state)
         {
             List<GridState> results = new();
-            foreach (VectorXY dst in state.Hole.NextFour())
+            foreach (VectorXY newHole in state.Hole.NextFour())
             {
-                if (0 <= dst.X && dst.X <= maxX && 0 <= dst.Y && dst.Y <= maxY)
+                if (0 <= newHole.X && newHole.X <= maxX && 0 <= newHole.Y && newHole.Y <= maxY)
                 {
-                    if (parseGrid[dst].Size >= parseGrid[state.Hole].Used)
+                    if (parseGrid[newHole].Size >= parseGrid[state.Hole].Used)
                     {
-                        VectorXY newWanted = (dst == state.Wanted) ? state.Hole : state.Wanted;
-                        results.Add(new(dst, newWanted));
+                        VectorXY newWanted = (newHole == state.Wanted) ? state.Hole : state.Wanted;
+                        results.Add(new(newHole, newWanted));
                     }
                 }
             }
