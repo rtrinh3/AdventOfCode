@@ -20,7 +20,7 @@ namespace Aoc2019
         {
             var (map, oxygen) = MapArea();
             var route = CalculateRoute(map, origin, oxygen);
-            var answer = route.Count;
+            var answer = route.Count();
             return answer.ToString();
         }
 
@@ -121,14 +121,14 @@ namespace Aoc2019
             Console.WriteLine(sb.ToString());
         }
 
-        List<VectorXY> CalculateRoute(Dictionary<VectorXY, int> map, VectorXY start, VectorXY end)
+        IEnumerable<VectorXY> CalculateRoute(Dictionary<VectorXY, int> map, VectorXY start, VectorXY end)
         {
             IEnumerable<VectorXY> GetNext(VectorXY current)
             {
                 return current.NextFour().Where(next => !map.ContainsKey(next) || map[next] != 0);
             }
             var bfsResult = GraphAlgos.BfsToEnd(start, GetNext, pos => pos == end);
-            return bfsResult.path.ToList();
+            return bfsResult.path.SkipLast(1);
         }
 
         Dictionary<VectorXY, int> CalculateDistances(Dictionary<VectorXY, int> map, VectorXY start)
