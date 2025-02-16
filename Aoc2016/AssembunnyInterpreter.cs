@@ -5,10 +5,11 @@ namespace Aoc2016;
 
 // See:
 // https://adventofcode.com/2016/day/12 ,
-// https://adventofcode.com/2016/day/23
+// https://adventofcode.com/2016/day/23 ,
+// https://adventofcode.com/2016/day/25
 public class AssembunnyInterpreter
 {
-    private static readonly FrozenSet<string> oneArg = FrozenSet.ToFrozenSet(["inc", "dec", "tgl"]);
+    private static readonly FrozenSet<string> oneArg = FrozenSet.ToFrozenSet(["inc", "dec", "tgl", "out"]);
     private static readonly FrozenSet<string> twoArgs = FrozenSet.ToFrozenSet(["cpy", "jnz"]);
 
     private readonly string[][] instructions;
@@ -36,7 +37,13 @@ public class AssembunnyInterpreter
         return char.IsAsciiLetterLower(arg[0]) ? registers[arg[0] - 'a'] : long.Parse(arg);
     }
 
-    public void Run()
+    public long[] Run()
+    {
+        var outputs = RunLazyOutput().ToArray();
+        return outputs;
+    }
+
+    public IEnumerable<long> RunLazyOutput()
     {
         while (ip < instructions.Length)
         {
@@ -110,6 +117,12 @@ public class AssembunnyInterpreter
                     }
                 }
                 ip++;
+            }
+            else if (instr[0] == "out")
+            {
+                long x = Eval(instr[1]);
+                ip++;
+                yield return x;
             }
             else
             {
