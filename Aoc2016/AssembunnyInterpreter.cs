@@ -117,6 +117,7 @@ public class AssembunnyInterpreter
                         throw new Exception("Unrecognized instruction while toggling: " + instr);
                     }
                     Console.WriteLine(instructions[tglTarget][0]);
+                    Console.WriteLine("Registers: " + string.Join(" ", registers));
                 }
                 ip++;
             }

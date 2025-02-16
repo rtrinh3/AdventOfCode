@@ -25,7 +25,6 @@ public class Day23Tests
     {
         var instance = new Day23(File.ReadAllText("day23-input.txt"));
         var answer = instance.Part2();
-        //Assert.AreEqual("13050", answer);
-        Assert.Inconclusive(answer);
+        Assert.AreEqual("479009610", answer);
     }
 }
