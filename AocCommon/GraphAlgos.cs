@@ -50,6 +50,7 @@ namespace AocCommon
                             yield return cursor;
                             cursor = parentsDistances[cursor].Item1;
                         }
+                        yield return start;
                     }
                     return (parentsDistances[current].Item2, GetSteps());
                 }
@@ -122,6 +123,7 @@ namespace AocCommon
                             yield return cursor;
                             cursor = parentsDistances[cursor].parent;
                         }
+                        yield return start;
                     }
                     return (parentsDistances[current].distance, GetSteps());
                 }
