@@ -95,6 +95,7 @@ public class AssembunnyInterpreter
                 int tglTarget = ip + (int)x;
                 if (0 <= tglTarget && tglTarget < instructions.Length)
                 {
+                    Console.Write($"tgl {x}: {instructions[tglTarget][0]} -> ");
                     if (instructions[tglTarget][0] == "inc")
                     {
                         instructions[tglTarget][0] = "dec";
@@ -115,6 +116,7 @@ public class AssembunnyInterpreter
                     {
                         throw new Exception("Unrecognized instruction while toggling: " + instr);
                     }
+                    Console.WriteLine(instructions[tglTarget][0]);
                 }
                 ip++;
             }

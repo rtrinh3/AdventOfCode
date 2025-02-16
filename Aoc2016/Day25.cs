@@ -8,7 +8,7 @@ public class Day25(string input) : IAocDay
 {
     public string Part1()
     {
-        const int SAMPLE_LENGTH = 1000;
+        const int SAMPLE_LENGTH = 8;
         long i = 0;
         Task.Run(() =>
         {
