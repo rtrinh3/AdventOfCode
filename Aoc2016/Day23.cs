@@ -17,27 +17,24 @@ public class Day23(string input) : IAocDay
 
     public string Part2()
     {
-        // The tgl instruction goes through the same sequence for 6-11; hopefully 12 too
-        //tgl 8: inc->dec
-        //tgl 6: inc->dec
-        //tgl 4: jnz->cpy
-        //tgl 2: jnz->cpy
-        // inputs 6-11 execute in a reasonable time
-        for (int i = 6; i <= 11; i++)
+        // As far as I can tell, the program calculates the factorial of the input and adds a constant to it.
+        // Let's deduce that offset from a few easy inputs and apply it to Input 12.
+        List<long> offsets = new();
+        for (int i = 7; i <= 10; i++)
         {
-            Console.WriteLine($"Input {i}");
-            AssembunnyInterpreter tempInterpreter = new(input);
-            tempInterpreter.Poke('a', i);
-            tempInterpreter.Run();
-            var output = tempInterpreter.Peek('a');
-            Console.WriteLine(output);
-            Console.WriteLine();
+            AssembunnyInterpreter interpreter = new(input);
+            interpreter.Poke('a', i);
+            interpreter.Run();
+            var output = interpreter.Peek('a');
+
+            long expectedFactorial = Enumerable.Range(1, i).Aggregate((a, b) => a * b);
+            long offset = output - expectedFactorial;
+            offsets.Add(offset);
         }
-        // Naive run
-        AssembunnyInterpreter interpreter = new(input);
-        interpreter.Poke('a', 12);
-        interpreter.Run();
-        var answer = interpreter.Peek('a');
+        var distinctOffsets = offsets.Distinct().ToArray();
+        var finalOffset = distinctOffsets.Single();
+        long factorialTwelve = Enumerable.Range(1, 12).Aggregate((a, b) => a * b);
+        long answer = factorialTwelve + finalOffset;
         return answer.ToString();
     }
 }
