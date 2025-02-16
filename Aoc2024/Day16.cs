@@ -12,10 +12,6 @@ public class Day16(string input) : IAocDay
 
     List<(Node, int)> GetNext(Node node)
     {
-        if (maze.Get(node.Position) == 'E')
-        {
-            return [];
-        }
         var left = node with { Direction = node.Direction.RotatedLeft() };
         var right = node with { Direction = node.Direction.RotatedRight() };
         List<(Node, int)> next = [(left, 1000), (right, 1000)];
@@ -40,74 +36,27 @@ public class Day16(string input) : IAocDay
     {
         VectorRC startPos = maze.Iterate().Single(x => x.Value == 'S').Position;
         Node startNode = new(startPos, VectorRC.Right);
-        var paths = DijkstraMultipath(startNode, GetNext);
-        VectorRC endPos = maze.Iterate().Single(x => x.Value == 'E').Position;
-        var endNodes = paths.Where(kvp => kvp.Key.Position == endPos).ToList();
-        var minimumScore = endNodes.Min(kvp => kvp.Value.Distance);
-        endNodes.RemoveAll(kvp => kvp.Value.Distance != minimumScore);
-        HashSet<Node> visited = new();
-        void Visit(Node node)
+        var scoreFromStart = GraphAlgos.DijkstraToAll(startNode, GetNext);
+        var endNodes = scoreFromStart.Where(kvp => maze.Get(kvp.Key.Position) == 'E').ToList();
+        var minimumScore = endNodes.Min(kvp => kvp.Value.distance);
+        endNodes.RemoveAll(kvp => kvp.Value.distance > minimumScore);
+        var scoreFromEnds = endNodes.Select(node =>
         {
-            // Add() returns false if already present
-            if (!visited.Add(node))
+            Node oppositeNode = new(node.Key.Position, -node.Key.Direction);
+            var scoreFromThisEnd = GraphAlgos.DijkstraToAll(oppositeNode, GetNext);
+            return scoreFromThisEnd.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.distance);
+        }).ToArray();
+        var onOptimalPath = scoreFromStart
+            .Where(kvpFromStart => scoreFromEnds.Any(scoreFromEnd =>
             {
-                return;
-            }
-            foreach (var parent in paths[node].Parents)
-            {
-                Visit(parent);
-            }
-        }
-        foreach (var kvp in endNodes)
-        {
-            Visit(kvp.Key);
-        }
-        var positions = visited.Select(x => x.Position).Distinct().ToList();
-        return positions.Count.ToString();
-    }
-
-    public static Dictionary<T, (List<T> Parents, int Distance)> DijkstraMultipath<T>(T start, Func<T, IEnumerable<(T, int)>> getNeighbors)
-            where T : notnull
-    {
-        PriorityQueue<T, int> queue = new();
-        queue.Enqueue(start, 0);
-        Dictionary<T, int> distances = new();
-        distances[start] = 0;
-        DefaultDict<T, List<T>> parents = new();
-        while (queue.TryDequeue(out var current, out var currentDistance))
-        {
-            if (distances[current] < currentDistance)
-            {
-                continue;
-            }
-            if (distances[current] > currentDistance)
-            {
-                throw new Exception("Not supposed to happen");
-            }
-            foreach (var (neighbor, distanceToNext) in getNeighbors(current))
-            {
-                var nextDistance = currentDistance + distanceToNext;
-                if (!distances.TryGetValue(neighbor, out var recordedDistance) || nextDistance <= recordedDistance)
-                {
-                    if (nextDistance == recordedDistance)
-                    {
-                        parents[neighbor].Add(current);
-                    }
-                    else
-                    {
-                        distances[neighbor] = nextDistance;
-                        parents[neighbor].Clear();
-                        parents[neighbor].Add(current);
-                        queue.Enqueue(neighbor, nextDistance);
-                    }
-                }
-            }
-        }
-        Dictionary<T, (List<T>, int)> parentsDistances = new();
-        foreach (var key in distances.Keys)
-        {
-            parentsDistances[key] = (parents[key], distances[key]);
-        }
-        return parentsDistances;
+                Node nodeFromEnd = new(kvpFromStart.Key.Position, -kvpFromStart.Key.Direction);
+                return scoreFromEnd.TryGetValue(nodeFromEnd, out var distanceFromEnd) &&
+                distanceFromEnd + kvpFromStart.Value.distance == minimumScore;
+            })
+            ).Select(kvp => kvp.Key.Position)
+            .Distinct()
+            .ToArray();
+        var answer = onOptimalPath.Length;
+        return answer.ToString();
     }
 }
