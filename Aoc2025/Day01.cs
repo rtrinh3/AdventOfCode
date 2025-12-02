@@ -2,6 +2,8 @@
 
 namespace Aoc2025;
 
+// https://adventofcode.com/2025/day/1
+// --- Day 1: Secret Entrance ---
 public class Day01(string input) : AocCommon.IAocDay
 {
     private const int DIAL_SIZE = 100;

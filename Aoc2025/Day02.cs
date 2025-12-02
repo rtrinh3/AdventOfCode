@@ -6,17 +6,21 @@ namespace Aoc2025;
 // --- Day 2: Gift Shop ---
 public class Day02(string input) : AocCommon.IAocDay
 {
-    public string Part1()
-    {
-        var pairs = input.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-        long accumulator = 0L;
-        foreach (var pair in pairs)
+    private readonly (long Lower, long Upper)[] Ranges =
+        input.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+        .Select(pair =>
         {
             var parts = pair.Split('-', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
             Debug.Assert(parts.Length == 2);
-            long lower = long.Parse(parts[0]);
-            long upper = long.Parse(parts[1]);
-            for (long i = lower; i <= upper; i++)
+            return (long.Parse(parts[0]), long.Parse(parts[1]));
+        }).ToArray();
+
+    public string Part1()
+    {
+        long accumulator = 0L;
+        foreach (var (Lower, Upper) in Ranges)
+        {
+            for (long i = Lower; i <= Upper; i++)
             {
                 string id = i.ToString();
                 if (id.Length % 2 != 0)
@@ -35,6 +39,29 @@ public class Day02(string input) : AocCommon.IAocDay
 
     public string Part2()
     {
-        throw new NotImplementedException();
+        long accumulator = 0L;
+        foreach (var (Lower, Upper) in Ranges)
+        {
+            for (long idn = Lower; idn <= Upper; idn++)
+            {
+                string id = idn.ToString();
+                for (int segmentLength = 1; segmentLength * 2 <= id.Length; segmentLength++)
+                {
+                    if (id.Length % segmentLength != 0)
+                    {
+                        continue;
+                    }
+                    int repeats = id.Length / segmentLength;
+                    var segments = Enumerable.Range(0, repeats).Select(n => id.Substring(n * segmentLength, segmentLength)).ToArray();
+                    bool isRepetitive = segments.All(s => s == segments[0]);
+                    if (isRepetitive)
+                    {
+                        accumulator += idn;
+                        break;
+                    }
+                }
+            }
+        }
+        return accumulator.ToString();
     }
 }

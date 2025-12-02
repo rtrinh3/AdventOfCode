@@ -1,5 +1,7 @@
 ﻿namespace Aoc2025.Tests;
 
+// https://adventofcode.com/2025/day/1
+// --- Day 1: Secret Entrance ---
 [TestClass()]
 public class Day01Tests
 {
