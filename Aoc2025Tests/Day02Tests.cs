@@ -1,5 +1,7 @@
 namespace Aoc2025.Tests;
 
+// https://adventofcode.com/2025/day/2
+// --- Day 2: Gift Shop ---
 [TestClass()]
 public class Day02Tests
 {
@@ -8,8 +10,7 @@ public class Day02Tests
     {
         var instance = new Day02(File.ReadAllText("day02-example.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("1227775554", answer);
     }
 
     [TestMethod()]
@@ -17,8 +18,7 @@ public class Day02Tests
     {
         var instance = new Day02(File.ReadAllText("day02-input.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("19128774598", answer);
     }
 
     [TestMethod()]
