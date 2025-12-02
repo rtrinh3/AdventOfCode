@@ -28,7 +28,7 @@ public class Day02(string input) : AocCommon.IAocDay
                     continue;
                 }
                 int halfLength = id.Length / 2;
-                if (id.Take(halfLength).SequenceEqual(id.Skip(halfLength)))
+                if (id.AsSpan(0, halfLength).SequenceEqual(id.AsSpan(halfLength, halfLength)))
                 {
                     accumulator += i;
                 }
@@ -51,9 +51,12 @@ public class Day02(string input) : AocCommon.IAocDay
                     {
                         continue;
                     }
-                    int repeats = id.Length / segmentLength;
-                    var segments = Enumerable.Range(0, repeats).Select(n => id.Substring(n * segmentLength, segmentLength)).ToArray();
-                    bool isRepetitive = segments.All(s => s == segments[0]);
+                    bool isRepetitive = true;
+                    ReadOnlySpan<char> initialSegment = id.AsSpan(0, segmentLength);
+                    for (int pos = segmentLength; pos < id.Length && isRepetitive; pos += segmentLength)
+                    {
+                        isRepetitive = initialSegment.SequenceEqual(id.AsSpan(pos, segmentLength));
+                    }
                     if (isRepetitive)
                     {
                         accumulator += idn;
