@@ -1,5 +1,7 @@
 namespace Aoc2025.Tests;
 
+// https://adventofcode.com/2025/day/3
+// --- Day 3: Lobby ---
 [TestClass()]
 public class Day03Tests
 {
@@ -8,8 +10,7 @@ public class Day03Tests
     {
         var instance = new Day03(File.ReadAllText("day03-example.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("357", answer);
     }
 
     [TestMethod()]
@@ -17,8 +18,7 @@ public class Day03Tests
     {
         var instance = new Day03(File.ReadAllText("day03-input.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("17301", answer);
     }
 
     [TestMethod()]
@@ -26,8 +26,7 @@ public class Day03Tests
     {
         var instance = new Day03(File.ReadAllText("day03-example.txt"));
         var answer = instance.Part2();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("3121910778619", answer);
     }
 
     [TestMethod()]
