@@ -8,37 +8,44 @@ public class Day03(string input) : AocCommon.IAocDay
 
     public string Part1()
     {
-        int accumulator = 0;
+        long accumulator = 0;
         foreach (var line in lines)
         {
-            int indexA = -1;
-            char valueA = '\0';
-            for (int i = 0; i < line.Length - 1; i++)
-            {
-                if (line[i] > valueA)
-                {
-                    indexA = i;
-                    valueA = line[i];
-                }
-            }
-            int indexB = indexA + 1;
-            char valueB = line[indexB];
-            for (int i = indexA + 1; i < line.Length; i++)
-            {
-                if (line[i] > valueB)
-                {
-                    indexB = i;
-                    valueB = line[i];
-                }
-            }
-            int value = 10 * (valueA - '0') + (valueB - '0');
-            accumulator += value;
+            var value = FindMaxJoltage(line, 2);
+            accumulator += long.Parse(value);
         }
         return accumulator.ToString();
     }
 
+    private static string FindMaxJoltage(ReadOnlySpan<char> adapters, int count)
+    {
+        if (count == 0)
+        {
+            return "";
+        }
+        char maxValue = '\0';
+        int maxIndex = -1;
+        for (int i = 0; i <= adapters.Length - count; i++)
+        {
+            if (adapters[i] > maxValue)
+            {
+                maxValue = adapters[i];
+                maxIndex = i;
+            }
+        }
+        var maxRemainder = FindMaxJoltage(adapters.Slice(maxIndex + 1), count - 1);
+        var answer = maxValue + maxRemainder;
+        return answer;
+    }
+
     public string Part2()
     {
-        throw new NotImplementedException();
+        long accumulator = 0;
+        foreach (var line in lines)
+        {
+            var value = FindMaxJoltage(line, 12);
+            accumulator += long.Parse(value);
+        }
+        return accumulator.ToString();
     }
 }

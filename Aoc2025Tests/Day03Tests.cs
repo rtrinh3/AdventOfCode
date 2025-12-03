@@ -34,7 +34,6 @@ public class Day03Tests
     {
         var instance = new Day03(File.ReadAllText("day03-input.txt"));
         var answer = instance.Part2();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("172162399742349", answer);
     }
 }
