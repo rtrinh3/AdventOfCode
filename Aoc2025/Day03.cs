@@ -19,22 +19,21 @@ public class Day03(string input) : AocCommon.IAocDay
 
     private static string FindMaxJoltage(ReadOnlySpan<char> adapters, int count)
     {
-        if (count == 0)
+        string answer = "";
+        int startIndex = 0;
+        for (int answerPos = 0; answerPos < count; answerPos++)
         {
-            return "";
-        }
-        char maxValue = '\0';
-        int maxIndex = -1;
-        for (int i = 0; i <= adapters.Length - count; i++)
-        {
-            if (adapters[i] > maxValue)
+            char maxValue = '\0';
+            for (int i = startIndex; i <= adapters.Length - (count - answerPos); i++)
             {
-                maxValue = adapters[i];
-                maxIndex = i;
+                if (adapters[i] > maxValue)
+                {
+                    maxValue = adapters[i];
+                    startIndex = i + 1;
+                }
             }
+            answer += maxValue;
         }
-        var maxRemainder = FindMaxJoltage(adapters.Slice(maxIndex + 1), count - 1);
-        var answer = maxValue + maxRemainder;
         return answer;
     }
 
