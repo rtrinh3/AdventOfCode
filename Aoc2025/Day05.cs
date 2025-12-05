@@ -2,18 +2,26 @@ namespace Aoc2025;
 
 // https://adventofcode.com/2025/day/5
 // --- Day 5: Cafeteria ---
-public class Day05(string input) : AocCommon.IAocDay
+public class Day05 : AocCommon.IAocDay
 {
-    public string Part1()
+    private record Range(long Min, long Max);
+
+    private readonly Range[] ranges;
+    private readonly long[] ingredients;
+
+    public Day05(string input)
     {
         var paragraphs = input.ReplaceLineEndings("\n").Split("\n\n");
-        var ranges = paragraphs[0].Split('\n').Select(line =>
+        ranges = paragraphs[0].Split('\n').Select(line =>
         {
             var parts = line.Split('-');
-            return (long.Parse(parts[0]), long.Parse(parts[1]));
+            return new Range(long.Parse(parts[0]), long.Parse(parts[1]));
         }).ToArray();
-        var ingredients = paragraphs[1].Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToArray();
+        ingredients = paragraphs[1].Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToArray();
+    }
 
+    public string Part1()
+    {
         int accumulator = 0;
         foreach (var ingredient in ingredients)
         {
@@ -31,6 +39,25 @@ public class Day05(string input) : AocCommon.IAocDay
 
     public string Part2()
     {
-        throw new NotImplementedException();
+        HashSet<Range> finalRanges = new();
+        foreach (var range in ranges)
+        {
+            List<Range> toRemove = new();
+            Range toAdd = range;
+            foreach (var existing in finalRanges)
+            {
+                if (toAdd.Min <= existing.Max && toAdd.Max >= existing.Min)
+                {
+                    toRemove.Add(existing);
+                    var newMin = Math.Min(toAdd.Min, existing.Min);
+                    var newMax = Math.Max(toAdd.Max, existing.Max);
+                    toAdd = new Range(newMin, newMax);
+                }
+            }
+            finalRanges.ExceptWith(toRemove);
+            finalRanges.Add(toAdd);
+        }
+        var answer = finalRanges.Sum(r => r.Max - r.Min + 1);
+        return answer.ToString();
     }
 }
