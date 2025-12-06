@@ -26,8 +26,7 @@ public class Day06Tests
     {
         var instance = new Day06(File.ReadAllText("day06-example.txt"));
         var answer = instance.Part2();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("3263827", answer);
     }
 
     [TestMethod()]
@@ -35,7 +34,6 @@ public class Day06Tests
     {
         var instance = new Day06(File.ReadAllText("day06-input.txt"));
         var answer = instance.Part2();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("11044319475191", answer);
     }
 }
