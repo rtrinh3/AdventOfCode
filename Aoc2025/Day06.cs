@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Numerics;
 
 namespace Aoc2025;
 
@@ -15,12 +14,12 @@ public class Day06(string input) : AocCommon.IAocDay
         Debug.Assert(cells.All(row => row.Length == cells[0].Length));
 
         // Homework
-        BigInteger accumulator = BigInteger.Zero;
+        long accumulator = 0L;
         for (int col = 0; col < cells[0].Length; col++)
         {
-            var numbers = cells[0..^1].Select(row => BigInteger.Parse(row[col]));
+            var numbers = cells[0..^1].Select(row => long.Parse(row[col]));
             string op = cells[^1][col];
-            BigInteger columnAnswer = op switch
+            long columnAnswer = op switch
             {
                 "+" => numbers.Aggregate((a, b) => a + b),
                 "*" => numbers.Aggregate((a, b) => a * b),
@@ -43,7 +42,7 @@ public class Day06(string input) : AocCommon.IAocDay
         var paragraphs = SplitOnBlank(rotatedLines).ToArray();
 
         // Homework
-        BigInteger accumulator = BigInteger.Zero;
+        long accumulator = 0L;
         foreach (var p in paragraphs)
         {
             char op = '\0';
@@ -58,8 +57,8 @@ public class Day06(string input) : AocCommon.IAocDay
                     paragraphCopy[i] = paragraphCopy[i][..^1];
                 }
             }
-            var numbers = paragraphCopy.Select(BigInteger.Parse);
-            BigInteger columnAnswer = op switch
+            var numbers = paragraphCopy.Select(long.Parse);
+            long columnAnswer = op switch
             {
                 '+' => numbers.Aggregate((a, b) => a + b),
                 '*' => numbers.Aggregate((a, b) => a * b),
