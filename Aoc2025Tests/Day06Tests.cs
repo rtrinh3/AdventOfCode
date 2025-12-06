@@ -1,5 +1,7 @@
 namespace Aoc2025.Tests;
 
+// https://adventofcode.com/2025/day/6
+// --- Day 6: Trash Compactor ---
 [TestClass()]
 public class Day06Tests
 {
@@ -8,8 +10,7 @@ public class Day06Tests
     {
         var instance = new Day06(File.ReadAllText("day06-example.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("4277556", answer);
     }
 
     [TestMethod()]
@@ -17,8 +18,7 @@ public class Day06Tests
     {
         var instance = new Day06(File.ReadAllText("day06-input.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("6417439773370", answer);
     }
 
     [TestMethod()]
