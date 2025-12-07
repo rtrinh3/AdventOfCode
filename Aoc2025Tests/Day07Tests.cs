@@ -1,5 +1,7 @@
 namespace Aoc2025.Tests;
 
+// https://adventofcode.com/2025/day/7
+// --- Day 7: Laboratories ---
 [TestClass()]
 public class Day07Tests
 {
@@ -8,8 +10,7 @@ public class Day07Tests
     {
         var instance = new Day07(File.ReadAllText("day07-example.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("21", answer);
     }
 
     [TestMethod()]
@@ -17,8 +18,7 @@ public class Day07Tests
     {
         var instance = new Day07(File.ReadAllText("day07-input.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("1622", answer);
     }
 
     [TestMethod()]
