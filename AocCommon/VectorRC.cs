@@ -31,9 +31,9 @@ namespace AocCommon
         {
             return new VectorRC(Row * factor, Col * factor);
         }
-        public readonly int Dot(VectorRC that)
+        public readonly long Dot(VectorRC that)
         {
-            return this.Row * that.Row + this.Col * that.Col;
+            return (long)Row * that.Row + (long)Col * that.Col;
         }
         public readonly VectorRC RotatedLeft()
         {
@@ -51,6 +51,14 @@ namespace AocCommon
         public readonly int ChebyshevMetric()
         {
             return Math.Max(Math.Abs(Row), Math.Abs(Col));
+        }
+        public long EuclideanSquared()
+        {
+            return ((long)Row * Row) + ((long)Col * Col);
+        }
+        public double EuclideanMetric()
+        {
+            return Math.Sqrt(EuclideanSquared());
         }
 
         public readonly VectorRC NextUp()

@@ -30,9 +30,9 @@ namespace AocCommon
         {
             return new VectorXY(X * factor, Y * factor);
         }
-        public int Dot(VectorXY that)
+        public long Dot(VectorXY that)
         {
-            return this.X * that.X + this.Y * that.Y;
+            return (long)X * that.X + (long)Y * that.Y;
         }
         public int Cross(VectorXY that)
         {
@@ -53,6 +53,14 @@ namespace AocCommon
         public int ChebyshevMetric()
         {
             return Math.Max(Math.Abs(X), Math.Abs(Y));
+        }
+        public long EuclideanSquared()
+        {
+            return ((long)X * X) + ((long)Y * Y);
+        }
+        public double EuclideanMetric()
+        {
+            return Math.Sqrt(EuclideanSquared());
         }
 
         public readonly VectorXY NextUp()

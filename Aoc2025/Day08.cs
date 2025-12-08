@@ -68,7 +68,7 @@ public class Day08(string input) : IAocDay
             from a in Enumerable.Range(0, boxes.Length)
             from b in Enumerable.Range(a + 1, boxes.Length - a - 1)
             select ((a, b), (boxes[a] - boxes[b]).EuclideanSquared());
-        PriorityQueue<(int, int), long> queue = new(distances);
+        PriorityQueue<(int, int), long> queue = new(distances); // Construct the heap using the heapify operation
         return queue;
     }
 }

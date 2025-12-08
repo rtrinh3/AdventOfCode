@@ -44,7 +44,7 @@ namespace Aoc2024
                     // Within each group, project each fence onto the other direction,
                     // then sort them: adjacent fences become adjacent numbers
                     VectorRC perpendicular = group.Key.Direction.RotatedLeft();
-                    List<int> projectedFences = group.Select(f => perpendicular.Dot(f.Inside)).Order().ToList();
+                    var projectedFences = group.Select(f => perpendicular.Dot(f.Inside)).Order().ToList();
                     int runCount = 1;
                     for (int i = 1; i < projectedFences.Count; i++)
                     {

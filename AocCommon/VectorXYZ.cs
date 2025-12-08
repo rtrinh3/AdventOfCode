@@ -26,9 +26,9 @@ namespace AocCommon
         {
             return new VectorXYZ(X * factor, Y * factor, Z * factor);
         }
-        public int Dot(VectorXYZ that)
+        public long Dot(VectorXYZ that)
         {
-            return this.X * that.X + this.Y * that.Y + this.Z * that.Z;
+            return (long)X * that.X + (long)Y * that.Y + (long)Z * that.Z;
         }
         public VectorXYZ Cross(VectorXYZ that)
         {

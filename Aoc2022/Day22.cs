@@ -275,7 +275,7 @@ namespace Aoc2022
             // https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
             const int CosAngle = 0;
             const int SinAngle = 1;
-            var answer = vector.Scale(CosAngle) + axis.Cross(vector).Scale(SinAngle) + axis.Scale(axis.Dot(vector) * (1 - CosAngle));
+            var answer = vector.Scale(CosAngle) + axis.Cross(vector).Scale(SinAngle) + axis.Scale((int)axis.Dot(vector) * (1 - CosAngle));
             return answer;
         }
     }

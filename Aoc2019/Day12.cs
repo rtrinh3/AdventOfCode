@@ -34,8 +34,8 @@ namespace Aoc2019
                     {
                         foreach (var axis in directions)
                         {
-                            int moonIPos = moonPositions[i].Dot(axis);
-                            int moonJPos = moonPositions[j].Dot(axis);
+                            var moonIPos = moonPositions[i].Dot(axis);
+                            var moonJPos = moonPositions[j].Dot(axis);
                             if (moonIPos < moonJPos)
                             {
                                 moonVelocities[i] += axis;
@@ -89,8 +89,8 @@ namespace Aoc2019
                 {
                     for (int j = i; j < moonPositions.Length; j++)
                     {
-                        int moonIPos = moonPositions[i].Dot(axis);
-                        int moonJPos = moonPositions[j].Dot(axis);
+                        var moonIPos = moonPositions[i].Dot(axis);
+                        var moonJPos = moonPositions[j].Dot(axis);
                         if (moonIPos < moonJPos)
                         {
                             moonVelocities[i] += axis;
