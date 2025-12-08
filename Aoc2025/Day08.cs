@@ -33,8 +33,7 @@ public class Day08(string input) : IAocDay
                 distances.Add((distance, boxes[a], boxes[b]));
             }
         }
-        //distances.Sort((a, b) => a.Item1.CompareTo(b.Item1));
-        distances = distances.OrderBy(x => x.Item1).ToList();
+        distances.Sort((a, b) => a.Item1.CompareTo(b.Item1));
 
         // Connections
         UnionFind<VectorXYZ> connections = new();
@@ -53,6 +52,38 @@ public class Day08(string input) : IAocDay
 
     public string Part2()
     {
-        throw new NotImplementedException();
+        // Distances
+        List<(long, VectorXYZ, VectorXYZ)> distances = new();
+        for (int a = 0; a < boxes.Length; a++)
+        {
+            for (int b = a + 1; b < boxes.Length; b++)
+            {
+                var distance = (boxes[b] - boxes[a]).EuclideanSquared();
+                distances.Add((distance, boxes[a], boxes[b]));
+            }
+        }
+        distances.Sort((a, b) => a.Item1.CompareTo(b.Item1));
+
+        // Connections
+        int numberOfCircuits = boxes.Length;
+        UnionFind<VectorXYZ> connections = new();
+        foreach (var (distance, boxA, boxB) in distances)
+        {
+            if (!connections.AreMerged(boxA, boxB))
+            {
+                connections.Union(boxA, boxB);
+                numberOfCircuits--;
+            }
+            //else
+            //{
+            //    Console.WriteLine("Redundant connection " + (distance, boxA, boxB));
+            //}
+            if (numberOfCircuits <= 1)
+            {
+                var answer = boxA.X * boxB.X;
+                return answer.ToString();
+            }
+        }
+        throw new Exception("No answer found!?");
     }
 }
