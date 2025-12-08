@@ -23,27 +23,17 @@ public class Day08(string input) : IAocDay
 
     public int DoPart1(int connectionsToMake)
     {
-        // Distances
-        List<(long, VectorXYZ, VectorXYZ)> distances = new();
-        for (int a = 0; a < boxes.Length; a++)
-        {
-            for (int b = a + 1; b < boxes.Length; b++)
-            {
-                var distance = (boxes[b] - boxes[a]).EuclideanSquared();
-                distances.Add((distance, boxes[a], boxes[b]));
-            }
-        }
-        distances.Sort((a, b) => a.Item1.CompareTo(b.Item1));
-
-        // Connections
-        UnionFind<VectorXYZ> connections = new();
+        var distances = GetDistanceQueue();
+        UnionFindInt connections = new();
         for (int c = 0; c < connectionsToMake; c++)
         {
-            connections.Union(distances[c].Item2, distances[c].Item3);
+            distances.TryDequeue(out var pair, out var distance);
+            var (boxA, boxB) = pair;
+            connections.Union(boxA, boxB);
         }
 
         // Count
-        var groups = boxes.Select(connections.Find).GroupBy(x => x);
+        var groups = Enumerable.Range(0, boxes.Length).Select(connections.Find).GroupBy(x => x);
         var orderedSizes = groups.Select(g => g.Count()).OrderByDescending(count => count);
         var answer = orderedSizes.Take(3).Aggregate((a, b) => a * b);
 
@@ -52,38 +42,33 @@ public class Day08(string input) : IAocDay
 
     public string Part2()
     {
-        // Distances
-        List<(long, VectorXYZ, VectorXYZ)> distances = new();
-        for (int a = 0; a < boxes.Length; a++)
-        {
-            for (int b = a + 1; b < boxes.Length; b++)
-            {
-                var distance = (boxes[b] - boxes[a]).EuclideanSquared();
-                distances.Add((distance, boxes[a], boxes[b]));
-            }
-        }
-        distances.Sort((a, b) => a.Item1.CompareTo(b.Item1));
-
-        // Connections
+        var distances = GetDistanceQueue();
         int numberOfCircuits = boxes.Length;
-        UnionFind<VectorXYZ> connections = new();
-        foreach (var (distance, boxA, boxB) in distances)
+        UnionFindInt connections = new();
+        while (distances.TryDequeue(out var pair, out var distance))
         {
+            var (boxA, boxB) = pair;
             if (!connections.AreMerged(boxA, boxB))
             {
                 connections.Union(boxA, boxB);
                 numberOfCircuits--;
             }
-            //else
-            //{
-            //    Console.WriteLine("Redundant connection " + (distance, boxA, boxB));
-            //}
             if (numberOfCircuits <= 1)
             {
-                var answer = boxA.X * boxB.X;
+                var answer = boxes[boxA].X * boxes[boxB].X;
                 return answer.ToString();
             }
         }
         throw new Exception("No answer found!?");
+    }
+
+    private PriorityQueue<(int, int), long> GetDistanceQueue()
+    {
+        IEnumerable<((int, int), long)> distances =
+            from a in Enumerable.Range(0, boxes.Length)
+            from b in Enumerable.Range(a + 1, boxes.Length - a - 1)
+            select ((a, b), (boxes[a] - boxes[b]).EuclideanSquared());
+        PriorityQueue<(int, int), long> queue = new(distances);
+        return queue;
     }
 }
