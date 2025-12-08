@@ -46,5 +46,13 @@ namespace AocCommon
         {
             return Math.Max(Math.Abs(X), Math.Max(Math.Abs(Y), Math.Abs(Z)));
         }
+        public long EuclideanSquared()
+        {
+            return ((long)X * X) + ((long)Y * Y) + ((long)Z * Z);
+        }
+        public double EuclideanMetric()
+        {
+            return Math.Sqrt(EuclideanSquared());
+        }
     }
 }
