@@ -45,7 +45,7 @@ public class Day09 : IAocDay
     public string Part2()
     {
         // Rasterize polygon
-        Console.WriteLine("Rasterization");
+        //Console.WriteLine("Rasterization");
         HashSet<VectorRC> perimeter = new();
         HashSet<VectorRC> leftPoints = new();
         HashSet<VectorRC> rightPoints = new();
@@ -84,7 +84,7 @@ public class Day09 : IAocDay
             throw new Exception("??");
         }
 
-        //// Debug
+        //// Debug raster
         //int minRow = perimeter.Min(x => x.Row);
         //int maxRow = perimeter.Max(x => x.Row);
         //int minCol = perimeter.Min(x => x.Col);
@@ -113,50 +113,63 @@ public class Day09 : IAocDay
         //    Console.WriteLine();
         //}
 
-        long maxRectangle = 0;
-        int a = 0;
-        int b = 0;
-        var report = Task.Run(() =>
-        {
-            while (a < Points.Length)
-            {
-                Console.WriteLine($"Testing {a}-{b} / {Points.Length} -- Max {maxRectangle}");
-                Thread.Sleep(1000);
-            }
-        });
-        for (a = 0; a < Points.Length; a++)
-        {
-            for (b = a + 1; b < Points.Length; b++)
-            {                
-                var cornerA = Points[a];
-                var cornerB = Points[b];
-                // Test border doesn't leave polygon
-                var top = Math.Min(cornerA.Row, cornerB.Row);
-                var bottom = Math.Max(cornerA.Row, cornerB.Row);
-                var left = Math.Min(cornerA.Col, cornerB.Col);
-                var right = Math.Max(cornerA.Col, cornerB.Col);
-                bool inPolygon = true;
-                for (int row = top; row <= bottom && inPolygon; row++)
-                {
-                    inPolygon = !outside.Contains(new(row, left)) && !outside.Contains(new(row, right));
-                }
-                for (int col = left; col <= right && inPolygon; col++)
-                {
-                    inPolygon = !outside.Contains(new(top, col)) && !outside.Contains(new(bottom, col));
-                }
+        // Probe around the rows and columns of the vertices
+        SortedSet<int> probeRows = new(
+            Points.Select(x => x.Row)
+            .Concat(Points.Select(x => x.Row - 1))
+            .Concat(Points.Select(x => x.Row + 1))
+            );
+        SortedSet<int> probeCols = new(
+            Points.Select(x => x.Col)
+            .Concat(Points.Select(x => x.Col - 1))
+            .Concat(Points.Select(x => x.Col + 1))
+            );
 
-                if (inPolygon)
-                {
-                    int height = Math.Abs(Points[b].Row - Points[a].Row) + 1;
-                    int width = Math.Abs(Points[b].Col - Points[a].Col) + 1;
-                    long area = Math.BigMul(height, width);
-                    if (area > maxRectangle)
-                    {
-                        maxRectangle = area;
-                    }
-                }
+        // Generate rectangles and sort by descending area
+        List<(VectorRC, VectorRC, long)> rectangles = new();
+        for (int a = 0; a < Points.Length; a++)
+        {
+            for (int b = a + 1; b < Points.Length; b++)
+            {
+                int height = Math.Abs(Points[b].Row - Points[a].Row) + 1;
+                int width = Math.Abs(Points[b].Col - Points[a].Col) + 1;
+                long area = Math.BigMul(height, width);
+                rectangles.Add((Points[a], Points[b], area));
             }
         }
-        return maxRectangle.ToString();
+        rectangles.Sort((x, y) => -x.Item3.CompareTo(y.Item3));
+
+        // Test each rectangle; the first one that's entirely inside must be the largest one
+        for (int r = 0; r < rectangles.Count; r++)
+        {
+            var (cornerA, cornerB, area) = rectangles[r];
+            // Test border doesn't leave polygon
+            var top = Math.Min(cornerA.Row, cornerB.Row);
+            var bottom = Math.Max(cornerA.Row, cornerB.Row);
+            var left = Math.Min(cornerA.Col, cornerB.Col);
+            var right = Math.Max(cornerA.Col, cornerB.Col);
+            bool inPolygon = true;
+            foreach (int row in probeRows.GetViewBetween(top, bottom))
+            {
+                if (!inPolygon)
+                {
+                    break;
+                }
+                inPolygon = !outside.Contains(new(row, left)) && !outside.Contains(new(row, right));
+            }
+            foreach (int col in probeCols.GetViewBetween(left, right))
+            {
+                if (!inPolygon)
+                {
+                    break;
+                }
+                inPolygon = !outside.Contains(new(top, col)) && !outside.Contains(new(bottom, col));
+            }
+            if (inPolygon)
+            {
+                return area.ToString();
+            }
+        }
+        throw new Exception("No solution found");
     }
 }
