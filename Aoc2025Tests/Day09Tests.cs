@@ -1,5 +1,7 @@
 namespace Aoc2025.Tests;
 
+// https://adventofcode.com/2025/day/9
+// --- Day 9: Movie Theater ---
 [TestClass()]
 public class Day09Tests
 {
@@ -8,8 +10,7 @@ public class Day09Tests
     {
         var instance = new Day09(File.ReadAllText("day09-example.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("50", answer);
     }
 
     [TestMethod()]
@@ -17,8 +18,7 @@ public class Day09Tests
     {
         var instance = new Day09(File.ReadAllText("day09-input.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("4725826296", answer);
     }
 
     [TestMethod()]
