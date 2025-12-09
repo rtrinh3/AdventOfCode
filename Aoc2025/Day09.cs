@@ -44,6 +44,18 @@ public class Day09 : IAocDay
 
     public string Part2()
     {
+        // Probe around the rows and columns of the vertices
+        SortedSet<int> probeRows = new(
+            Points.Select(x => x.Row)
+            .Concat(Points.Select(x => x.Row - 1))
+            .Concat(Points.Select(x => x.Row + 1))
+            );
+        SortedSet<int> probeCols = new(
+            Points.Select(x => x.Col)
+            .Concat(Points.Select(x => x.Col - 1))
+            .Concat(Points.Select(x => x.Col + 1))
+            );
+
         // Rasterize polygon
         //Console.WriteLine("Rasterization");
         HashSet<VectorRC> perimeter = new();
@@ -54,15 +66,34 @@ public class Day09 : IAocDay
             var pointA = Points[x];
             var pointB = Points[(x + 1) % Points.Length];
             var diff = pointB - pointA;
-            var diffLen = diff.ManhattanMetric();
             var diffDir = new VectorRC(Math.Sign(diff.Row), Math.Sign(diff.Col));
-            Debug.Assert(diffDir.Row == 0 || diffDir.Col == 0);
-            for (int i = 0; i <= diffLen; i++)
+            if (diffDir.Row == 0)
             {
-                VectorRC pos = pointA + diffDir.Scale(i);
-                perimeter.Add(pos);
-                leftPoints.Add(pos + diffDir.RotatedLeft());
-                rightPoints.Add(pos + diffDir.RotatedRight());
+                int left = Math.Min(pointA.Col, pointB.Col);
+                int right = Math.Max(pointA.Col, pointB.Col);
+                foreach (var col in probeCols.GetViewBetween(left, right))
+                {
+                    VectorRC pos = new(pointA.Row, col);
+                    perimeter.Add(pos);
+                    leftPoints.Add(pos + diffDir.RotatedLeft());
+                    rightPoints.Add(pos + diffDir.RotatedRight());
+                }
+            }
+            else if (diffDir.Col == 0)
+            {
+                int top = Math.Min(pointA.Row, pointB.Row);
+                int bottom = Math.Max(pointA.Row, pointB.Row);
+                foreach (var row in probeRows.GetViewBetween(top, bottom))
+                {
+                    VectorRC pos = new(row, pointA.Col);
+                    perimeter.Add(pos);
+                    leftPoints.Add(pos + diffDir.RotatedLeft());
+                    rightPoints.Add(pos + diffDir.RotatedRight());
+                }
+            }
+            else
+            {
+                throw new Exception("Diagonal segment?!");
             }
         }
         var leftMost = Points.MinBy(p => p.Col);
@@ -112,18 +143,6 @@ public class Day09 : IAocDay
         //    }
         //    Console.WriteLine();
         //}
-
-        // Probe around the rows and columns of the vertices
-        SortedSet<int> probeRows = new(
-            Points.Select(x => x.Row)
-            .Concat(Points.Select(x => x.Row - 1))
-            .Concat(Points.Select(x => x.Row + 1))
-            );
-        SortedSet<int> probeCols = new(
-            Points.Select(x => x.Col)
-            .Concat(Points.Select(x => x.Col - 1))
-            .Concat(Points.Select(x => x.Col + 1))
-            );
 
         // Generate rectangles and sort by descending area
         List<(VectorRC, VectorRC, long)> rectangles = new();
