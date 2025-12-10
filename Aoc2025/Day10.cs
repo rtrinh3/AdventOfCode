@@ -71,36 +71,43 @@ public class Day10 : IAocDay
 
     public string Part2()
     {
+        var z3ctx = new Microsoft.Z3.Context(new Dictionary<string, string>() { { "model", "true" } });
         int accumulator = 0;
         foreach (var machine in Machines)
         {
-            ImmutableArray<int> initialJoltages = Enumerable.Repeat(0, machine.Joltages.Length).ToImmutableArray();
-            var bfsResult = GraphAlgos.BfsToEnd(initialJoltages,
-                joltages =>
+            var optimizer = z3ctx.MkOptimize();
+            var buttonPresses = Enumerable.Range(0, machine.Buttons.Length).Select(n => z3ctx.MkIntConst("b" + n)).ToArray();
+            for (int buttonIndex = 0; buttonIndex < machine.Buttons.Length; buttonIndex++)
+            {
+                var positiveConstraint = z3ctx.MkGe(buttonPresses[buttonIndex], z3ctx.MkInt(0));
+                optimizer.Add(positiveConstraint);
+            }
+            for (int joltIndex = 0; joltIndex < machine.Joltages.Length; joltIndex++)
+            {
+                var target = z3ctx.MkInt(machine.Joltages[joltIndex]);
+                List<Microsoft.Z3.ArithExpr> summands = new();
+                for (int buttonIndex = 0; buttonIndex < machine.Buttons.Length; buttonIndex++)
                 {
-                    List<ImmutableArray<int>> nextResults = new();
-                    foreach (var button in machine.Buttons)
+                    if ((machine.Buttons[buttonIndex] & (1u << joltIndex)) != 0)
                     {
-                        int[] newJoltages = joltages.ToArray();
-                        for (int i = 0; i < newJoltages.Length; i++)
-                        {
-                            if ((button & (1u << i)) != 0u)
-                            {
-                                newJoltages[i]++;
-                            }
-                            if (newJoltages[i] > machine.Joltages[i])
-                            {
-                                goto SKIP_BUTTON;
-                            }
-                        }
-                        nextResults.Add(newJoltages.ToImmutableArray());
-                    SKIP_BUTTON:
-                        ;
+                        summands.Add(buttonPresses[buttonIndex]);
                     }
-                    return nextResults;
-                },
-                joltages => joltages.SequenceEqual(machine.Joltages));
-            accumulator += bfsResult.distance;
+                }
+                var joltConstraint = z3ctx.MkEq(z3ctx.MkAdd(summands), target);
+                optimizer.Add(joltConstraint);
+            }
+            var sumToMinimize = z3ctx.MkAdd(buttonPresses);
+            var optHandle = optimizer.MkMinimize(sumToMinimize);
+            var check = optimizer.Check();
+            var answer = optHandle.Value;
+            if (answer is Microsoft.Z3.IntNum answerInt) {
+                var value = answerInt.Int;
+                accumulator += value;
+            }
+            else
+            {
+                throw new Exception("no solve?");
+            }
         }
         return accumulator.ToString();
     }
