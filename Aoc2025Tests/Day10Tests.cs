@@ -1,5 +1,7 @@
 namespace Aoc2025.Tests;
 
+// https://adventofcode.com/2025/day/10
+// --- Day 10: Factory ---
 [TestClass()]
 public class Day10Tests
 {
@@ -8,8 +10,7 @@ public class Day10Tests
     {
         var instance = new Day10(File.ReadAllText("day10-example.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("7", answer);
     }
 
     [TestMethod()]
@@ -17,8 +18,7 @@ public class Day10Tests
     {
         var instance = new Day10(File.ReadAllText("day10-input.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("535", answer);
     }
 
     [TestMethod()]
