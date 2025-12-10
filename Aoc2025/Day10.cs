@@ -1,4 +1,6 @@
 using AocCommon;
+using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace Aoc2025;
@@ -69,6 +71,37 @@ public class Day10 : IAocDay
 
     public string Part2()
     {
-        throw new NotImplementedException();
+        int accumulator = 0;
+        foreach (var machine in Machines)
+        {
+            ImmutableArray<int> initialJoltages = Enumerable.Repeat(0, machine.Joltages.Length).ToImmutableArray();
+            var bfsResult = GraphAlgos.BfsToEnd(initialJoltages,
+                joltages =>
+                {
+                    List<ImmutableArray<int>> nextResults = new();
+                    foreach (var button in machine.Buttons)
+                    {
+                        int[] newJoltages = joltages.ToArray();
+                        for (int i = 0; i < newJoltages.Length; i++)
+                        {
+                            if ((button & (1u << i)) != 0u)
+                            {
+                                newJoltages[i]++;
+                            }
+                            if (newJoltages[i] > machine.Joltages[i])
+                            {
+                                goto SKIP_BUTTON;
+                            }
+                        }
+                        nextResults.Add(newJoltages.ToImmutableArray());
+                    SKIP_BUTTON:
+                        ;
+                    }
+                    return nextResults;
+                },
+                joltages => joltages.SequenceEqual(machine.Joltages));
+            accumulator += bfsResult.distance;
+        }
+        return accumulator.ToString();
     }
 }
