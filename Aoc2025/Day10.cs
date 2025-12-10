@@ -1,5 +1,4 @@
 using AocCommon;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
@@ -71,42 +70,45 @@ public class Day10 : IAocDay
 
     public string Part2()
     {
-        var z3ctx = new Microsoft.Z3.Context(new Dictionary<string, string>() { { "model", "true" } });
+        var z3 = new Microsoft.Z3.Context();
+        var z3zero = z3.MkInt(0);
         int accumulator = 0;
         foreach (var machine in Machines)
         {
-            var optimizer = z3ctx.MkOptimize();
-            var buttonPresses = Enumerable.Range(0, machine.Buttons.Length).Select(n => z3ctx.MkIntConst("b" + n)).ToArray();
+            var optimizer = z3.MkOptimize();
+            var buttonPresses = new Microsoft.Z3.IntExpr[machine.Buttons.Length];
             for (int buttonIndex = 0; buttonIndex < machine.Buttons.Length; buttonIndex++)
             {
-                var positiveConstraint = z3ctx.MkGe(buttonPresses[buttonIndex], z3ctx.MkInt(0));
+                var button = z3.MkIntConst("b" + buttonIndex);
+                buttonPresses[buttonIndex] = button;
+                var positiveConstraint = z3.MkGe(button, z3zero);
                 optimizer.Add(positiveConstraint);
             }
             for (int joltIndex = 0; joltIndex < machine.Joltages.Length; joltIndex++)
             {
-                var target = z3ctx.MkInt(machine.Joltages[joltIndex]);
-                List<Microsoft.Z3.ArithExpr> summands = new();
+                List<Microsoft.Z3.ArithExpr> joltContributions = new();
                 for (int buttonIndex = 0; buttonIndex < machine.Buttons.Length; buttonIndex++)
                 {
                     if ((machine.Buttons[buttonIndex] & (1u << joltIndex)) != 0)
                     {
-                        summands.Add(buttonPresses[buttonIndex]);
+                        joltContributions.Add(buttonPresses[buttonIndex]);
                     }
                 }
-                var joltConstraint = z3ctx.MkEq(z3ctx.MkAdd(summands), target);
+                var targetJolt = z3.MkInt(machine.Joltages[joltIndex]);
+                var joltConstraint = z3.MkEq(z3.MkAdd(joltContributions), targetJolt);
                 optimizer.Add(joltConstraint);
             }
-            var sumToMinimize = z3ctx.MkAdd(buttonPresses);
-            var optHandle = optimizer.MkMinimize(sumToMinimize);
-            var check = optimizer.Check();
-            var answer = optHandle.Value;
-            if (answer is Microsoft.Z3.IntNum answerInt) {
+            var sumToMinimize = z3.MkAdd(buttonPresses);
+            var optimizationResult = optimizer.MkMinimize(sumToMinimize);
+            Debug.Assert(optimizer.Check() == Microsoft.Z3.Status.SATISFIABLE);
+            if (optimizationResult.Value is Microsoft.Z3.IntNum answerInt)
+            {
                 var value = answerInt.Int;
                 accumulator += value;
             }
             else
             {
-                throw new Exception("no solve?");
+                throw new Exception("What is this result " + optimizationResult.Value);
             }
         }
         return accumulator.ToString();
