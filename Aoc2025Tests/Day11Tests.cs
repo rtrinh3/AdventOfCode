@@ -8,7 +8,7 @@ public class Day11Tests
     [TestMethod()]
     public void Day11_Part1_Example_Test()
     {
-        var instance = new Day11(File.ReadAllText("day11-example.txt"));
+        var instance = new Day11(File.ReadAllText("day11-example1.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("5", answer);
     }
@@ -24,10 +24,9 @@ public class Day11Tests
     [TestMethod()]
     public void Day11_Part2_Example_Test()
     {
-        var instance = new Day11(File.ReadAllText("day11-example.txt"));
+        var instance = new Day11(File.ReadAllText("day11-example2.txt"));
         var answer = instance.Part2();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("2", answer);
     }
 
     [TestMethod()]
@@ -35,7 +34,6 @@ public class Day11Tests
     {
         var instance = new Day11(File.ReadAllText("day11-input.txt"));
         var answer = instance.Part2();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("479511112939968", answer);
     }
 }

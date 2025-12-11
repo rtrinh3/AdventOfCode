@@ -1,38 +1,36 @@
-using AocCommon;
-
 namespace Aoc2025;
 
 // https://adventofcode.com/2025/day/11
 // --- Day 11: Reactor ---
-public class Day11(string input) : AocCommon.IAocDay
+public class Day11 : AocCommon.IAocDay
 {
-    public string Part1()
+    private readonly Dictionary<string, string[]> Connections;
+    private readonly Func<string, string, long> GetPathsBetween;
+
+    public Day11(string input)
     {
-        // Parse
-        Dictionary<string, string[]> connections = new();
+        Connections = new();
         var lines = input.TrimEnd().Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         foreach (var line in lines)
         {
             var splitColon = line.Split(':');
             string device = splitColon[0];
             var outputs = splitColon[1].Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            connections.Add(device, outputs);
+            Connections.Add(device, outputs);
         }
 
-        // Traverse
-        Func<string, long> GetPathsToOut = null;
-        GetPathsToOut = Memoization.Make((string device) =>
+        GetPathsBetween = AocCommon.Memoization.Make((string origin, string destination) =>
         {
-            if (device == "out")
+            if (origin == destination)
             {
                 return 1L;
             }
-            if (connections.TryGetValue(device, out var outputs))
+            if (Connections.TryGetValue(origin, out var outputs))
             {
                 long accumulator = 0L;
                 foreach (var output in outputs)
                 {
-                    accumulator += GetPathsToOut(output);
+                    accumulator += GetPathsBetween(output, destination);
                 }
                 return accumulator;
             }
@@ -41,12 +39,21 @@ public class Day11(string input) : AocCommon.IAocDay
                 return 0L;
             }
         });
-        var answer = GetPathsToOut("you");
+    }
+
+    public string Part1()
+    {        
+        var answer = GetPathsBetween("you", "out");
         return answer.ToString();
     }
 
     public string Part2()
     {
-        throw new NotImplementedException();
+        // Assume svr-fft-dac-out
+        var orderA = GetPathsBetween("svr", "fft") * GetPathsBetween("fft", "dac") * GetPathsBetween("dac", "out");
+        // Assume svr-dac-fft-out
+        var orderB = GetPathsBetween("svr", "dac") * GetPathsBetween("dac", "fft") * GetPathsBetween("fft", "out");
+        var answer = orderA + orderB;
+        return answer.ToString();
     }
 }
