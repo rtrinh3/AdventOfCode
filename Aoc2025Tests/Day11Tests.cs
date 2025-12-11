@@ -1,5 +1,7 @@
 namespace Aoc2025.Tests;
 
+// https://adventofcode.com/2025/day/11
+// --- Day 11: Reactor ---
 [TestClass()]
 public class Day11Tests
 {
@@ -8,8 +10,7 @@ public class Day11Tests
     {
         var instance = new Day11(File.ReadAllText("day11-example.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("5", answer);
     }
 
     [TestMethod()]
@@ -17,8 +18,7 @@ public class Day11Tests
     {
         var instance = new Day11(File.ReadAllText("day11-input.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("543", answer);
     }
 
     [TestMethod()]
