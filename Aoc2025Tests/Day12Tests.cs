@@ -1,5 +1,7 @@
 namespace Aoc2025.Tests;
 
+// https://adventofcode.com/2025/day/12
+// --- Day 12: Christmas Tree Farm ---
 [TestClass()]
 public class Day12Tests
 {
@@ -8,8 +10,7 @@ public class Day12Tests
     {
         var instance = new Day12(File.ReadAllText("day12-example.txt"));
         var answer = instance.Part1();
-        Assert.Inconclusive(answer);
-        // Assert.AreEqual("EXPECTED_ANSWER", answer);
+        Assert.AreEqual("2", answer);
     }
 
     [TestMethod()]
