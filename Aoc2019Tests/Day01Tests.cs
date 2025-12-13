@@ -27,7 +27,7 @@ namespace Aoc2019.Tests
         [TestMethod()]
         public void Part1InputTest()
         {
-            var instance = new Day01(File.ReadAllText("day01-input.txt"));
+            var instance = new Day01(File.ReadAllText("inputs/day01-input.txt"));
             var answer = instance.Part1();
             Assert.AreEqual("3388015", answer);
         }
@@ -50,7 +50,7 @@ namespace Aoc2019.Tests
         [TestMethod()]
         public void Part2InputTest()
         {
-            var instance = new Day01(File.ReadAllText("day01-input.txt"));
+            var instance = new Day01(File.ReadAllText("inputs/day01-input.txt"));
             var answer = instance.Part2();
             Assert.AreEqual("5079140", answer);
         }

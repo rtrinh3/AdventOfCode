@@ -8,7 +8,7 @@ namespace Aoc2019.Tests
         [TestMethod()]
         public void Test()
         {
-            var instance = new Day25(File.ReadAllText("day25-input.txt"));
+            var instance = new Day25(File.ReadAllText("inputs/day25-input.txt"));
             var answer = instance.Part1();
             Assert.AreEqual("1109393410", answer);
         }

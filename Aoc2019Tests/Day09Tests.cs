@@ -10,7 +10,7 @@ namespace Aoc2019.Tests
         [TestMethod()]
         public void Part1Example1Test()
         {
-            var program = File.ReadAllText("day09-example1.txt");
+            var program = File.ReadAllText("inputs/day09-example1.txt");
             var numbers = program.Split(',').Select(BigInteger.Parse).ToList();
             var interpreter = new IntcodeInterpreter(numbers);
             var output = interpreter.RunToEnd().ToList();
@@ -19,7 +19,7 @@ namespace Aoc2019.Tests
         [TestMethod()]
         public void Part1Example2Test()
         {
-            var program = File.ReadAllText("day09-example2.txt");
+            var program = File.ReadAllText("inputs/day09-example2.txt");
             var interpreter = new IntcodeInterpreter(program);
             var output = interpreter.RunToEnd().Single();
             Assert.AreEqual(16, output.ToString().Length);
@@ -27,7 +27,7 @@ namespace Aoc2019.Tests
         [TestMethod()]
         public void Part1Example3Test()
         {
-            var program = File.ReadAllText("day09-example3.txt");
+            var program = File.ReadAllText("inputs/day09-example3.txt");
             var numbers = program.Split(',', AocCommon.Parsing.TrimAndDiscard);
             var interpreter = new IntcodeInterpreter(program);
             var output = interpreter.RunToEnd().Single();
@@ -36,7 +36,7 @@ namespace Aoc2019.Tests
         [TestMethod()]
         public void Part1InputTest()
         {
-            var instance = new Day09(File.ReadAllText("day09-input.txt"));
+            var instance = new Day09(File.ReadAllText("inputs/day09-input.txt"));
             var answer = instance.Part1();
             Assert.AreEqual("3989758265", answer);
         }
@@ -44,7 +44,7 @@ namespace Aoc2019.Tests
         [TestMethod()]
         public void Part2InputTest()
         {
-            var instance = new Day09(File.ReadAllText("day09-input.txt"));
+            var instance = new Day09(File.ReadAllText("inputs/day09-input.txt"));
             var answer = instance.Part2();
             Assert.AreEqual("76791", answer);
         }
