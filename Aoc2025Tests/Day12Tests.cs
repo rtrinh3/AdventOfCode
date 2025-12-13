@@ -5,7 +5,7 @@ namespace Aoc2025.Tests;
 [TestClass()]
 public class Day12Tests
 {
-    [TestMethod()]
+    [TestMethod(), Timeout(10_000)]
     public void Day12_Part1_Example_Test()
     {
         var instance = new Day12(File.ReadAllText("day12-example.txt"));

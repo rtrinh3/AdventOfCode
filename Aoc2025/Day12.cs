@@ -77,6 +77,7 @@ public class Day12(string input) : AocCommon.IAocDay
         int accumulator = 0;
         foreach (var line in treeLines)
         {
+            Console.WriteLine(line);
             var splitColon = line.Split(':');
             var dimsText = splitColon[0].Split('x');
             int height = int.Parse(dimsText[0]);
@@ -163,7 +164,12 @@ public class Day12(string input) : AocCommon.IAocDay
             var arrangementFound = FindArrangement(new([]), new(requirements));
             if (arrangementFound)
             {
+                Console.WriteLine("OK");
                 accumulator++;
+            }
+            else
+            {
+                Console.WriteLine("No");
             }
         }
 

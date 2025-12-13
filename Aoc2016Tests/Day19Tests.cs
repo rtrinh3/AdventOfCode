@@ -27,7 +27,7 @@ public class Day19Tests
         var answer = instance.Part2();
         Assert.AreEqual("2", answer);
     }
-    [TestMethod(), Timeout(60_000)]
+    [TestMethod(), Timeout(10_000)]
     public void Day19_Part2_Input_Test()
     {
         var instance = new Day19(File.ReadAllText("day19-input.txt"));
