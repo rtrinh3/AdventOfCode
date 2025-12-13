@@ -7,3 +7,6 @@
 [submodule "Aoc2019Tests/inputs"]
 	path = Aoc2019Tests/inputs
 	url = ../Aoc2019Inputs.git
+[submodule "Aoc2020Tests/inputs"]
+	path = Aoc2020Tests/inputs
+	url = ../Aoc2020Inputs.git

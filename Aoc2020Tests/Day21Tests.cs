@@ -8,14 +8,14 @@
         [TestMethod()]
         public void Day21_Part1_ExampleTest()
         {
-            var instance = new Day21(File.ReadAllText("day21-example.txt"));
+            var instance = new Day21(File.ReadAllText("inputs/day21-example.txt"));
             var answer = instance.Part1();
             Assert.AreEqual("5", answer);
         }
         [TestMethod()]
         public void Day21_Part1_InputTest()
         {
-            var instance = new Day21(File.ReadAllText("day21-input.txt"));
+            var instance = new Day21(File.ReadAllText("inputs/day21-input.txt"));
             var answer = instance.Part1();
             Assert.AreEqual("2162", answer);
         }
@@ -23,14 +23,14 @@
         [TestMethod()]
         public void Day21_Part2_ExampleTest()
         {
-            var instance = new Day21(File.ReadAllText("day21-example.txt"));
+            var instance = new Day21(File.ReadAllText("inputs/day21-example.txt"));
             var answer = instance.Part2();
             Assert.AreEqual("mxmxvkd,sqjhc,fvjkl", answer);
         }
         [TestMethod()]
         public void Day21_Part2_InputTest()
         {
-            var instance = new Day21(File.ReadAllText("day21-input.txt"));
+            var instance = new Day21(File.ReadAllText("inputs/day21-input.txt"));
             var answer = instance.Part2();
             Assert.AreEqual("lmzg,cxk,bsqh,bdvmx,cpbzbx,drbm,cfnt,kqprv", answer);
         }
