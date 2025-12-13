@@ -8,7 +8,7 @@ public class Day21Tests
     [TestMethod()]
     public void Part1ExampleTest()
     {
-        var file = File.ReadAllText("day21-example.txt");
+        var file = File.ReadAllText("inputs/day21-example.txt");
         var totalInstance = new Day21(file);
         var totalAnswer = totalInstance.Part1();
         Assert.AreEqual("126384", totalAnswer);
@@ -32,7 +32,7 @@ public class Day21Tests
     [TestMethod()]
     public void Part1InputTest()
     {
-        var instance = new Day21(File.ReadAllText("day21-input.txt"));
+        var instance = new Day21(File.ReadAllText("inputs/day21-input.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("132532", answer);
     }
@@ -42,7 +42,7 @@ public class Day21Tests
     {
         // https://www.reddit.com/r/adventofcode/comments/1hjb7hh/2024_day_21_part_2_can_someone_share_what_the/
         // https://www.reddit.com/r/adventofcode/comments/1hje6m0/day_21_part_2_need_answer_to_test_case_more/
-        var file = File.ReadAllText("day21-example.txt");
+        var file = File.ReadAllText("inputs/day21-example.txt");
         var totalInstance = new Day21(file);
         var totalAnswer = totalInstance.Part2();
         Assert.AreEqual("154115708116294", totalAnswer);
@@ -66,7 +66,7 @@ public class Day21Tests
     [TestMethod()]
     public void Part2InputTest()
     {
-        var instance = new Day21(File.ReadAllText("day21-input.txt"));
+        var instance = new Day21(File.ReadAllText("inputs/day21-input.txt"));
         var answer = instance.Part2();
         Assert.AreEqual("165644591859332", answer);
     }

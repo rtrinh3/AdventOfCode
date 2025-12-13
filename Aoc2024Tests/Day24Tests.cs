@@ -8,21 +8,21 @@ public class Day24Tests
     [TestMethod()]
     public void Part1Example1Test()
     {
-        var instance = new Day24(File.ReadAllText("day24-example1.txt"));
+        var instance = new Day24(File.ReadAllText("inputs/day24-example1.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("4", answer);
     }
     [TestMethod()]
     public void Part1Example2Test()
     {
-        var instance = new Day24(File.ReadAllText("day24-example2.txt"));
+        var instance = new Day24(File.ReadAllText("inputs/day24-example2.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("2024", answer);
     }
     [TestMethod()]
     public void Part1InputTest()
     {
-        var instance = new Day24(File.ReadAllText("day24-input.txt"));
+        var instance = new Day24(File.ReadAllText("inputs/day24-input.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("59364044286798", answer);
     }
@@ -30,7 +30,7 @@ public class Day24Tests
     [TestMethod()]
     public void Part2Example3Test()
     {
-        var instance = new Day24(File.ReadAllText("day24-example3.txt"));
+        var instance = new Day24(File.ReadAllText("inputs/day24-example3.txt"));
         static int EvaluateErrorBitwiseAnd(Func<ulong, ulong, ulong> system)
         {
             int errors = 0;
@@ -54,7 +54,7 @@ public class Day24Tests
     [TestMethod(), Timeout(10_000)]
     public void Part2InputTest()
     {
-        var instance = new Day24(File.ReadAllText("day24-input.txt"));
+        var instance = new Day24(File.ReadAllText("inputs/day24-input.txt"));
         var answer = instance.Part2();
         // (gmt,z07);(cbj,qjj);(dmn,z18);(cfk,z35)
         Assert.AreEqual("cbj,cfk,dmn,gmt,qjj,z07,z18,z35", answer);

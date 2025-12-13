@@ -8,7 +8,7 @@ public class Day20Tests
     [TestMethod()]
     public void Part1ExampleTest()
     {
-        var instance = new Day20(File.ReadAllText("day20-example.txt"));
+        var instance = new Day20(File.ReadAllText("inputs/day20-example.txt"));
         Dictionary<int, int> expected = new()
         {
             [2] = 14,
@@ -33,7 +33,7 @@ public class Day20Tests
     [TestMethod()]
     public void Part1InputTest()
     {
-        var instance = new Day20(File.ReadAllText("day20-input.txt"));
+        var instance = new Day20(File.ReadAllText("inputs/day20-input.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("1197", answer);
     }
@@ -41,7 +41,7 @@ public class Day20Tests
     [TestMethod()]
     public void Part2ExampleTest()
     {
-        var instance = new Day20(File.ReadAllText("day20-example.txt"));
+        var instance = new Day20(File.ReadAllText("inputs/day20-example.txt"));
         Dictionary<int, int> expected = new()
         {
             [50] = 32,
@@ -69,7 +69,7 @@ public class Day20Tests
     [TestMethod()]
     public void Part2InputTest()
     {
-        var instance = new Day20(File.ReadAllText("day20-input.txt"));
+        var instance = new Day20(File.ReadAllText("inputs/day20-input.txt"));
         var answer = instance.Part2();
         Assert.AreEqual("944910", answer);
     }
@@ -77,7 +77,7 @@ public class Day20Tests
     public void Part2RedditTest()
     {
         // https://www.reddit.com/r/adventofcode/comments/1hih8yx/2024_day_20_part_3_your_code_is_too_general_lets/
-        var instance = new Day20(File.ReadAllText("day20-reddit.txt"));
+        var instance = new Day20(File.ReadAllText("inputs/day20-reddit.txt"));
         Dictionary<int, int> expected = new()
         {
             [28] = 436, // https://www.reddit.com/r/adventofcode/comments/1hih8yx/comment/m2z6igc/
