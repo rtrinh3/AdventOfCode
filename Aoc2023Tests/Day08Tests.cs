@@ -14,21 +14,21 @@ namespace Aoc2023.Tests
         [TestMethod()]
         public void Part1Example1Test()
         {
-            var instance = new Day08(File.ReadAllText("day08-example1.txt"));
+            var instance = new Day08(File.ReadAllText("inputs/day08-example1.txt"));
             var answer = instance.Part1();
             Assert.AreEqual(2, answer);
         }
         [TestMethod()]
         public void Part1Example2Test()
         {
-            var instance = new Day08(File.ReadAllText("day08-example2.txt"));
+            var instance = new Day08(File.ReadAllText("inputs/day08-example2.txt"));
             var answer = instance.Part1();
             Assert.AreEqual(6, answer);
         }
         [TestMethod()]
         public void Part1InputTest()
         {
-            var instance = new Day08(File.ReadAllText("day08-input.txt"));
+            var instance = new Day08(File.ReadAllText("inputs/day08-input.txt"));
             var answer = instance.Part1();
             Assert.AreEqual(20093, answer);
         }
@@ -36,7 +36,7 @@ namespace Aoc2023.Tests
         [TestMethod()]
         public void Part2ExampleTest()
         {
-            var instance = new Day08(File.ReadAllText("day08-example3.txt"));
+            var instance = new Day08(File.ReadAllText("inputs/day08-example3.txt"));
             var answer = instance.Part2();
             Assert.AreEqual(6, answer);
             var bruteAnswer = instance.Part2BruteForce();
@@ -45,7 +45,7 @@ namespace Aoc2023.Tests
         [TestMethod()]
         public void Part2InputTest()
         {
-            var instance = new Day08(File.ReadAllText("day08-input.txt"));
+            var instance = new Day08(File.ReadAllText("inputs/day08-input.txt"));
             var answer = instance.Part2();
             Assert.AreEqual(22103062509257, answer);
         }

@@ -15,14 +15,14 @@ namespace Aoc2023.Tests
         [TestMethod()]
         public void Part1ExampleTest()
         {
-            var instance = new Day03(File.ReadAllText("day03-example.txt"));
+            var instance = new Day03(File.ReadAllText("inputs/day03-example.txt"));
             var answer = instance.Part1();
             Assert.AreEqual(4361, answer);
         }
         [TestMethod()]
         public void Part1InputTest()
         {
-            var instance = new Day03(File.ReadAllText("day03-input.txt"));
+            var instance = new Day03(File.ReadAllText("inputs/day03-input.txt"));
             var answer = instance.Part1();
             Assert.AreEqual(539637, answer);
         }
@@ -30,14 +30,14 @@ namespace Aoc2023.Tests
         [TestMethod()]
         public void Part2ExampleTest()
         {
-            var instance = new Day03(File.ReadAllText("day03-example.txt"));
+            var instance = new Day03(File.ReadAllText("inputs/day03-example.txt"));
             var answer = instance.Part2();
             Assert.AreEqual(467835, answer);
         }
         [TestMethod()]
         public void Part2InputTest()
         {
-            var instance = new Day03(File.ReadAllText("day03-input.txt"));
+            var instance = new Day03(File.ReadAllText("inputs/day03-input.txt"));
             var answer = instance.Part2();
             Assert.AreEqual(82818007, answer);
         }
