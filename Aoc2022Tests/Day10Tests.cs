@@ -8,14 +8,14 @@ namespace Aoc2022.Tests
         [TestMethod()]
         public void Part1ExampleTest()
         {
-            var instance = new Day10(File.ReadAllText("day10-example.txt"));
+            var instance = new Day10(File.ReadAllText("inputs/day10-example.txt"));
             var answer = instance.Part1();
             Assert.AreEqual("13140", answer);
         }
         [TestMethod()]
         public void Part1InputTest()
         {
-            var instance = new Day10(File.ReadAllText("day10-input.txt"));
+            var instance = new Day10(File.ReadAllText("inputs/day10-input.txt"));
             var answer = instance.Part1();
             Assert.AreEqual("15120", answer);
         }
@@ -23,7 +23,7 @@ namespace Aoc2022.Tests
         [TestMethod()]
         public void Part2ExampleTest()
         {
-            var instance = new Day10(File.ReadAllText("day10-example.txt"));
+            var instance = new Day10(File.ReadAllText("inputs/day10-example.txt"));
             var answer = instance.Part2();
             var counts = answer.GroupBy(c => c).OrderByDescending(g => g.Count()).ToList();
             Assert.IsTrue(counts.Count >= 3);
@@ -43,7 +43,7 @@ namespace Aoc2022.Tests
         [TestMethod()]
         public void Part2InputTest()
         {
-            var instance = new Day10(File.ReadAllText("day10-input.txt"));
+            var instance = new Day10(File.ReadAllText("inputs/day10-input.txt"));
             var answer = instance.Part2();
             var counts = answer.GroupBy(c => c).OrderByDescending(g => g.Count()).ToList();
             Assert.IsTrue(counts.Count >= 3);
