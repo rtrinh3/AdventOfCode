@@ -8,14 +8,14 @@ public class Day15Tests
     [TestMethod()]
     public void Day15_Part1_Example_Test()
     {
-        var instance = new Day15(File.ReadAllText("day15-example.txt"));
+        var instance = new Day15(File.ReadAllText("inputs/day15-example.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("5", answer);
     }
     [TestMethod()]
     public void Day15_Part1_Input_Test()
     {
-        var instance = new Day15(File.ReadAllText("day15-input.txt"));
+        var instance = new Day15(File.ReadAllText("inputs/day15-input.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("121834", answer);
     }
@@ -23,7 +23,7 @@ public class Day15Tests
     [TestMethod()]
     public void Day15_Part2_Input_Test()
     {
-        var instance = new Day15(File.ReadAllText("day15-input.txt"));
+        var instance = new Day15(File.ReadAllText("inputs/day15-input.txt"));
         var answer = instance.Part2();
         Assert.AreEqual("3208099", answer);
     }
