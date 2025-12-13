@@ -8,7 +8,7 @@ public class Day12Tests
     [TestMethod(), Timeout(10_000)]
     public void Day12_Part1_Example_Test()
     {
-        var instance = new Day12(File.ReadAllText("day12-example.txt"));
+        var instance = new Day12(File.ReadAllText("inputs/day12-example.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("2", answer);
     }
@@ -16,7 +16,7 @@ public class Day12Tests
     [TestMethod()]
     public void Day12_Part1_Input_Test()
     {
-        var instance = new Day12(File.ReadAllText("day12-input.txt"));
+        var instance = new Day12(File.ReadAllText("inputs/day12-input.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("451", answer);
     }

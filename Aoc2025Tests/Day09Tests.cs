@@ -8,7 +8,7 @@ public class Day09Tests
     [TestMethod()]
     public void Day09_Part1_Example_Test()
     {
-        var instance = new Day09(File.ReadAllText("day09-example.txt"));
+        var instance = new Day09(File.ReadAllText("inputs/day09-example.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("50", answer);
     }
@@ -16,7 +16,7 @@ public class Day09Tests
     [TestMethod()]
     public void Day09_Part1_Input_Test()
     {
-        var instance = new Day09(File.ReadAllText("day09-input.txt"));
+        var instance = new Day09(File.ReadAllText("inputs/day09-input.txt"));
         var answer = instance.Part1();
         Assert.AreEqual("4725826296", answer);
     }
@@ -24,7 +24,7 @@ public class Day09Tests
     [TestMethod()]
     public void Day09_Part2_Example_Test()
     {
-        var instance = new Day09(File.ReadAllText("day09-example.txt"));
+        var instance = new Day09(File.ReadAllText("inputs/day09-example.txt"));
         var answer = instance.Part2();
         Assert.AreEqual("24", answer);
     }
@@ -32,7 +32,7 @@ public class Day09Tests
     [TestMethod()]
     public void Day09_Part2_Input_Test()
     {
-        var instance = new Day09(File.ReadAllText("day09-input.txt"));
+        var instance = new Day09(File.ReadAllText("inputs/day09-input.txt"));
         var answer = instance.Part2();
         Assert.AreEqual("1637556834", answer);
     }
